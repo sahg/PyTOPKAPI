@@ -17,6 +17,14 @@ import numpy as np
 
 ##        ROUTINES FOR SOIL STORE
 #```````````````````````````````````````````
+def initial_volume_soil(ar_pVs_t0,ar_Vsm):
+    """ initialize_volume_soil
+    Compute the intial content of water (volume of water) from the
+    initial saturated values given in the parameter file.
+    """
+    ar_Vs_t0=ar_pVs_t0/100.*ar_Vsm
+    return ar_Vs_t0
+
 def input_soil(P,Dt,X,ar_Q_to_next_cell,ar_cell_up):
     """ input_soil
         Compute the total input of soil cell:

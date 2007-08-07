@@ -1,5 +1,5 @@
-""" TOPKAPI_main.py
-Main programm of the hydrological model.
+""" model.py
+Main programm of the TOPKAPI model.
 """
 
 __author__ = "Theo Vischel"
@@ -9,8 +9,8 @@ __date__ = "$Date: 08/10/2006 $"
 import sys
 ############################################
 ############################################
-sys.path.append('c:/Theo/topkapi_model/programme/')
-sys.path.append('c:/Theo/liebenbergsvlei/python_prog/')
+##sys.path.append('c:/Theo/topkapi_model/programme/')
+##sys.path.append('c:/Theo/liebenbergsvlei/python_prog/')
 
 #General module importation
 import numpy as np
@@ -42,15 +42,14 @@ def run(input_file):
     only_channel_output=False
 
     ##~~~~~~~~~~~ INPUTS  ~~~~~~~~~~~##
-    #Initial soil moisture and parameter factors
-    Vs_initial=40.
+    #Parameter multiplying factors
     fac_L=1.1
     fac_Ks=101.
     fac_n_o=1.
-    fac_n_c=1.
+    fac_n_c=7.
 
     #Param
-    path_in='C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/Example/'
+    path_in='C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/Example/run_the_model/'
     file_global_param=path_in+'global_param.dat'
     file_cell_param=path_in+'cell_param.dat'
     #Rain
@@ -63,7 +62,7 @@ def run(input_file):
     group_name='sample_event'
 
     #LESOTHO
-    lesotho=False
+    lesotho=True
     if lesotho:
         path_Qlesotho=path_in+'forcing_variables/'
         file_Qlesotho=path_Qlesotho+'external_lesotho_flows.dat'
@@ -122,9 +121,9 @@ def run(input_file):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_global_param)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_tan_beta,ar_L1,ar_Ks1,\
-    ar_theta_r,ar_theta_s,ar_n_o1,ar_n_c1,\
-    ar_cell_down,ar_pVs_t0,ar_pVc_t0,ar_kc\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L0,ar_Ks0,\
+    ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
+    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_cell_param)
     ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
@@ -145,22 +144,22 @@ def run(input_file):
     ###############################################  
     ######Change the values of the parameters######
     ###############################################
-    ar_L=ar_L1*fac_L
-    ar_Ks=ar_Ks1*fac_Ks
-    ar_n_o=ar_n_o1*fac_n_o
-    ar_n_c=ar_n_c1*fac_n_c
+    ar_L=ar_L0*fac_L
+    ar_Ks=ar_Ks0*fac_Ks
+    ar_n_o=ar_n_o0*fac_n_o
+    ar_n_c=ar_n_c0*fac_n_c
 
     ####---------------------------------####
     #### Computation of model parameters ####
     ####---------------------------------####
 
     #~~~~Computation of model parameters from physical parameters
-    ar_Vsm, ar_b_s, ar_Vs_t0, ar_b_o, ar_W, ar_b_c, ar_Vc_t0\
+    ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
       =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
                               ar_lambda,ar_tan_beta,ar_L,\
                               ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-                              ar_A_drained,ar_pVs_t0,ar_pVc_t0)
+                              ar_A_drained)
 
 
     ####---------------------------####
@@ -174,10 +173,9 @@ def run(input_file):
     ####---------------------------####
     ####     Core of the Model     ####
     ####---------------------------####
-    print 'NB_CELL=',nb_cell
-    print 'NB_TIME_STEP=',nb_time_step
-    print '**SIMULATIONS**'
-
+    print '** NB_CELL=',nb_cell
+    print '** NB_TIME_STEP=',nb_time_step
+    print '--> SIMULATIONS <--'
 
     ####=============================####
     ####  Variable array definition  ####
@@ -188,12 +186,10 @@ def run(input_file):
     ## Initialisation of the reservoirs ####
     ##==================================####
     #Matrix of soil,overland and channel store at the begining of the time step
-    ar_Vs0=ar_Vs_t0
-    ar_Vo0=sp.zeros(nb_cell)
-    if lesotho:
-        ar_Qc_ini=sp.zeros(nb_cell)+ar_Qlesotho[0]
-        ar_Vc_t0=fl.initial_volume_channel(ar_Qc_ini,ar_W,X,ar_n_c)
-    ar_Vc0=ar_Vc_t0
+    ar_Vs0=fl.initial_volume_soil(ar_pVs_t0,ar_Vsm)
+    ar_Vo0=ar_Vo_t0
+    ar_Vc0=fl.initial_volume_channel(ar_Qc_t0,ar_W,X,ar_n_c)
+
     #Matrix of soil,overland and channel store at the end of the time step
     ar_Vs1=sp.ones(nb_cell)*-99.9
     ar_Vo1=sp.ones(nb_cell)*-99.9
@@ -259,7 +255,7 @@ def run(input_file):
             ## ====================== ##       
             ## ===== SOIL STORE ===== ##
             ## ====================== ##
-            #~~~~ Computation of soil input        
+            #~~~~ Computation of soil input
             ar_a_s[cell] \
                 = fl.input_soil(ndar_rain[t,cell],Dt,X,ar_Q_to_next_cell,li_cell_up[cell])
             #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
