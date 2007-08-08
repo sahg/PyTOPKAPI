@@ -54,10 +54,12 @@ def from_float_array_to_string_array(ar_float,unique=False):
 def check_file_exist(filename):
     folder_name=os.path.split(filename)[0]
     if not os.path.exists(folder_name):
+        print folder_name, 'has been created'
         os.mkdir(folder_name)
 
 def check_folder_exist(folder_name):
     if not os.path.exists(folder_name):
+        print folder_name, 'has been created'
         os.mkdir(folder_name)
         
 def read_one_array_hdf(file_h5,group,name):

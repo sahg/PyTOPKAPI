@@ -4,19 +4,17 @@ Main programm of the TOPKAPI model.
 
 __author__ = "Theo Vischel"
 __version__ = "$Revision: 1.0 $"
-__date__ = "$Date: 08/10/2006 $"
+__date__ = "$Date: 08/08/2007 $"
 
-import sys
-############################################
-############################################
-##sys.path.append('c:/Theo/topkapi_model/programme/')
-##sys.path.append('c:/Theo/liebenbergsvlei/python_prog/')
 
 #General module importation
 import numpy as np
 import scipy as sp
 import tables as h5
 import scipy.io as io
+from ConfigParser import SafeConfigParser
+config = SafeConfigParser()
+
 
 #Personnal module importation
 import utils as ut
@@ -31,92 +29,79 @@ reload(om)
 reload(em)
 
 
-def run(input_file):
+def run(ini_file='TOPKAPI.ini'):
 
-    ##~~~~~~ Numerical options ~~~~~~##
-    solve_s=1 #0 for RKF, 1 for qas/RKF
-    solve_o=1 #0 for RKF, 1 for qas/RKF
-    solve_c=1 #0 for RKF, 1 for qas/RKF
+    ##================================##
+    ##  Read the input file (*.ini)   ##
+    ##================================##
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+    ##~~~~~~ Numerical_options ~~~~~~##
+    solve_s=config.getfloat('numerical_options','solve_s')
+    solve_o=config.getfloat('numerical_options','solve_o')
+    solve_c=config.getfloat('numerical_options','solve_c')
 
-    ##~~~~~~ Result writing options~~~~~##
-    only_channel_output=False
+    ##~~~~~~ Flags~~~~~##
+    only_channel_output=config.getboolean('flags','only_channel_output')
+    lesotho=config.getboolean('flags','lesotho')
+    
+    ##~~~~~~ Calibration ~~~~~~##
+    fac_L=config.getfloat('calib_params','fac_L')
+    fac_Ks=config.getfloat('calib_params','fac_Ks')
+    fac_n_o=config.getfloat('calib_params','fac_n_o')
+    fac_n_c=config.getfloat('calib_params','fac_n_c')
 
-    ##~~~~~~~~~~~ INPUTS  ~~~~~~~~~~~##
-    #Parameter multiplying factors
-    fac_L=1.1
-    fac_Ks=101.
-    fac_n_o=1.
-    fac_n_c=7.
-
+    ##~~~~~~~~~~~ INPUTS  FILES ~~~~~~~~~~~##
     #Param
-    path_in='C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/Example/run_the_model/'
-    file_global_param=path_in+'global_param.dat'
-    file_cell_param=path_in+'cell_param.dat'
+    file_global_param=config.get('files','file_global_param')
+    file_cell_param=config.get('files','file_cell_param')
     #Rain
-    path_rain=path_in+'forcing_variables/'
-    file_rain=path_rain+'rainfields.h5'
+    file_rain=config.get('files', 'file_rain')
     #ETP
-    path_ET=path_in+'forcing_variables/'
-    file_ET=path_ET+'ET.h5'
-    #Event
-    group_name='sample_event'
-
+    file_ET=config.get('files','file_ET')
+    #Simulated event
+    group_name=config.get('groups','group_name')
     #LESOTHO
-    lesotho=True
     if lesotho:
-        path_Qlesotho=path_in+'forcing_variables/'
-        file_Qlesotho=path_Qlesotho+'external_lesotho_flows.dat'
-
-
+        file_Qlesotho=config.get('files','file_Qlesotho')
 
     ##~~~~~~~~~~~ OUTPUTS FILES ~~~~~~~~~~##
-    path_out=path_in+'Results/'
+    file_out=config.get('files','file_out')
     #create path_out if it does'nt exist
-    ut.check_folder_exist(path_out)
+    ut.check_file_exist(file_out)
 
-    file_out=path_out+group_name+'_simulation_results.h5'
 
-    ##################################
-    ##~~~~~~~~~~ PROGRAMME ~~~~~~~~~##
-    ##################################
-
-    ####----------------------------####
-    ####   Read the forcing data    ####
-    ####----------------------------####
-
-    ##~~~~~~~~~~~ Input files ~~~~~~~~~~~##
-    ###~~~~Rainfall file reading
-    #Read the data
+    ##============================##
+    ##   Read the forcing data    ##
+    ##============================##
+    print 'Read the forcing data'
+    #~~~~Rainfall
     h5file_in=h5.openFile(file_rain,mode='r')
     group='/'+group_name+'/'
     node = h5file_in.getNode(group+'rainfall')
     ndar_rain=node.read()
     h5file_in.close()
-
-    ###~~~~ETr 
+    #~~~~ETr 
     h5file_in=h5.openFile(file_ET,mode='r')
     group='/'+group_name+'/'
     node = h5file_in.getNode(group+'ETr')
     ndar_ETr=node.read()
     h5file_in.close()
-
-    ###~~~~ETo
+    #~~~~ETo
     h5file_in=h5.openFile(file_ET,mode='r')
     group='/'+group_name+'/'
     node = h5file_in.getNode(group+'ETo')
     ndar_ETo=node.read()
     h5file_in.close()
-
-    ###~~~~Lesotho flows
-    #read the flow data coming from lesotho
+    #~~~~Lesotho flows
     if lesotho:
         ar_Qlesotho=io.read_array(file_Qlesotho)[:,5]
 
-    ####----------------------------####
-    #### Pretreatment of input data ####
-    ####----------------------------####
 
-    ##~~~~~~~~~~~ Parameters ~~~~~~~~~~~##
+    ##============================##
+    ## Pretreatment of input data ##
+    ##============================##
+    print 'Pretreatment of input data'
     #~~~~Read Global parameters file
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_global_param)
@@ -134,25 +119,11 @@ def run(input_file):
     li_cell_up=pm.direct_up_cell(ar_cell_label,ar_cell_down,ar_label_sort)
     #~~~~Computation of drained area
     ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
-
-    #~~~~Look for the cell of Lesotho tunnel
-    if lesotho:
-        Xlesotho=-255032.83
-        Ylesotho=-3149857.34
-        cell_lesotho=ut.find_cell_coordinates(ar_cell_label,Xlesotho,Ylesotho,ar_coorx,ar_coory,ar_lambda)
-
-    ###############################################  
-    ######Change the values of the parameters######
-    ###############################################
+    #~~~~Modifies the values of the parameters
     ar_L=ar_L0*fac_L
     ar_Ks=ar_Ks0*fac_Ks
     ar_n_o=ar_n_o0*fac_n_o
     ar_n_c=ar_n_c0*fac_n_c
-
-    ####---------------------------------####
-    #### Computation of model parameters ####
-    ####---------------------------------####
-
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
       =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
@@ -160,36 +131,26 @@ def run(input_file):
                               ar_lambda,ar_tan_beta,ar_L,\
                               ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
                               ar_A_drained)
-
-
-    ####---------------------------####
-    ####     Some changes for      ####
-    ####   sensitivity analyses    ####
-    ####---------------------------####
-
+    #~~~~Look for the cell of Lesotho tunnel
+    if lesotho:
+        Xlesotho=-255032.83
+        Ylesotho=-3149857.34
+        cell_lesotho=ut.find_cell_coordinates(ar_cell_label,Xlesotho,Ylesotho,ar_coorx,ar_coory,ar_lambda)
     #~~~~Number of simulation time steps
     nb_time_step=len(ndar_rain[:,0])
 
-    ####---------------------------####
-    ####     Core of the Model     ####
-    ####---------------------------####
-    print '** NB_CELL=',nb_cell
-    print '** NB_TIME_STEP=',nb_time_step
-    print '--> SIMULATIONS <--'
 
-    ####=============================####
-    ####  Variable array definition  ####
-    ####=============================####
+    ##=============================##
+    ##  Variable array definition  ##
+    ##=============================##
 
-    ## All these variables are computed
-    ##==================================####
-    ## Initialisation of the reservoirs ####
-    ##==================================####
+    ## Initialisation of the reservoirs
     #Matrix of soil,overland and channel store at the begining of the time step
     ar_Vs0=fl.initial_volume_soil(ar_pVs_t0,ar_Vsm)
     ar_Vo0=ar_Vo_t0
     ar_Vc0=fl.initial_volume_channel(ar_Qc_t0,ar_W,X,ar_n_c)
 
+    ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
     ar_Vs1=sp.ones(nb_cell)*-99.9
     ar_Vo1=sp.ones(nb_cell)*-99.9
@@ -199,8 +160,7 @@ def run(input_file):
     ar_Qo_out=sp.ones(nb_cell)*-99.9
     ar_Qc_out=sp.zeros(nb_cell)
 
-    ## Intermediate validation variables
-    #Matrix of soil,overland and channel total input
+    ## Intermediate variables
     ar_a_s=sp.ones(nb_cell)*-99.9
     ar_a_o=sp.ones(nb_cell)*-99.9
     ar_a_c=sp.ones(nb_cell)*-99.9
@@ -208,17 +168,15 @@ def run(input_file):
     ar_Q_to_channel=sp.ones(nb_cell)*-99.9
     ar_Q_to_channel_sub=sp.zeros(nb_cell)
     ar_Qc_cell_up=sp.zeros(nb_cell)
-
     ar_ETa=sp.zeros(nb_cell)
     ar_ET_channel=sp.zeros(nb_cell)
       
 
-    ##=============================####
-    ## HDF5 output file definition ####
-    ##=============================####
+    ##=============================##
+    ## HDF5 output file definition ##
+    ##=============================##
     h5file=h5.openFile(file_out,mode='w',title='TOPKAPI_out')
-
-    atom = h5.Float32Atom(shape=(0,nb_cell))# needs to match your data type
+    atom = h5.Float32Atom(shape=(0,nb_cell))
     h5filter = h5.Filters(9)# maximum compression
 
     group_soil=h5file.createGroup('/','Soil','Soil arrays')
@@ -231,10 +189,17 @@ def run(input_file):
     array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', atom,'m3/s', \
                                     filters=h5filter,expectedrows=nb_time_step)
 
-
-    ##Write some initial values into the output file
+    #Write the initial values into the output file
     array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
     array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
+
+
+    ##===========================##
+    ##     Core of the Model     ##
+    ##===========================##
+    print '** NB_CELL=',nb_cell
+    print '** NB_TIME_STEP=',nb_time_step
+    print '--> SIMULATIONS <--'
 
     ## Loop on time
     for t in range(nb_time_step):
