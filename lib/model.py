@@ -176,17 +176,17 @@ def run(ini_file='TOPKAPI.ini'):
     ## HDF5 output file definition ##
     ##=============================##
     h5file=h5.openFile(file_out,mode='w',title='TOPKAPI_out')
-    atom = h5.Float32Atom(shape=(0,nb_cell))
+    atom = h5.Float32Atom()
     h5filter = h5.Filters(9)# maximum compression
 
     group_soil=h5file.createGroup('/','Soil','Soil arrays')
-    array_Vs = h5file.createEArray(group_soil, 'V_s', atom,'m3', \
+    array_Vs = h5file.createEArray(group_soil, 'V_s', atom, shape=(0,nb_cell), title='m3', \
                                     filters=h5filter,expectedrows=nb_time_step+1)
     group_overland=h5file.createGroup('/','Overland','Overland arrays')
-    array_Vo = h5file.createEArray(group_overland, 'V_o', atom,'m3', \
+    array_Vo = h5file.createEArray(group_overland, 'V_o', atom, shape=(0,nb_cell), title='m3', \
                                     filters=h5filter,expectedrows=nb_time_step+1)
     group_channel=h5file.createGroup('/','Channel','Channel arrays')
-    array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', atom,'m3/s', \
+    array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', atom, shape=(0,nb_cell), title='m3/s', \
                                     filters=h5filter,expectedrows=nb_time_step)
 
     #Write the initial values into the output file
