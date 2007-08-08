@@ -13,7 +13,7 @@ config = SafeConfigParser()
 
 #Personnal module importation
 import utils as ut
-reload(ut)
+#reload(ut)
 
 
 def graph(ini_file='plot_Qsim_Qobs_Rain.ini'):
