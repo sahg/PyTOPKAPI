@@ -7,5 +7,3 @@ on a regular basis...
 
 __author__ = 'Theo Vischel'
 __version__ = '0.1'
-
-import model # always make this package available to the user

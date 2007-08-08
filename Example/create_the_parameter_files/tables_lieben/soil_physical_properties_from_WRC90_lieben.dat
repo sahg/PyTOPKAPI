@@ -1,0 +1,4 @@
+code  porosity (ave)       porosity (std)       theta_r (ave)        theta_r (std)        pore distr (ave)     pore distr (std)     alpha_s          Ks (mm/s)
+3     0.437                0.063                0.02                 0.019                0.694                0.396                5.882            6.54E-04
+2     0.453                0.102                0.041                0.065                0.378                0.238                8.291            6.06E-05
+1     0.475                0.048                0.09                 0.105                0.165                0.128                15.121           1.67E-06
