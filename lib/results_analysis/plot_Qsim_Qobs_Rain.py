@@ -16,7 +16,7 @@ from TOPKAPI import utils as ut
 #reload(ut)
 
 
-def graph(ini_file='plot_Qsim_Qobs_Rain.ini'):
+def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     
     config.read(ini_file)
     print 'Read the file ',ini_file
