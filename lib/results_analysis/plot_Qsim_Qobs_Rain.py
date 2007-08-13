@@ -12,7 +12,7 @@ from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
 #Personnal module importation
-import utils as ut
+from TOPKAPI import utils as ut
 #reload(ut)
 
 

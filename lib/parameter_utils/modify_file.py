@@ -27,10 +27,9 @@ import os.path
 
 #External modules
 #Utilities
-import utils as ut
-#pretreatment_module: used for subroutines to read the parameter files
-import pretreatment as pm
-import result_analysis as ra
+import TOPKAPI.utils as ut
+#pretreatment: used for subroutines to read the parameter files
+import TOPKAPI.pretreatment as pm
 ####################################
 ### MODIFYING THE PARAMETER FILE ###
 ####################################
@@ -66,7 +65,7 @@ def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1
     
     #Search for the catchment cells
     print 'Search for the catchment cells'
-    subcatch_label=ra.all_up_cell(cell_outlet,ar_cell_down,ar_cell_label)
+    subcatch_label=all_up_cell(cell_outlet,ar_cell_down,ar_cell_label)
 
     #Select the subcatchmnent parameters
     print 'Select the subcatchmnent parameters'
@@ -102,7 +101,7 @@ def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1
 
     image_out=os.path.split(file_out)[0]+'/'+nom_image+'.png'
     ar_image=ar_cell_label*0.;ar_image[subcatch_label]=1.;ar_image[ar_lambda==1.]=10.;ar_image[cell_outlet]=5.
-    ra.field_map(ar_image,ar_coorx,ar_coory,X,image_out,'Subcatchment')
+    field_map(ar_image,ar_coorx,ar_coory,X,image_out,'Subcatchment')
 
 def from_param_to_new_param(file_in,file_out,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,new_pVs_t0=50.,new_Vo_t0=0.,new_pVc_t0=0.,channel_lesotho=False):
     """
@@ -319,17 +318,22 @@ def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5
       to link the tunnel output to the river by transforming the initially non-channel cells into channel cells
     """
     nb_param=17.
-
+    fac_L_simu=1.1
+    fac_Ks_simu=101.0
+    fac_n_o_simu=1.
+    fac_n_c_simu=1.7
     #--Read and compute the parameters to have the values of parameter and ar_Vsm
     #~~~~Read Global parameters file
-    print 'Reading parameter file'
+    print 'Pretreatment of input data'
+    #~~~~Read Global parameters file
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_in_global)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
-    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L0,ar_Ks0,\
+    ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_in)
+    ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
     #~~~~Computation of cell order
@@ -338,6 +342,11 @@ def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5
     li_cell_up=pm.direct_up_cell(ar_cell_label,ar_cell_down,ar_label_sort)
     #~~~~Computation of drained area
     ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
+    #~~~~Modifies the values of the parameters
+    ar_L=ar_L0*fac_L_simu
+    ar_Ks=ar_Ks0*fac_Ks_simu
+    ar_n_o=ar_n_o0*fac_n_o_simu
+    ar_n_c=ar_n_c0*fac_n_c_simu
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
       =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
@@ -470,7 +479,69 @@ def channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,a
         ar_n_c[i]=ar_n_c[last_ind]
     
     return ar_lambda,ar_n_c
+
+#####################################
+## SUBROUTINES                      #
+#####################################
+
+##~~ Compute all the upper cells ~~##
+def direct_up_cell(ar_cell,ar_cell_down,ar_cell_label):
+    ar_out=sp.array([],int)
+    for i in range(len(ar_cell)):
+        ind=np.where(ar_cell_down==ar_cell[i])
+        if np.size(ar_out)==0:
+            ar_out=ar_cell_label[ind]
+        else:
+            if np.size(ar_cell_label[ind])>0:
+                ar_out=np.concatenate((ar_out,ar_cell_label[ind]))
+    return ar_out
+       
+def all_up_cell(cell,ar_cell_down,ar_cell_label):
+    """ all_up_cell
+        Return an array of the label of all the cells drained by a given cell (cell=label of cell)
+        Example b=all_up_cell(13,ar_cell_down,ar_cell_label)
+                b = array([13,  8, 14,  4,  9,  2,  5])
+    """
+    a=sp.ones(1,int)*cell
+    b=a
+    while np.size(a)!=0:
+        a=direct_up_cell(a,ar_cell_down,ar_cell_label)
+        b=np.concatenate((b,a))
+    return b
+
+##~~ Plot a field map ~~##
+def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0):
+
+    import matplotlib.numerix.ma as M
+
+    max_val=max(ar_field)
+    
+    xmin=min(ar_coorx);xmax=max(ar_coorx)
+    ymin=min(ar_coory);ymax=max(ar_coory)
+    step=X
+    nx=(xmax-xmin)/step+1
+    ny=(ymax-ymin)/step+1
+    
+    ar_indx=np.array((ar_coorx-xmin)/step,int)
+    ar_indy=np.array((ar_coory-ymin)/step,int)
+    
+    ar_map=sp.ones((ny,nx))*-99.9
+    ar_map[ar_indy,ar_indx]=ar_field
+    
+    if flip==1:
+        ar_map=np.flipud(ar_map)
         
+    ar_map2 = M.masked_where(ar_map <0, ar_map)
+
+        
+    ut.check_file_exist(image_out)
+    
+    pl.clf()
+    pl.imshow(ar_map2,interpolation='Nearest',origin='lower',vmax=max_val,vmin=0)
+    pl.title(title)
+    pl.colorbar()
+    pl.savefig(image_out)
+
 
 if __name__ == '__main__':
 
@@ -507,13 +578,13 @@ if __name__ == '__main__':
 ##        from_param_to_new_param_catchVsi(file_in,file_in_global,file_out,file_h5,file_catchment_saturation,new_pVs_t0=i,channel_lesotho=True)
 
 
-##    #### TO MODIFY INITIAL VALUES FROM A SIMULATION FILE ####
-##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/parameter_files_Aug07/'
-##    file_in=path_main+'cell_param_sub_Aug07_Vsi80%.dat'
-##    file_in_global='C:/Theo/liebenbergsvlei/topkapi_model/parameters/global_param_6h.dat'
-##    file_out=path_main+'cell_param_sub_Aug07_intialized.dat'
-##    file_h5='C:/Theo/liebenbergsvlei/topkapi_model/simulation_after_calibration/simulations/Event3_6h_subC8H020_L1.1_Ks101.0_no1.0_nc7.0_40%.h5'
-##    indice_extrac_file=180
-##    from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5,indice_extrac_file,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,channel_lesotho=True)
+    #### TO MODIFY INITIAL VALUES FROM A SIMULATION FILE ####
+    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/parameter_files_Aug07/'
+    file_in=path_main+'cell_param_sub_Aug07_Vsi80%.dat'
+    file_in_global='C:/Theo/liebenbergsvlei/topkapi_model/parameters/global_param_6h.dat'
+    file_out=path_main+'cell_param_sub_Aug07_intialized.dat'
+    file_h5='C:/Theo/liebenbergsvlei/topkapi_model/simulation_after_calibration/simulations/Event3_6h_subC8H020_L1.1_Ks101.0_no1.0_nc7.0_40%.h5'
+    indice_extrac_file=180
+    from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5,indice_extrac_file,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,channel_lesotho=True)
 
     

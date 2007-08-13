@@ -413,7 +413,6 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         #### Results writing at each time step ####
         ####===================================####
-
         array_Vs.append(ar_Vs1.reshape((1,nb_cell)))
         array_Vo.append(ar_Vo1.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell))) 
