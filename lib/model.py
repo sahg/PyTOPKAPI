@@ -40,33 +40,35 @@ def run(ini_file='TOPKAPI.ini'):
     solve_s=config.getfloat('numerical_options','solve_s')
     solve_o=config.getfloat('numerical_options','solve_o')
     solve_c=config.getfloat('numerical_options','solve_c')
+    only_channel_output=config.getboolean('numerical_options','only_channel_output')
+ 
+    ##~~~~~~~~~~~ input files ~~~~~~~~~~~##
+    #Param
+    file_global_param=config.get('input_files','file_global_param')
+    file_cell_param=config.get('input_files','file_cell_param')
+    #Rain
+    file_rain=config.get('input_files', 'file_rain')
+    #ETP
+    file_ET=config.get('input_files','file_ET')
 
-    ##~~~~~~ Flags~~~~~##
-    only_channel_output=config.getboolean('flags','only_channel_output')
-    lesotho=config.getboolean('flags','lesotho')
-    
+    #~~~~~~~~~~~ Group (simulated event) ~~~~~~~~~~~##
+    group_name=config.get('groups','group_name')
+
     ##~~~~~~ Calibration ~~~~~~##
     fac_L=config.getfloat('calib_params','fac_L')
     fac_Ks=config.getfloat('calib_params','fac_Ks')
     fac_n_o=config.getfloat('calib_params','fac_n_o')
     fac_n_c=config.getfloat('calib_params','fac_n_c')
 
-    ##~~~~~~~~~~~ INPUTS  FILES ~~~~~~~~~~~##
-    #Param
-    file_global_param=config.get('files','file_global_param')
-    file_cell_param=config.get('files','file_cell_param')
-    #Rain
-    file_rain=config.get('files', 'file_rain')
-    #ETP
-    file_ET=config.get('files','file_ET')
-    #Simulated event
-    group_name=config.get('groups','group_name')
-    #LESOTHO
-    if lesotho:
-        file_Qlesotho=config.get('files','file_Qlesotho')
-
-    ##~~~~~~~~~~~ OUTPUTS FILES ~~~~~~~~~~##
-    file_out=config.get('files','file_out')
+    ##~~~~~~ External flows ~~~~~~##
+    external_flow=config.getboolean('external_flow','external_flow')
+    if external_flow:
+        file_Qexternal_flow=config.get('external_flow','file_Qexternal_flow')
+        Xexternal_flow=config.getfloat('external_flow','Xexternal_flow')
+        Yexternal_flow=config.getfloat('external_flow','Yexternal_flow')
+        
+    ##~~~~~~~~~~~ output files ~~~~~~~~~~##
+    file_out=config.get('output_files','file_out')
     #create path_out if it does'nt exist
     ut.check_file_exist(file_out)
 
@@ -93,9 +95,9 @@ def run(ini_file='TOPKAPI.ini'):
     node = h5file_in.getNode(group+'ETo')
     ndar_ETo=node.read()
     h5file_in.close()
-    #~~~~Lesotho flows
-    if lesotho:
-        ar_Qlesotho=io.read_array(file_Qlesotho)[:,5]
+    #~~~~external_flow flows
+    if external_flow:
+        ar_Qexternal_flow=io.read_array(file_Qexternal_flow)[:,5]
 
 
     ##============================##
@@ -131,11 +133,11 @@ def run(ini_file='TOPKAPI.ini'):
                               ar_lambda,ar_tan_beta,ar_L,\
                               ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
                               ar_A_drained)
-    #~~~~Look for the cell of Lesotho tunnel
-    if lesotho:
-        Xlesotho=-255032.83
-        Ylesotho=-3149857.34
-        cell_lesotho=ut.find_cell_coordinates(ar_cell_label,Xlesotho,Ylesotho,ar_coorx,ar_coory,ar_lambda)
+    #~~~~Look for the cell of external_flow tunnel
+    if external_flow:
+        cell_external_flow=ut.find_cell_coordinates(ar_cell_label,Xexternal_flow,Yexternal_flow,ar_coorx,ar_coory,ar_lambda)
+        print 'external flows will be taken into account for cell no',cell_external_flow,\
+              ' coordinates (',Xexternal_flow,',',Yexternal_flow,')'
     #~~~~Number of simulation time steps
     nb_time_step=len(ndar_rain[:,0])
 
@@ -337,8 +339,8 @@ def run(ini_file='TOPKAPI.ini'):
                 ar_a_c[cell],ar_Qc_cell_up[cell] \
                     = fl.input_channel(ar_Qc_out,ar_Q_to_channel[cell],li_cell_up[cell])
                 
-                if lesotho and cell==np.where(ar_cell_label==cell_lesotho)[0][0]:
-                    ar_a_c[cell]=ar_a_c[cell]+ar_Qlesotho[t]
+                if external_flow and cell==np.where(ar_cell_label==cell_external_flow)[0][0]:
+                    ar_a_c[cell]=ar_a_c[cell]+ar_Qexternal_flow[t]
 
                 #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
                 if ar_a_c[cell]==0.:

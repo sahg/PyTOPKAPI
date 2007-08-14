@@ -80,7 +80,7 @@ def creat_param_file(file_bin_streamnet,file_bin_beta,file_bin_flowdir,\
       
     * Output:
       - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
+       label X Y lambda dam L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
 
 
       
