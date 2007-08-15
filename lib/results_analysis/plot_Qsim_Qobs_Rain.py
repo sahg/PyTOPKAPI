@@ -153,10 +153,9 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 #``````````````````````````````````````````   
 def read_delta_flow(file_name):
     import scipy.io as io
-    f=file(file_name,'r')
-    tab=io.read_array(f)
-    f.close()
-    ar_date=tab[:,0:-1]
+
+    tab=io.read_array(file_name)
+    ar_date=np.array(tab[:,0:-1], np.int32) # date components are integer numbers
     ar_Q=tab[:,-1]
     return ar_date,ar_Q
 
