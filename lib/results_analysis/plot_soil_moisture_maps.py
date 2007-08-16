@@ -85,8 +85,8 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
         tab=ndar_Vs/ar_Vsm*100.
 
     # Plot the maps
-    for t in range(t1,t2):
-        print 'Map time step ', t
+    for t in np.arange(int(t1),int(t2+1)):
+        print 'Map time-step ', t
         image_out=im_out+ut.string(t,len(str(t2)))+'.png'
         field_map_ndar(tab,t,ar_coorx,ar_coory,X,image_out)
 
