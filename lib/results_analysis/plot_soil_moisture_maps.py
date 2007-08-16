@@ -12,9 +12,8 @@ from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
 
-def run(ini_file='toto'):
-    ##~~~~~~INPUTS~~~~~##
-    #-->files
+def run(ini_file='plot_soil_moisture_maps.ini'):
+
     config.read(ini_file)
     print 'Read the file ',ini_file
 
@@ -28,7 +27,6 @@ def run(ini_file='toto'):
     fac_Ks=config.getfloat('calib_params','fac_Ks')
     fac_n_o=config.getfloat('calib_params','fac_n_o')
     fac_n_c=config.getfloat('calib_params','fac_n_c')
-
 
     t1=config.getfloat('flags','t1')
     t2=config.getfloat('flags','t2')
@@ -88,7 +86,7 @@ def run(ini_file='toto'):
 
     # Plot the maps
     for t in range(t1,t2):
-        print t
+        print 'Map time step ', t
         image_out=im_out+ut.string(t,len(str(t2)))+'.png'
         field_map_ndar(tab,t,ar_coorx,ar_coory,X,image_out)
 
@@ -114,7 +112,7 @@ def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out):
     
     pl.clf()
     pl.imshow(ar_map2,interpolation='Nearest',origin='lower',vmax=max_val,vmin=0)
-    pl.title('time step= '+ut.string(t,5))
+    pl.title('time step= '+ut.string(t,len(str(t))))
     pl.colorbar()
     pl.savefig(image_out)
 
