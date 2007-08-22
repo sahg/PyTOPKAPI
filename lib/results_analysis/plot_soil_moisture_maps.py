@@ -88,13 +88,14 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
     for t in np.arange(int(t1),int(t2+1)):
         print 'Map time-step ', t
         image_out=im_out+ut.string(t,len(str(t2)))+'.png'
-        field_map_ndar(tab,t,ar_coorx,ar_coory,X,image_out)
+        field_map_ndar(tab,t,ar_coorx,ar_coory,X,image_out,variable)
 
-def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out):
+def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out,variable):
 
     ar_field=ndar_field[t,:]
     max_val=int(np.max(ndar_field))
-
+    if variable==4:
+        max_val=100.
     xmin=min(ar_coorx);xmax=max(ar_coorx)
     ymin=min(ar_coory);ymax=max(ar_coory)
     step=X
