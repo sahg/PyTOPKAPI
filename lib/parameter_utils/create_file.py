@@ -29,26 +29,23 @@ import sys
 ############################################
 sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/lib/')
 
-#Internal modules
+#Python modules
 import numpy as np
 import pylab as pl
 from numpy import ma
 import scipy.io as io
 import tables as h5
+from ConfigParser import SafeConfigParser
+config = SafeConfigParser()
 
-#External modules
+#External modules from TOPKAPI
 #Utilities
-import utils as ut
-#pretreatment_module: used for subroutines to read the column type files.
-import pretreatment_module as pm
+from TOPKAPI import utils as ut
+#pretreatment: used for subroutines to read the column type files.
+from TOPKAPI import pretreatment as pm
 
 
-def creat_param_file(file_bin_streamnet,file_bin_beta,file_bin_flowdir,\
-                     file_bin_GLCC,file_bin_SIRI,\
-                     file_bin_WRC90,file_bin_strahler,\
-                     file_table_GLCC_manning,file_table_SIRI_soil,\
-                     file_table_WRC90_soil,file_table_strahler_manning,file_out,\
-                     pVs_t0=80., Vo_t0=0.,Qc_t0=0.,kc=1):
+def run(ini_file='create_file.ini'):
     """
     * objective:
       Create a parameter file from the catchment data (GIS maps), in association with the TABLES povided in the litterature.
@@ -80,10 +77,8 @@ def creat_param_file(file_bin_streamnet,file_bin_beta,file_bin_flowdir,\
       
     * Output:
       - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda dam L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
+       label X Y lambda dam tna_beta L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
 
-
-      
     * Comment:
      1. !!!!VERY IMPORTANT!!!!
      The routine refers to several subroutines listed below that must be carefully read before running the programm. This programm is helpfull for
@@ -97,9 +92,36 @@ def creat_param_file(file_bin_streamnet,file_bin_beta,file_bin_flowdir,\
         Assigning a spatially variable initial soil moisture can be done through the routine "from_param_to_new_param_catchVsi" in this file.
 
     """
+    ### READ THE PARAMETERS ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+    ##~~~~~~ GIS_files ~~~~~~##
+    file_bin_streamnet=config.get('GIS_files','file_bin_streamnet')
+    file_bin_beta=config.get('GIS_files','file_bin_beta')
+    file_bin_flowdir=config.get('GIS_files','file_bin_flowdir')
+    file_bin_GLCC=config.get('GIS_files','file_bin_GLCC')
+    file_bin_SIRI=config.get('GIS_files','file_bin_SIRI')
+    file_bin_WRC90=config.get('GIS_files','file_bin_WRC90')
+    file_bin_strahler=config.get('GIS_files','file_bin_strahler')
 
-    #~~~~Number of parameter (used to fix the final array dimension)~~~#
-    nb_param=17.
+    ##~~~~~~ table_files ~~~~~~##
+    file_table_GLCC_manning=config.get('table_files','file_table_GLCC_manning')
+    file_table_SIRI_soil=config.get('table_files','file_table_SIRI_soil')
+    file_table_WRC90_soil=config.get('table_files','file_table_WRC90_soil')
+    file_table_strahler_manning=config.get('table_files','file_table_strahler_manning')
+
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
+
+    ##~~~~~~ numerical_values ~~~~~~##
+    nb_param=config.getfloat('numerical_values','nb_param')
+    pVs_t0=config.getfloat('numerical_values','pVs_t0')
+    Vo_t0=config.getfloat('numerical_values','Vo_t0')
+    Qc_t0=config.getfloat('numerical_values','Qc_t0')
+    kc=config.getfloat('numerical_values','kc')
+
+    #create path_out if it does'nt exist
+    ut.check_file_exist(file_out)
 
     #~~~~~Paremeters directly read ~~~~~~#
     #Table of channel cells (1 for channel, 0 otherwise) 
@@ -551,16 +573,16 @@ def matrix_plot(matrix, fig_name, title='GRID Plot'):
     pl.close()
 
 
-if __name__ == '__main__':
-    ### EXAMPLE OF CREATION OF A PARAMETER FILE FOR THE LIEBENBERGSVLEI ###
-    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/'
-    path_GIS=path_main+'GIS_bin_files/'
-    path_table=path_main+'tables_lieben/'
-    creat_param_file(path_GIS+'streamnet',path_GIS+'slope',path_GIS+'flowdir',\
-                     path_GIS+'land_use_GLCC', path_GIS+'soil_type_SIRI',\
-                     path_GIS+'soil_text_WRC90',path_GIS+'strahler_order',\
-                     path_table+'manning_from_GLCC_lieben.dat',path_table+'soil_properties_from_SIRI_lieben.dat',\
-                     path_table+'soil_physical_properties_from_WRC90_lieben.dat',path_table+'Strahler_manning.dat',\
-                     path_main+'parameter_files_Aug07/cell_param_Aug07_Vsi80%.dat')
+##if __name__ == '__main__':
+##    ### EXAMPLE OF CREATION OF A PARAMETER FILE FOR THE LIEBENBERGSVLEI ###
+##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/'
+##    path_GIS=path_main+'GIS_bin_files/'
+##    path_table=path_main+'tables_lieben/'
+##    creat_param_file(path_GIS+'streamnet',path_GIS+'slope',path_GIS+'flowdir',\
+##                     path_GIS+'land_use_GLCC', path_GIS+'soil_type_SIRI',\
+##                     path_GIS+'soil_text_WRC90',path_GIS+'strahler_order',\
+##                     path_table+'manning_from_GLCC_lieben.dat',path_table+'soil_properties_from_SIRI_lieben.dat',\
+##                     path_table+'soil_physical_properties_from_WRC90_lieben.dat',path_table+'Strahler_manning.dat',\
+##                     path_main+'parameter_files_Aug07/cell_param_Aug07_Vsi80%.dat')
 
     

@@ -1,0 +1,4 @@
+Value  Texture
+1      SaCl-Cl
+2      SaLm
+3      SaClLm-SaCl
