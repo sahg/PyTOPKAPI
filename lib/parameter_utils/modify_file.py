@@ -18,12 +18,15 @@ sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/
 
 #Internal modules
 import numpy as np
+import scipy as sp
 import pylab as pl
 from numpy import ma
 import scipy.io as io
 import tables as h5
 import os
 import os.path
+from ConfigParser import SafeConfigParser
+config = SafeConfigParser()
 
 #External modules
 #Utilities
@@ -34,7 +37,7 @@ import TOPKAPI.pretreatment as pm
 ### MODIFYING THE PARAMETER FILE ###
 ####################################
 
-def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1000):
+def subcatch(ini_file='subcatch.ini'):
     """
     * Objective:
     Extract a sub catchment parameter file from a catchment parameter file
@@ -46,10 +49,23 @@ def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1
       
     * Output
       - file_out: parameter file for the selected subcatchment
-      - nom_image: picture of the selected subcatchment
+      - picture_out: picture of the selected subcatchment
     """
-
-    nb_param=17.
+    ### READ THE INI FILE ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+    ##~~~~~~ file_in ~~~~~~##
+    file_in=config.get('file_in','file_in')
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
+    ##~~~~~~ picture_out ~~~~~~##
+    picture_out=config.get('picture_out','picture_out')
+    ##~~~~~~ coord_outlet ~~~~~~##
+    Xoutlet=config.getfloat('coord_outlet','Xoutlet')
+    Youtlet=config.getfloat('coord_outlet','Youtlet')
+    ##~~~~~~ flags ~~~~~~##
+    nb_param=config.getfloat('flags','nb_param')
+    X=config.getfloat('flags','X')
     
     #Reading of parameter file
     print 'Reading parameter file'
@@ -61,7 +77,6 @@ def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1
     #Search for the cell close to the coordinates
     print 'Search for the outlet cell'
     cell_outlet=find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lambda)
-    print cell_outlet
     
     #Search for the catchment cells
     print 'Search for the catchment cells'
@@ -99,11 +114,10 @@ def from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image,X=1
     io.write_array(f, tab_param)
     f.close()
 
-    image_out=os.path.split(file_out)[0]+'/'+nom_image+'.png'
     ar_image=ar_cell_label*0.;ar_image[subcatch_label]=1.;ar_image[ar_lambda==1.]=10.;ar_image[cell_outlet]=5.
-    field_map(ar_image,ar_coorx,ar_coory,X,image_out,'Subcatchment')
+    field_map(ar_image,ar_coorx,ar_coory,X,picture_out,'Subcatchment')
 
-def from_param_to_new_param(file_in,file_out,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,new_pVs_t0=50.,new_Vo_t0=0.,new_pVc_t0=0.,channel_lesotho=False):
+def new_param(ini_file='new_param.ini'):
     """
     * Objective
         Modifies the param file by multiplying some variables (L, Ks, n_o,n_c)
@@ -113,12 +127,28 @@ def from_param_to_new_param(file_in,file_out,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n
       - the other parameters are assigned by default and have to be changed according to user's choice.
     * Output
       - file_out: new parameter file
-    * Comment
-      The boolean channel_lesotho calls a subroutine that was used in the case of the Liebenbergsvlei catchment
-      to link the tunnel output to the river by transforming the initially non-channel cells into channel cells
     """
+    ### READ THE INI FILE ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+    ##~~~~~~ file_in ~~~~~~##
+    file_in=config.get('file_in','file_in')
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
 
-    nb_param=17.
+    ##~~~~~~ factor_values ~~~~~##
+    fac_L=config.getfloat('factor_values','fac_L')
+    fac_Ks=config.getfloat('factor_values','fac_KS')
+    fac_n_o=config.getfloat('factor_values','fac_n_o')
+    fac_n_c=config.getfloat('factor_values','fac_n_c')
+    
+    ##~~~~~~ new_initial_values ~~~~~##
+    new_pVs_t0=config.getfloat('new_initial_values','new_pVs_t0')
+    new_Vo_t0=config.getfloat('new_initial_values','new_Vo_t0')
+    new_Qc_t0=config.getfloat('new_initial_values','new_Qc_t0')
+
+    ##~~~~~~ flags ~~~~~~##
+    nb_param=config.getfloat('flags','nb_param')
     
     #Reading of parameter file
     print 'Reading parameter file'
@@ -145,17 +175,12 @@ def from_param_to_new_param(file_in,file_out,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n
     if new_pVs_t0!=ar_pVs_t0[0]:
         print 'Change pVs_t0'
         ar_pVs_t0=ar_pVs_t0*0.+new_pVs_t0
-        print ar_pVs_t0[0]
     if new_Vo_t0!=ar_Vo_t0[0]:
         print 'Change pVs_t0'
         ar_Vo_t0=ar_Vo_t0*0.+new_Vo_t0
-        print ar_Vo_t0[0]
     if new_Qc_t0!=ar_Qc_t0[0]:
         print 'Change pVc_t0'
         ar_Qc_t0=ar_Qc_t0*0.+new_Qc_t0
-
-    if channel_lesotho:
-        ar_lambda=channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down)
         
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
@@ -181,104 +206,38 @@ def from_param_to_new_param(file_in,file_out,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n
     io.write_array(f, tab_param)
     f.close()
 
-def from_param_to_new_param_catchVsi(file_in,file_in_global,file_out,file_h5,file_catchment_saturation,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,\
-                                    new_pVs_t0=-99.,new_pVc_t0=-99.,channel_lesotho=False):
-    """
 
+def connect_external_flow(ini_file='connect_external_flow.ini'):
+    """
     * Objective
-        Modifies the param file by multiplying some variables (L, Ks, n_o,n_c)
-        or replacing by a given new value for the initial level of reservoir in percent
-        The initial soil saturation is affected from the evolutive saturation file
-    * Input
-      - file_in: parameter file to be modified
-      - the other parameters are assigned by default and have to be changed according to user's choice.
-    * Output
-      - file_out: new parameter file
-    * Comment
-      The boolean channel_lesotho calls a subroutine that was used in the case of the Liebenbergsvlei catchment
-      to link the tunnel output to the river by transforming the initially non-channel cells into channel cells
+      to link the location of external flows to the river network by transforming the initially non-channel cells into channel cells
+      ar_lambda is modified (value from 0 to 1) ar_n_c is modified the value of the new channel cells are taken equal to the nearest existing channel cell
     """
-    nb_param=17.
+    ### READ THE INI FILE ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+    ##~~~~~~ file_in ~~~~~~##
+    file_in=config.get('file_in','file_in')
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
 
+    ##~~~~~~ external_flow ~~~~~~##
+    Xext_flow=config.getfloat('external_flow','Xext_flow')
+    Yext_flow=config.getfloat('external_flow','Yext_flow')
+
+    ##~~~~~~ flags ~~~~~~##
+    nb_param=config.getfloat('flags','nb_param')
     
-    #--Read and compute the parameters to have the values of parameter and ar_Vsm
-    #~~~~Read Global parameters file
+    #Reading of parameter file
     print 'Reading parameter file'
-    X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
-      =pm.read_global_parameters(file_in_global)
-    #~~~~Read Cell parameters file
     ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
-        =pm.read_cell_parameters(file_in)
-    #~~~~Number of cell in the catchment
-    nb_cell=len(ar_cell_label)
-    #~~~~Computation of cell order
-    ar_label_sort=pm.sort_cell(ar_cell_label,ar_cell_down)
-    #~~~~Computation of upcells
-    li_cell_up=pm.direct_up_cell(ar_cell_label,ar_cell_down,ar_label_sort)
-    #~~~~Computation of drained area
-    ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
-    #~~~~Computation of model parameters from physical parameters
-    ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
-                              A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L,\
-                              ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-                              ar_A_drained)
+    =pm.read_cell_parameters(file_in)
 
-    #Read the soil volume file
-    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'/Soil/','V_s'))
-
-    #Read the file of catchment saturation rates
-    f=file(file_catchment_saturation,'r')
-    tab_rate=io.read_array(f)
-    f.close()
-
-    #Look for the rate closest to the expected mean value
-    if new_pVs_t0>tab_rate[0]:
-        ind=0
-        print 'rate=100%'
-    elif new_pVs_t0<tab_rate[-1]:
-        ind=-1
-        print 'rate=0%'
-    else:
-        loop=True
-        i=-1
-        while loop:
-            i=i+1
-            if new_pVs_t0>=tab_rate[i] and new_pVs_t0>tab_rate[i+1]:
-                ind=i+1
-                loop=False
-                print 'rate=',tab_rate[i]
-    print ind
-    ar_Vs=ndar_Vs[ind,:]
-    ar_Vsi=ar_Vs/ar_Vsm*100.
-    print ar_Vsi
-    #~~~~~~Change in parameters~~~~~~#
-    if fac_L!=1.:
-        print 'Change L'
-        ar_L=ar_L*fac_L
-    if fac_Ks!=1.:
-        print 'Change Ks'
-        ar_Ks=ar_Ks*fac_Ks
-    if fac_n_o!=1.:
-        print 'Change n_o'
-        ar_n_o=ar_n_o*fac_n_o
-    if fac_n_c!=1.:
-        print 'Change n_c'
-        ar_n_c=ar_n_c*fac_n_c
-    if new_pVc_t0>=0.:
-        print 'Change pVc_t0'
-        ar_pVc_t0=ar_pVc_t0*0.+new_pVc_t0
-    if new_pVs_t0>=0.:
-        print 'Change pVs_t0'
-        ar_pVs_t0=ar_Vsi
-        print ar_pVs_t0[0]
-
-    if channel_lesotho:
-        ar_lambda,ar_n_c=channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c)
-    
+    print 'Connect external flows to the network'
+    ar_lambda,ar_n_c=link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xext_flow,Yext_flow)
+        
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
     tab_param[:,0]=ar_cell_label
@@ -303,34 +262,42 @@ def from_param_to_new_param_catchVsi(file_in,file_in_global,file_out,file_h5,fil
     io.write_array(f, tab_param)
     f.close()
 
-def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5,indice_extrac_file,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,channel_lesotho=False):
+
+def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     """
     * Objective
-        Modifies the param file by multiplying some variables (L, Ks, n_o,n_c)
-        and/or by replacing the initial level of reservoirs by values extracted from a TOPKAPI simulation file.
-    * Input
-      - file_in: parameter file to be modified
-      - the other parameters are assigned by default and have to be changed according to user's choice.
-    * Output
-      - file_out: new parameter file
-    * Comment
-      The boolean channel_lesotho calls a subroutine that was used in the case of the Liebenbergsvlei catchment
-      to link the tunnel output to the river by transforming the initially non-channel cells into channel cells
-    """
-    nb_param=17.
-    fac_L_simu=1.1
-    fac_Ks_simu=101.0
-    fac_n_o_simu=1.
-    fac_n_c_simu=1.7
+
+     """
+    ### READ THE INI FILE ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+
+    ##~~~~~~ file_in ~~~~~~##
+    file_in=config.get('file_in','file_in')
+    file_in_global=config.get('file_in','file_in_global')
+    file_h5=config.get('file_in','file_h5')
+    
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
+
+    ##~~~~~~ variables ~~~~~~##
+    time_step=config.getint('variables','time_step')
+    fac_L_simu=config.getfloat('variables','fac_L_simu')
+    fac_Ks_simu=config.getfloat('variables','fac_Ks_simu')
+    fac_n_o_simu=config.getfloat('variables','fac_n_o_simu')
+    fac_n_c_simu=config.getfloat('variables','fac_n_c_simu')
+
+    ##~~~~~~ flags ~~~~~~##
+    nb_param=config.getfloat('flags','nb_param')
+
     #--Read and compute the parameters to have the values of parameter and ar_Vsm
     #~~~~Read Global parameters file
-    print 'Pretreatment of input data'
     #~~~~Read Global parameters file
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_in_global)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L0,ar_Ks0,\
-    ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_in)
     ar_tan_beta[ar_tan_beta==0.]=1e-3
@@ -343,16 +310,16 @@ def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5
     #~~~~Computation of drained area
     ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
     #~~~~Modifies the values of the parameters
-    ar_L=ar_L0*fac_L_simu
-    ar_Ks=ar_Ks0*fac_Ks_simu
-    ar_n_o=ar_n_o0*fac_n_o_simu
-    ar_n_c=ar_n_c0*fac_n_c_simu
+    ar_L1=ar_L*fac_L_simu
+    ar_Ks1=ar_Ks*fac_Ks_simu
+    ar_n_o1=ar_n_o*fac_n_o_simu
+    ar_n_c1=ar_n_c*fac_n_c_simu
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
       =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L,\
-                              ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
+                              ar_lambda,ar_tan_beta,ar_L1,\
+                              ar_Ks1,ar_theta_r,ar_theta_s,ar_n_o1,ar_n_c1,\
                               ar_A_drained)
 
     #Read the soil volume file
@@ -362,27 +329,11 @@ def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5
     #Read the channel dischargefile
     ndar_Qc=np.array(ut.read_one_array_hdf(file_h5,'/Channel/','Qc_out'))
 
-
-    ar_Vs=ndar_Vs[indice_extrac_file,:]
+    ar_Vs=ndar_Vs[time_step,:]
     ar_pVs_t0=ar_Vs/ar_Vsm*100.
-    ar_Vo_t0=ndar_Vo[indice_extrac_file,:]
-    ar_Qc_t0=ndar_Qc[indice_extrac_file,:]
-    #~~~~~~Change in parameters~~~~~~#
-    if fac_L!=1.:
-        print 'Change L'
-        ar_L=ar_L*fac_L
-    if fac_Ks!=1.:
-        print 'Change Ks'
-        ar_Ks=ar_Ks*fac_Ks
-    if fac_n_o!=1.:
-        print 'Change n_o'
-        ar_n_o=ar_n_o*fac_n_o
-    if fac_n_c!=1.:
-        print 'Change n_c'
-        ar_n_c=ar_n_c*fac_n_c
-        
-    if channel_lesotho:
-        ar_lambda,ar_n_c=channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c)
+    ar_Vo_t0=ndar_Vo[time_step,:]
+    ar_Qc_t0=ndar_Qc[time_step,:]
+
     
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
@@ -408,6 +359,122 @@ def from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5
     io.write_array(f, tab_param)
     f.close()
 
+def mean_simuVsi(ini_file='mean_simuVsi.ini'):
+    """
+    * Objective
+        
+    """
+
+    ### READ THE INI FILE ###
+    config.read(ini_file)
+    print 'Read the file ',ini_file
+
+    ##~~~~~~ file_in ~~~~~~##
+    file_in=config.get('file_in','file_in')
+    file_in_global=config.get('file_in','file_in_global')
+    file_h5=config.get('file_in','file_h5')
+    
+    ##~~~~~~ file_out ~~~~~~##
+    file_out=config.get('file_out','file_out')
+
+    ##~~~~~~ variables ~~~~~~##
+    mean_pVs_t0=config.getfloat('variables','mean_pVs_t0')
+    fac_L_simu=config.getfloat('variables','fac_L_simu')
+    fac_Ks_simu=config.getfloat('variables','fac_Ks_simu')
+    fac_n_o_simu=config.getfloat('variables','fac_n_o_simu')
+    fac_n_c_simu=config.getfloat('variables','fac_n_c_simu')
+
+    ##~~~~~~ flags ~~~~~~##
+    nb_param=config.getfloat('flags','nb_param')
+
+    #--Read and compute the parameters to have the values of parameter and ar_Vsm
+    #~~~~Read Global parameters file
+    print 'Pretreatment of input data'
+    #~~~~Read Global parameters file
+    X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
+      =pm.read_global_parameters(file_in_global)
+    #~~~~Read Cell parameters file
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
+    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
+        =pm.read_cell_parameters(file_in)
+    ar_tan_beta[ar_tan_beta==0.]=1e-3
+    #~~~~Number of cell in the catchment
+    nb_cell=len(ar_cell_label)
+    #~~~~Computation of cell order
+    ar_label_sort=pm.sort_cell(ar_cell_label,ar_cell_down)
+    #~~~~Computation of upcells
+    li_cell_up=pm.direct_up_cell(ar_cell_label,ar_cell_down,ar_label_sort)
+    #~~~~Computation of drained area
+    ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
+    #~~~~Modifies the values of the parameters
+    ar_L1=ar_L*fac_L_simu
+    ar_Ks1=ar_Ks*fac_Ks_simu
+    ar_n_o1=ar_n_o*fac_n_o_simu
+    ar_n_c1=ar_n_c*fac_n_c_simu
+    #~~~~Computation of model parameters from physical parameters
+    ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
+      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+                              A_thres,W_max,W_min,\
+                              ar_lambda,ar_tan_beta,ar_L1,\
+                              ar_Ks1,ar_theta_r,ar_theta_s,ar_n_o1,ar_n_c1,\
+                              ar_A_drained)
+
+    #Read the soil volume file
+    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'/Soil/','V_s'))
+
+    #Read the file of catchment saturation rates
+    ndar_Vs_sat=ndar_Vs/ar_Vsm*100.
+    tab_rate=np.average(ndar_Vs_sat,axis=1)
+    tab_rate_sort=np.sort(tab_rate)
+    indice_sort=np.argsort(tab_rate)
+    
+    #Look for the rate closest to the expected mean value
+    if mean_pVs_t0<tab_rate_sort[0]:
+        ind=0
+        print 'mean_pVs_t0 expected:', mean_pVs_t0,'effective:',tab_rate_sort[0]
+    elif mean_pVs_t0>tab_rate_sort[-1]:
+        ind=-1
+        print 'mean_pVs_t0 expected:', mean_pVs_t0,' effective',tab_rate_sort[-1]
+    else:
+        loop=True
+        i=-1
+        while loop:
+            i=i+1
+            if mean_pVs_t0>=tab_rate_sort[i] and mean_pVs_t0<tab_rate_sort[i+1]:
+                ind=i
+                loop=False
+                print 'mean_pVs_t0 expected:', mean_pVs_t0,' effective:',tab_rate_sort[i]
+    
+    ind_end=indice_sort[ind]
+    print ind,ind_end
+    ar_Vs=ndar_Vs[ind_end,:]
+    ar_Vsi=ar_Vs/ar_Vsm*100.
+    print ar_Vsi
+    
+    #~~~~~~Write parameter file~~~~~~#
+    tab_param=np.zeros((len(ar_cell_label),nb_param))
+    tab_param[:,0]=ar_cell_label
+    tab_param[:,1]=ar_coorx
+    tab_param[:,2]=ar_coory
+    tab_param[:,3]=ar_lambda
+    tab_param[:,4]=ar_dam
+    tab_param[:,5]=ar_tan_beta
+    tab_param[:,6]=ar_L
+    tab_param[:,7]=ar_Ks
+    tab_param[:,8]=ar_theta_r
+    tab_param[:,9]=ar_theta_s
+    tab_param[:,10]=ar_n_o
+    tab_param[:,11]=ar_n_c
+    tab_param[:,12]=ar_cell_down
+    tab_param[:,13]=ar_pVs_t0
+    tab_param[:,14]=ar_Vo_t0
+    tab_param[:,15]=ar_Qc_t0
+    tab_param[:,16]=ar_kc
+
+    f = file(file_out, 'w')
+    io.write_array(f, tab_param)
+    f.close()
 
 ########################################################################################
 ######## Surbroutines
@@ -431,9 +498,9 @@ def distance(x1,y1,x2,y2):
     dist=((x1-x2)**2+(y1-y2)**2)**0.5
     return dist
 
-def find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lambda,channel=True):
+def find_cell_coordinates(ar_cell_label,Xtarget,Ytarget,ar_coorx,ar_coory,ar_lambda,channel=True):
     """
-    Find the label of the closest cell from (Xoutlet, Youtlet)
+    Find the label of the closest cell from (Xtarget, Ytarget)
     """
     tab_x=np.unique(ar_coorx);X=abs(tab_x[0]-tab_x[1])
     dist_max=3*X
@@ -441,7 +508,7 @@ def find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lam
     nb_cell=len(ar_cell_label)
     cell_outlet=-999.9
     for i in range(nb_cell):
-        dist=distance(Xoutlet,Youtlet,ar_coorx[i],ar_coory[i])
+        dist=distance(Xtarget,Ytarget,ar_coorx[i],ar_coory[i])
         if channel:
             if dist < dist_min and ar_lambda[i]==1.:
                 dist_min=dist
@@ -457,12 +524,12 @@ def find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lam
         stop
     return cell_outlet
 
-def channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xoutlet=-255032.83,Youtlet=-3149857.34):
+def link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xext_flow,Yext_flow):
     """
     Change the ar_lambda to connnect the tunnel to the channel. Zero values are changed in 1 values.
     The values of the manning coefficient for the changed cells is taken as the manning value of the closest channel cell.
     """
-    cell=find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lambda,channel=False)
+    cell=find_cell_coordinates(ar_cell_label,Xext_flow,Yext_flow,ar_coorx,ar_coory,ar_lambda,channel=False)
     hillslope=True
     li_ind=[]
     while hillslope:
@@ -472,7 +539,6 @@ def channel_cell_tunnel(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,a
             last_ind=ind
         else:
             li_ind.append(ind)
-            print cell,ind
             ar_lambda[ind]=1.
             cell=ar_cell_down[ind]
     for i in li_ind:
@@ -510,7 +576,7 @@ def all_up_cell(cell,ar_cell_down,ar_cell_label):
     return b
 
 ##~~ Plot a field map ~~##
-def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0):
+def field_map(ar_field,ar_coorx,ar_coory,X,picture_out,title,flip=0):
 
     import matplotlib.numerix.ma as M
 
@@ -534,57 +600,10 @@ def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0):
     ar_map2 = M.masked_where(ar_map <0, ar_map)
 
         
-    ut.check_file_exist(image_out)
+    ut.check_file_exist(picture_out)
     
     pl.clf()
     pl.imshow(ar_map2,interpolation='Nearest',origin='lower',vmax=max_val,vmin=0)
     pl.title(title)
     pl.colorbar()
-    pl.savefig(image_out)
-
-
-if __name__ == '__main__':
-
-
-##    #### TO EXTRACT A SUBCATCHMENT ####
-##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/parameter_files_Aug07/'
-##    file_in=path_main+'cell_param_Aug07_Vsi80%.dat'
-##    file_out=path_main+'cell_param_sub_Aug07_Vsi80%.dat'
-##    Xoutlet=-259210.38
-##    Youtlet=-3065828.87
-##    nom_image='subC8H020'
-##    from_param_to_subcatch_param(file_in, file_out,Xoutlet,Youtlet,nom_image)
-    
-
-##    #### TO CHANGE THE INITIAL SOIL MOISTURE (CONSTANT) ####
-##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/'
-##    file_in=path_main+'cell_param_20Feb07_Vsi80%.dat'
-##    file_out=path_main+'cell_param_Vsi100%.dat'
-##    from_param_to_new_param(file_in,file_out,new_pVs_t0=100.)
-
-
-##    #### TO CHANGE THE INITIAL SOIL MOISTURE (VARIABLE) ####
-##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/parameter_files_Aug07/'
-##    file_in=path_main+'cell_param_Aug07_Vsi80%.dat'
-##    file_in_global=path_main+'global_param_6h.dat'
-##    file_h5='C:/Theo/liebenbergsvlei/topkapi_model/field_initial_soil_moisture/Event1_6h_L1.1_Ks101.0_no1.0_nc1.0_100%_zerorain.h5'
-##    file_catchment_saturation='C:/Theo/liebenbergsvlei/topkapi_model/field_initial_soil_moisture/Catchment_soil_moisture_evolution.dat'
-##
-##    tab=[10,20,30,40,50,60,70,80,90,100]
-##    for i in tab:
-##        print ''
-##        print i
-##        file_out=path_main+'cell_param_Aug07_catchVsi'+str(i)+'%.dat'
-##        from_param_to_new_param_catchVsi(file_in,file_in_global,file_out,file_h5,file_catchment_saturation,new_pVs_t0=i,channel_lesotho=True)
-
-
-    #### TO MODIFY INITIAL VALUES FROM A SIMULATION FILE ####
-    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/parameter_files_Aug07/'
-    file_in=path_main+'cell_param_sub_Aug07_Vsi80%.dat'
-    file_in_global='C:/Theo/liebenbergsvlei/topkapi_model/parameters/global_param_6h.dat'
-    file_out=path_main+'cell_param_sub_Aug07_intialized.dat'
-    file_h5='C:/Theo/liebenbergsvlei/topkapi_model/simulation_after_calibration/simulations/Event3_6h_subC8H020_L1.1_Ks101.0_no1.0_nc7.0_40%.h5'
-    indice_extrac_file=180
-    from_param_to_new_param_initial_simu(file_in,file_in_global,file_out,file_h5,indice_extrac_file,fac_L=1.,fac_Ks=1.,fac_n_o=1.,fac_n_c=1.,channel_lesotho=True)
-
-    
+    pl.savefig(picture_out)
