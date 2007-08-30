@@ -205,7 +205,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Loop on time
     for t in range(nb_time_step):
-        print t
+        print t,'/',nb_time_step
 
         ## Loop on cells
         n=-1
