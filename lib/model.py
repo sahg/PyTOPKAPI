@@ -108,11 +108,10 @@ def run(ini_file='TOPKAPI.ini'):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_global_param)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L0,ar_Ks0,\
-    ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,\
+    ar_L0,ar_Ks0,ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_cell_param)
-    ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
     #~~~~Computation of cell order
@@ -126,12 +125,16 @@ def run(ini_file='TOPKAPI.ini'):
     ar_Ks=ar_Ks0*fac_Ks
     ar_n_o=ar_n_o0*fac_n_o
     ar_n_c=ar_n_c0*fac_n_c
+    print 'Max L=',max(ar_L)
+    print 'Max Ks=',max(ar_Ks)
+    print 'Max n_o=',max(ar_n_o)
+    print 'Max n_c=',max(ar_n_c)
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+      =pm.compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L,\
-                              ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
+                              ar_lambda,ar_tan_beta,ar_tan_beta_channel,\
+                              ar_L,ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
                               ar_A_drained)
     #~~~~Look for the cell of external_flow tunnel
     if external_flow:
@@ -325,7 +328,7 @@ def run(ini_file='TOPKAPI.ini'):
             ## ============================= ##
             ar_Q_to_next_cell[cell],ar_Q_to_channel[cell],ar_Q_to_channel_sub[cell] \
                 = fl.flow_partitioning(ar_lambda[cell],ar_Qs_out[cell],\
-                                       ar_Qo_out[cell],ar_W[cell],X)
+                                       ar_Qo_out[cell],ar_W[cell],X,ar_Xc[cell])
 
 
             ## ======================== ##
@@ -344,9 +347,9 @@ def run(ini_file='TOPKAPI.ini'):
 
                 #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
                 if ar_a_c[cell]==0.:
-                    ar_Vc1[cell]=om.input_zero_solution(ar_b_c[cell], alpha_c, Vc[t,cell], Dt)
+                    ar_Vc1[cell]=om.input_zero_solution(ar_b_c[cell], alpha_c, Vc0[cell], Dt)
                 elif ar_b_c[cell]==0.:
-                    Vs_prim=om.coefb_zero_solution(ar_a_c[cell], ar_Vc0[cell], Dt)
+                    ar_Vc1[cell]=om.coefb_zero_solution(ar_a_c[cell], ar_Vc0[cell], Dt)
                 else:
                     if solve_c==1:
                         #qas
@@ -403,7 +406,7 @@ def run(ini_file='TOPKAPI.ini'):
 
             #~~~~~ Evaporation from channel
             if ar_lambda[cell]==1:
-                 ar_ET_channel[cell],ar_Vc1[cell]=em.evapor_channel(ar_Vc1[cell],ndar_ETo[t,cell],ar_W[cell],X)
+                 ar_ET_channel[cell],ar_Vc1[cell]=em.evapor_channel(ar_Vc1[cell],ndar_ETo[t,cell],ar_W[cell],ar_Xc[cell])
 
         ####===================================####
         #### Affectation of new vector values  ####

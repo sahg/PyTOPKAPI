@@ -40,11 +40,10 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_global_param)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L0,ar_Ks0,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L0,ar_Ks0,\
     ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_cell_param)
-    ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
     #~~~~Computation of cell order
@@ -60,9 +59,9 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
     ar_n_c=ar_n_c0*fac_n_c
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+      =pm.compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L,\
+                              ar_lambda,ar_tan_beta,ar_tan_beta_channel,ar_L,\
                               ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
                               ar_A_drained)
 

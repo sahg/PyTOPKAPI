@@ -52,21 +52,23 @@ def read_cell_parameters(file_name):
     ar_coorx=tab_read[:,1]
     ar_coory=tab_read[:,2]
     ar_lambda=np.array(tab_read[:,3],int)
-    ar_dam=np.array(tab_read[:,4],int)
-    ar_tan_beta=tab_read[:,5]
-    ar_L=tab_read[:,6]
-    ar_Ks=tab_read[:,7]
-    ar_theta_r=tab_read[:,8]
-    ar_theta_s=tab_read[:,9]
-    ar_n_o=tab_read[:,10]
-    ar_n_c=tab_read[:,11]
-    ar_cell_down=np.array(tab_read[:,12],int)
-    ar_pVs_t0=tab_read[:,13]
-    ar_Vo_t0=tab_read[:,14]
-    ar_Qc_t0=tab_read[:,15]
-    ar_kc=tab_read[:,16]
+    ar_Xc=np.array(tab_read[:,4])
+    ar_dam=np.array(tab_read[:,5],int)
+    ar_tan_beta=tab_read[:,6]
+    ar_tan_beta_channel=tab_read[:,7]
+    ar_L=tab_read[:,8]
+    ar_Ks=tab_read[:,9]
+    ar_theta_r=tab_read[:,10]
+    ar_theta_s=tab_read[:,11]
+    ar_n_o=tab_read[:,12]
+    ar_n_c=tab_read[:,13]
+    ar_cell_down=np.array(tab_read[:,14],int)
+    ar_pVs_t0=tab_read[:,15]
+    ar_Vo_t0=tab_read[:,16]
+    ar_Qc_t0=tab_read[:,17]
+    ar_kc=tab_read[:,18]
 
-    return ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    return ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
            ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
            ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc
 
@@ -120,9 +122,9 @@ def drained_area(ar_label_sort,li_cell_up,X):
     return ar_A_drained
 
 #```````````````````````````````````````````````````````````
-def compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+def compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                        A_thres,W_max,W_min,\
-                       ar_lambda,ar_tan_beta,ar_L,\
+                       ar_lambda,ar_tan_beta,ar_tan_beta_channel,ar_L,\
                        ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
                        ar_A_drained):
     """compute_cell_param
@@ -150,13 +152,12 @@ def compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
     ##Channel parameters
     A_total=nb_cell*X**2
     ar_W=W_max+((W_max-W_min)/(A_total**0.5-A_thres**0.5))*(ar_A_drained**0.5-A_total**0.5)
-    ar_Cc=(1/ar_n_c)*(ar_tan_beta)**0.5
-    ar_b_c=ar_Cc*ar_W/((X*ar_W)**(alpha_c))
+    ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
+    ar_b_c=ar_Cc*ar_W/((ar_Xc*ar_W)**(alpha_c))
     ar_W[ar_lambda==0]=-99.9
     ar_b_c[ar_lambda==0]=-99.9
     
     return ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c
-
 
 #``````````````````````````````````````````   
 def read_column_input(file_name,nb_cell):
@@ -185,20 +186,4 @@ def read_column_input(file_name,nb_cell):
     
     return mat_out
 
-#``````````````````````````````````````````   
-def generate_file_rain_ETr_ETo(nb_cell,\
-                               ar_hyeto=np.array([5.,10.,20.,50.,50.,30.,20.,10.,5.]),nb_step_zero_rain=90,\
-                               ETr_value=5.,\
-                               ETo_value=5.):
-    """
-    Generate simple rainfall and ETr file for testing the model
-    """
-    ar_rain=np.concatenate((ar_hyeto,np.zeros(nb_step_zero_rain)))
-    ndar_rain=np.zeros((len(ar_rain),nb_cell))
-    for i in range(nb_cell):
-        ndar_rain[:,i]=ar_rain
-    ndar_ETr=np.zeros((len(ar_rain),nb_cell))+ETr_value
-    ndar_ETo=np.zeros((len(ar_rain),nb_cell))+ETo_value
-    
-    return ndar_rain,ndar_ETr,ndar_ETo
     

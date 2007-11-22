@@ -1,0 +1,63 @@
+svn revision 25 to revision 26
+==============================
+
+The changes are mainly associated with the necessity of the model to deal with an 8 direction flow routing
+
+1. In the folder parameter_utils
+--------------------------------
+
+**create_file.py**
+
+* In the main subroutine ``run``
+	+ Modifications associated with the addition of 2 new parameters in the parameter file:
+		- Xchannel: the length of the channel that be X or sqrt(2)X
+		- ar_tan_beta_channel: the slopes of the channels that are now separated fro
+* The routine ``from_flowdir_to_cell_down_4D`` was replaced by the routine ``from_flowdir_to_cell_down_8D`` that takes into account 4 supplementary flow directions
+* The routine ``compute_Xchannel`` was added to compute the length of the channel according to the flow direction
+
+**modify_file.py**
+
+* Minor modifications to read (according to the new routine to read the parameter files in pretreatment.py in the folder LIB) and write the parameter files with the 2 new parameters
+
+**GIS_treatment.py**
+
+* Was not in SVN but I made some of the most important changes since it concerns the DEM treatment and slope computation:
+	- The routine ``from_DEM_to_cell_down_and_slope`` is the routine to (i) fill the sink of the DEM in 4 directions, (ii) extract the slopes and (iii) extract flowdirections.
+	- By using this routine I've come to the conclusion that a 4D routing was not realistic. This routine is not usefull when one considers an 8D routing scheme since all the treatment can be done through ArcGIS.
+	- The routine ``compute_slope_8D`` computes the slopes as a simple difference of height between a cell and its downstream cell (as defined by the cell connectivity). In our case study in the Liebenbergsvlei, these slopes were assigned to the channels.
+* This program is not yet in a user-friendly form (no ``*.ini`` file as input).
+
+**zero_slope_management.py**
+
+* New program that aims at replacing the zero slope values by non-zero slope values according to the DEM uncertainty of 1 metre.
+* The input file is the TOPKAPI model parameter file created with the raw slopes, a corrected parameter file is created.
+* The program is in a user-friendly form (it is run with a ``*.ini`` type input file) so it can be automized in the process of parameter file creation.
+
+**map_param.py**
+
+* New routine in the package to plot the parameter files. I made this routine a long time ago. I put it in the package since it is always usefull to map the parameters.
+* However it is not in a user-friendly form (no ``*.ini`` file as input)
+
+2. In the folder lib
+--------------------
+
+**pretreatment.py**
+
+* Minor modifications to read the parameter files with the 2 new parameters
+
+**fluxes.py**
+
+* Changes in the routine ``flow_partitioning`` to adapt the flow partitioning to the channel length
+
+**model.py**
+
+* Minor modifications to read the parameter files with the 2 new parameters (according to the new routine to read the parameter files in pretreatment.py)
+* Correction of an error detected in the solving of the channel equation with a zero input (as this case never happened this error has never influenced the results).
+* Minor modifications associated with the varying length of the channel Xc (in the flow partioning, in the evaporation of the channel water)
+
+3. In the folder results_analysis
+---------------------------------
+
+**plot_soil_moisture_maps.py**
+
+* Minor modifications to read the parameter files with the 2 new parameters (according to the new routine to read the parameter files in pretreatment.py)

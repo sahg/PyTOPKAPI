@@ -77,7 +77,7 @@ def run(ini_file='create_file.ini'):
       
     * Output:
       - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda dam tna_beta L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
+       label X Y lambda Xc dam tan_beta L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
 
     * Comment:
      1. !!!!VERY IMPORTANT!!!!
@@ -98,6 +98,7 @@ def run(ini_file='create_file.ini'):
     ##~~~~~~ GIS_files ~~~~~~##
     file_bin_streamnet=config.get('GIS_files','file_bin_streamnet')
     file_bin_beta=config.get('GIS_files','file_bin_beta')
+    file_bin_beta_channel=config.get('GIS_files','file_bin_beta_channel')
     file_bin_flowdir=config.get('GIS_files','file_bin_flowdir')
     file_bin_GLCC=config.get('GIS_files','file_bin_GLCC')
     file_bin_SIRI=config.get('GIS_files','file_bin_SIRI')
@@ -130,7 +131,8 @@ def run(ini_file='create_file.ini'):
     ar_dam=np.zeros(len(ar_lambda))
     #beta is given in degres -->tan(beta) is computed
     ar_tan_beta=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta))
-
+    ar_tan_beta_channel=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta_channel))
+    
     #~~~~~Parameters extracted from GIS and estimated from TABLES~~~~~#
     ### !!!USER MUST CHECK THESE 4 SUBROUTINES BEFORE RUNNING THE CODE!!! ###
     ar_n_o=from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning)
@@ -141,8 +143,9 @@ def run(ini_file='create_file.ini'):
     #~~~~~Parameters computed~~~~~#
     ar_label=np.arange(len(ar_lambda))
     ar_coorX,ar_coorY=from_bingrid_to_coordinate(file_bin_streamnet)
-    ar_cell_down=from_flowdir_to_celldown_4D(file_bin_flowdir)
-    
+    ar_cell_down=from_flowdir_to_celldown_8D(file_bin_flowdir)
+    ar_Xc=compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down)
+
     #~~~~~ Initial values and crop factor (CONSTANT) ~~~~~~#
     #Creation of a vector zero
     ar_tab=ar_label*0.
@@ -161,19 +164,21 @@ def run(ini_file='create_file.ini'):
     tab_param[:,1]=ar_coorX
     tab_param[:,2]=ar_coorY
     tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_dam
-    tab_param[:,5]=ar_tan_beta
-    tab_param[:,6]=ar_L
-    tab_param[:,7]=ar_Ks
-    tab_param[:,8]=ar_Theta_r
-    tab_param[:,9]=ar_Theta_s
-    tab_param[:,10]=ar_n_o
-    tab_param[:,11]=ar_n_c
-    tab_param[:,12]=ar_cell_down
-    tab_param[:,13]=ar_pVs_t0
-    tab_param[:,14]=ar_Vo_t0
-    tab_param[:,15]=ar_Qc_t0
-    tab_param[:,16]=ar_kc
+    tab_param[:,4]=ar_Xc
+    tab_param[:,5]=ar_dam
+    tab_param[:,6]=ar_tan_beta
+    tab_param[:,7]=ar_tan_beta_channel
+    tab_param[:,8]=ar_L
+    tab_param[:,9]=ar_Ks
+    tab_param[:,10]=ar_Theta_r
+    tab_param[:,11]=ar_Theta_s
+    tab_param[:,12]=ar_n_o
+    tab_param[:,13]=ar_n_c
+    tab_param[:,14]=ar_cell_down
+    tab_param[:,15]=ar_pVs_t0
+    tab_param[:,16]=ar_Vo_t0
+    tab_param[:,17]=ar_Qc_t0
+    tab_param[:,18]=ar_kc
 
     #'help io.write_array' for more info
     f = file(file_out, 'w')
@@ -495,6 +500,70 @@ def from_flowdir_to_celldown_4D(file_bin_flowdir):
                         print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
     return ar_cell_down
 
+def from_flowdir_to_celldown_8D(file_bin_flowdir):
+    """
+    * objective:
+      Associate to each cell the label of the celldown (outcell) according to the 4D flow directions:
+    * Input
+      - file_bin_flowdir: 8D flow direction binary file (from GIS) with codes: 1 E, 16 W, 64 N, 4 S, 32 NW, 128 NE, 2 SE, 8 SW.
+    * Output
+      - ar_cell_down: an array (dimension equal to the number of cell) containing the label of the outcells.
+    * Commment
+     Some errors can occur in the direction files that should be detected by the routine. A manual correction is required if it does happen.
+    """
+
+    tab_flowdir=read_arc_bin(file_bin_flowdir)
+    tab_label=from_bingrid_to_label(file_bin_flowdir)
+    nrows=np.shape(tab_label)[0]
+    ncols=np.shape(tab_label)[1]
+    ar_cell_down=np.zeros(np.shape(np.where(tab_label>=0))[1])-99
+    n=0
+    num=0
+    outlet=0
+    for i in range(nrows):
+        for j in range(ncols):
+            flow=tab_flowdir[i,j]
+            OK=0
+            if tab_label[i,j] >= 0:
+                num=num+1
+                if flow==1:
+                    x=i
+                    y=j+1
+                elif flow==16:
+                    x=i
+                    y=j-1
+                elif flow==64:
+                    x=i-1
+                    y=j
+                elif flow==4:
+                    x=i+1
+                    y=j
+                elif flow==32:
+                    x=i-1
+                    y=j-1
+                elif flow==128:
+                    x=i-1
+                    y=j+1
+                elif flow==2:
+                    x=i+1
+                    y=j+1
+                elif flow==8:
+                    x=i+1
+                    y=j-1
+                else:
+                    print 'ERROR'
+                if tab_label[x,y]>=0:
+                    ar_cell_down[tab_label[i,j]]=tab_label[x,y]
+                else:
+                    if outlet==0:
+                        ar_cell_down[tab_label[i,j]]=tab_label[x,y]
+                        outlet=1
+                    else:
+                        n=n+1
+                        #Print the data to detect where the errors are (manual correction to be done...)
+                        print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
+    return ar_cell_down
+
 
 def from_bingrid_to_label(file_bin_grid,write_file=False):
     """
@@ -560,6 +629,27 @@ def from_bingrid_to_coordinate(file_bin_grid):
     
     return ar_coorX,ar_coorY
 
+
+def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
+    ar_Xc=np.array(ar_lambda,float)
+    
+    for i in range(len(ar_label)):
+        if ar_cell_down[i]>=0:
+            cell_down=ar_cell_down[i]
+            Xcell=ar_coorX[i]
+            Ycell=ar_coorY[i]
+#            print np.where(ar_label==cell_down),np.where(ar_label==cell_down)[0]
+            Xcell_down=ar_coorX[np.where(ar_label==cell_down)[0][0]]
+            Ycell_down=ar_coorY[np.where(ar_label==cell_down)[0][0]]
+#            print ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
+            ar_Xc[i]=ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
+                
+    ind_outlet=np.where(ar_cell_down<0)
+    ar_Xc[ind_outlet]=min(ar_Xc)
+
+    return ar_Xc
+
+
 def matrix_plot(matrix, fig_name, title='GRID Plot'):
     """Create a plot of the data in a GRIB1 file."""
     
@@ -572,17 +662,5 @@ def matrix_plot(matrix, fig_name, title='GRID Plot'):
     pl.savefig(fig_name)
     pl.close()
 
-
-##if __name__ == '__main__':
-##    ### EXAMPLE OF CREATION OF A PARAMETER FILE FOR THE LIEBENBERGSVLEI ###
-##    path_main='C:/Theo/liebenbergsvlei/topkapi_model/parameters/'
-##    path_GIS=path_main+'GIS_bin_files/'
-##    path_table=path_main+'tables_lieben/'
-##    creat_param_file(path_GIS+'streamnet',path_GIS+'slope',path_GIS+'flowdir',\
-##                     path_GIS+'land_use_GLCC', path_GIS+'soil_type_SIRI',\
-##                     path_GIS+'soil_text_WRC90',path_GIS+'strahler_order',\
-##                     path_table+'manning_from_GLCC_lieben.dat',path_table+'soil_properties_from_SIRI_lieben.dat',\
-##                     path_table+'soil_physical_properties_from_WRC90_lieben.dat',path_table+'Strahler_manning.dat',\
-##                     path_main+'parameter_files_Aug07/cell_param_Aug07_Vsi80%.dat')
 
     

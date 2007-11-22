@@ -69,7 +69,7 @@ def subcatch(ini_file='subcatch.ini'):
     
     #Reading of parameter file
     print 'Reading parameter file'
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
     =pm.read_cell_parameters(file_in)
@@ -90,23 +90,25 @@ def subcatch(ini_file='subcatch.ini'):
     tab_param[:,1]=ar_coorx[subcatch_label]
     tab_param[:,2]=ar_coory[subcatch_label]
     tab_param[:,3]=ar_lambda[subcatch_label]
-    tab_param[:,4]=ar_dam[subcatch_label]
-    tab_param[:,5]=ar_tan_beta[subcatch_label]
-    tab_param[:,6]=ar_L[subcatch_label]
-    tab_param[:,7]=ar_Ks[subcatch_label]
-    tab_param[:,8]=ar_theta_r[subcatch_label]
-    tab_param[:,9]=ar_theta_s[subcatch_label]
-    tab_param[:,10]=ar_n_o[subcatch_label]
-    tab_param[:,11]=ar_n_c[subcatch_label]
+    tab_param[:,4]=ar_Xc[subcatch_label]
+    tab_param[:,5]=ar_dam[subcatch_label]
+    tab_param[:,6]=ar_tan_beta[subcatch_label]
+    tab_param[:,7]=ar_tan_beta_channel[subcatch_label]   
+    tab_param[:,8]=ar_L[subcatch_label]
+    tab_param[:,9]=ar_Ks[subcatch_label]
+    tab_param[:,10]=ar_theta_r[subcatch_label]
+    tab_param[:,11]=ar_theta_s[subcatch_label]
+    tab_param[:,12]=ar_n_o[subcatch_label]
+    tab_param[:,13]=ar_n_c[subcatch_label]
     for i in range(len(subcatch_label)):
         if i==0.:
-            tab_param[i,12]=-9999.
+            tab_param[i,14]=-9999.
         else:
-            tab_param[i,12]=new_label[np.where(ar_cell_label[subcatch_label]==ar_cell_down[subcatch_label][i])]
-    tab_param[:,13]=ar_pVs_t0[subcatch_label]
-    tab_param[:,14]=ar_Vo_t0[subcatch_label]
-    tab_param[:,15]=ar_Qc_t0[subcatch_label]
-    tab_param[:,16]=ar_kc[subcatch_label]
+            tab_param[i,14]=new_label[np.where(ar_cell_label[subcatch_label]==ar_cell_down[subcatch_label][i])]
+    tab_param[:,15]=ar_pVs_t0[subcatch_label]
+    tab_param[:,16]=ar_Vo_t0[subcatch_label]
+    tab_param[:,17]=ar_Qc_t0[subcatch_label]
+    tab_param[:,18]=ar_kc[subcatch_label]
 
     #~~~~~~Write parameter file~~~~~~#
     #'help io.write_array' for more info
@@ -152,7 +154,7 @@ def new_param(ini_file='new_param.ini'):
     
     #Reading of parameter file
     print 'Reading parameter file'
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
     =pm.read_cell_parameters(file_in)
@@ -188,19 +190,21 @@ def new_param(ini_file='new_param.ini'):
     tab_param[:,1]=ar_coorx
     tab_param[:,2]=ar_coory
     tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_dam
-    tab_param[:,5]=ar_tan_beta
-    tab_param[:,6]=ar_L
-    tab_param[:,7]=ar_Ks
-    tab_param[:,8]=ar_theta_r
-    tab_param[:,9]=ar_theta_s
-    tab_param[:,10]=ar_n_o
-    tab_param[:,11]=ar_n_c
-    tab_param[:,12]=ar_cell_down
-    tab_param[:,13]=ar_pVs_t0
-    tab_param[:,14]=ar_Vo_t0
-    tab_param[:,15]=ar_Qc_t0
-    tab_param[:,16]=ar_kc
+    tab_param[:,4]=ar_Xc
+    tab_param[:,5]=ar_dam
+    tab_param[:,6]=ar_tan_beta
+    tab_param[:,7]=ar_tan_beta_channel
+    tab_param[:,8]=ar_L
+    tab_param[:,9]=ar_Ks
+    tab_param[:,10]=ar_theta_r
+    tab_param[:,11]=ar_theta_s
+    tab_param[:,12]=ar_n_o
+    tab_param[:,13]=ar_n_c
+    tab_param[:,14]=ar_cell_down
+    tab_param[:,15]=ar_pVs_t0
+    tab_param[:,16]=ar_Vo_t0
+    tab_param[:,17]=ar_Qc_t0
+    tab_param[:,18]=ar_kc
 
     f = file(file_out, 'w')
     io.write_array(f, tab_param)
@@ -230,7 +234,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     
     #Reading of parameter file
     print 'Reading parameter file'
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
     =pm.read_cell_parameters(file_in)
@@ -244,19 +248,21 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     tab_param[:,1]=ar_coorx
     tab_param[:,2]=ar_coory
     tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_dam
-    tab_param[:,5]=ar_tan_beta
-    tab_param[:,6]=ar_L
-    tab_param[:,7]=ar_Ks
-    tab_param[:,8]=ar_theta_r
-    tab_param[:,9]=ar_theta_s
-    tab_param[:,10]=ar_n_o
-    tab_param[:,11]=ar_n_c
-    tab_param[:,12]=ar_cell_down
-    tab_param[:,13]=ar_pVs_t0
-    tab_param[:,14]=ar_Vo_t0
-    tab_param[:,15]=ar_Qc_t0
-    tab_param[:,16]=ar_kc
+    tab_param[:,4]=ar_Xc
+    tab_param[:,5]=ar_dam
+    tab_param[:,6]=ar_tan_beta
+    tab_param[:,7]=ar_tan_beta_channel
+    tab_param[:,8]=ar_L
+    tab_param[:,9]=ar_Ks
+    tab_param[:,10]=ar_theta_r
+    tab_param[:,11]=ar_theta_s
+    tab_param[:,12]=ar_n_o
+    tab_param[:,13]=ar_n_c
+    tab_param[:,14]=ar_cell_down
+    tab_param[:,15]=ar_pVs_t0
+    tab_param[:,16]=ar_Vo_t0
+    tab_param[:,17]=ar_Qc_t0
+    tab_param[:,18]=ar_kc
 
     f = file(file_out, 'w')
     io.write_array(f, tab_param)
@@ -296,11 +302,10 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_in_global)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_in)
-    ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
     #~~~~Computation of cell order
@@ -316,9 +321,9 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     ar_n_c1=ar_n_c*fac_n_c_simu
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+      =pm.compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L1,\
+                              ar_lambda,ar_tan_beta,ar_tan_beta_channel,ar_L1,\
                               ar_Ks1,ar_theta_r,ar_theta_s,ar_n_o1,ar_n_c1,\
                               ar_A_drained)
 
@@ -337,23 +342,26 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
+
     tab_param[:,0]=ar_cell_label
     tab_param[:,1]=ar_coorx
     tab_param[:,2]=ar_coory
     tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_dam
-    tab_param[:,5]=ar_tan_beta
-    tab_param[:,6]=ar_L
-    tab_param[:,7]=ar_Ks
-    tab_param[:,8]=ar_theta_r
-    tab_param[:,9]=ar_theta_s
-    tab_param[:,10]=ar_n_o
-    tab_param[:,11]=ar_n_c
-    tab_param[:,12]=ar_cell_down
-    tab_param[:,13]=ar_pVs_t0
-    tab_param[:,14]=ar_Vo_t0
-    tab_param[:,15]=ar_Qc_t0
-    tab_param[:,16]=ar_kc
+    tab_param[:,4]=ar_Xc
+    tab_param[:,5]=ar_dam
+    tab_param[:,6]=ar_tan_beta
+    tab_param[:,7]=ar_tan_beta_channel
+    tab_param[:,8]=ar_L
+    tab_param[:,9]=ar_Ks
+    tab_param[:,10]=ar_theta_r
+    tab_param[:,11]=ar_theta_s
+    tab_param[:,12]=ar_n_o
+    tab_param[:,13]=ar_n_c
+    tab_param[:,14]=ar_cell_down
+    tab_param[:,15]=ar_pVs_t0
+    tab_param[:,16]=ar_Vo_t0
+    tab_param[:,17]=ar_Qc_t0
+    tab_param[:,18]=ar_kc
 
     f = file(file_out, 'w')
     io.write_array(f, tab_param)
@@ -394,11 +402,10 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_in_global)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_dam,ar_tan_beta,ar_L,ar_Ks,\
+    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
         =pm.read_cell_parameters(file_in)
-    ar_tan_beta[ar_tan_beta==0.]=1e-3
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
     #~~~~Computation of cell order
@@ -414,9 +421,9 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     ar_n_c1=ar_n_c*fac_n_c_simu
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
+      =pm.compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
                               A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_L1,\
+                              ar_lambda,ar_tan_beta,ar_tan_beta_channel,ar_L1,\
                               ar_Ks1,ar_theta_r,ar_theta_s,ar_n_o1,ar_n_c1,\
                               ar_A_drained)
 
@@ -451,26 +458,30 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     ar_Vs=ndar_Vs[ind_end,:]
     ar_Vsi=ar_Vs/ar_Vsm*100.
     print ar_Vsi
+    ar_pVs_t0=ar_Vsi
     
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
+
     tab_param[:,0]=ar_cell_label
     tab_param[:,1]=ar_coorx
     tab_param[:,2]=ar_coory
     tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_dam
-    tab_param[:,5]=ar_tan_beta
-    tab_param[:,6]=ar_L
-    tab_param[:,7]=ar_Ks
-    tab_param[:,8]=ar_theta_r
-    tab_param[:,9]=ar_theta_s
-    tab_param[:,10]=ar_n_o
-    tab_param[:,11]=ar_n_c
-    tab_param[:,12]=ar_cell_down
-    tab_param[:,13]=ar_pVs_t0
-    tab_param[:,14]=ar_Vo_t0
-    tab_param[:,15]=ar_Qc_t0
-    tab_param[:,16]=ar_kc
+    tab_param[:,4]=ar_Xc
+    tab_param[:,5]=ar_dam
+    tab_param[:,6]=ar_tan_beta
+    tab_param[:,7]=ar_tan_beta_channel
+    tab_param[:,8]=ar_L
+    tab_param[:,9]=ar_Ks
+    tab_param[:,10]=ar_theta_r
+    tab_param[:,11]=ar_theta_s
+    tab_param[:,12]=ar_n_o
+    tab_param[:,13]=ar_n_c
+    tab_param[:,14]=ar_cell_down
+    tab_param[:,15]=ar_pVs_t0
+    tab_param[:,16]=ar_Vo_t0
+    tab_param[:,17]=ar_Qc_t0
+    tab_param[:,18]=ar_kc
 
     f = file(file_out, 'w')
     io.write_array(f, tab_param)
@@ -532,18 +543,22 @@ def link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_
     cell=find_cell_coordinates(ar_cell_label,Xext_flow,Yext_flow,ar_coorx,ar_coory,ar_lambda,channel=False)
     hillslope=True
     li_ind=[]
+    cc=0.
     while hillslope:
         ind=np.where(ar_cell_label==cell)
         if ar_lambda[ind]==1.:
             hillslope=False
             last_ind=ind
         else:
+            cc=cc+1
+            print 'Cell',cell,'has been conected to the channel network via cell',ar_cell_down[ind]
             li_ind.append(ind)
             ar_lambda[ind]=1.
             cell=ar_cell_down[ind]
     for i in li_ind:
         ar_n_c[i]=ar_n_c[last_ind]
-    
+    if cc==0.:
+        print 'External flows already connected'
     return ar_lambda,ar_n_c
 
 #####################################

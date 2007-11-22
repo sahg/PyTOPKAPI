@@ -105,7 +105,7 @@ def Qout_computing2(V_t0,V_t1,b,alpha):
     return Qout
 
 #```````````````````````````````````````````
-def flow_partitioning(Lambda,Qs_out,Qo_out,W,X):
+def flow_partitioning(Lambda,Qs_out,Qo_out,W,X,Xc):
     """ flow partitioning
         Partition the outflows from soil and overland into:
         - next cell
@@ -113,9 +113,14 @@ def flow_partitioning(Lambda,Qs_out,Qo_out,W,X):
 
         Return: Q_to_next_cell, Q_to_channel, Q_to_cannel_sub
     """
-    Q_to_next_cell=(1-Lambda*W/X)*(Qs_out+Qo_out)    
-    Q_to_channel=(Lambda*W/X)*(Qs_out+Qo_out)
-    Q_to_channel_sub=(Lambda*W/X)*(Qs_out)
+    if Lambda!=0:
+        Q_to_next_cell=(1-Lambda*W*X/(X**2))*(Qs_out+Qo_out)    
+        Q_to_channel=(Lambda*W*X/(X**2))*(Qs_out+Qo_out)
+        Q_to_channel_sub=(Lambda*W*X/(X**2))*(Qs_out)
+    else:
+        Q_to_next_cell=(Qs_out+Qo_out)    
+        Q_to_channel=0.
+        Q_to_channel_sub=0.
 
     return Q_to_next_cell,Q_to_channel,Q_to_channel_sub
 
