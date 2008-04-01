@@ -111,7 +111,8 @@ def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out,variable):
     ut.check_file_exist(image_out)
     
     pl.clf()
-    pl.imshow(ar_map2,interpolation='Nearest',origin='lower',vmax=max_val,vmin=0)
+    pl.imshow(ar_map2, cmap=pl.cm.RdBu, 
+              interpolation='Nearest', origin='lower', vmax=max_val, vmin=0)
     pl.title('time step= '+ut.string(t,len(str(t))))
     pl.colorbar()
     pl.savefig(image_out)
