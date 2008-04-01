@@ -131,100 +131,100 @@ def arc_bin_plot(bin_name, fig_name, title='GRIB Plot'):
     pl.close()
 
 
-def from_DEM_to_cell_down_and_slope(file_DEM_grid,file_label):
-    """
-    """
-    tab_DEM=io.read_array(file_DEM_grid)
-    nrows=np.shape(tab_DEM)[0]
-    ncols=np.shape(tab_DEM)[1]
-    tab_label=io.read_array(file_label)
-
-    tab_dir=np.array(tab_DEM)
-    tab_slope=np.array(tab_DEM)
-
-    
-    #Image of tab_DEM
-    tab_DEM=np.array(tab_DEM)
-    
-    ar=np.reshape(tab_DEM,ncols*nrows)
-    ar_DEM=ar[ar>-99.]
-
-    ar_cell_down=np.zeros(len(ar_DEM))
-    ar_tan_beta=np.zeros(len(ar_DEM))
-
-    ncell=-1
-    nb_sink=0
-    for i in range(nrows):
-        for j in range(ncols):
-            label=tab_label[i,j]
-            li_select_cells=[]
-            li_select_DEM=[]
-            li_select_dir=[]
-            if label>0:
-                ncell=ncell+1
-                #North
-                if i>0:
-                    x=i-1
-                    y=j
-                    if tab_label[x,y]>-1:
-                        li_select_cells.append(tab_label[x,y])
-                        li_select_DEM.append(tab_DEM[x,y])
-                        li_select_dir.append(64)
-                #East
-                if j<max(range(ncols)):
-                    x=i
-                    y=j+1
-                    if tab_label[x,y]>-1:
-                        li_select_cells.append(tab_label[x,y])
-                        li_select_DEM.append(tab_DEM[x,y])
-                        li_select_dir.append(1)
-                #South
-                if i<max(range(nrows)):
-                    x=i+1
-                    y=j
-                    if tab_label[x,y]>-1:
-                        li_select_cells.append(tab_label[x,y])
-                        li_select_DEM.append(tab_DEM[x,y])
-                        li_select_dir.append(4)
-                #West
-                if j>0:
-                    x=i
-                    y=j-1
-                    if tab_label[x,y]>-1:
-                        li_select_cells.append(tab_label[x,y])
-                        li_select_DEM.append(tab_DEM[x,y])
-                        li_select_dir.append(16)
-                    
-                
-                ar_select_cells=np.array(li_select_cells)
-                ar_select_DEM=np.array(li_select_DEM)
-                ar_select_dir=np.array(li_select_dir)
-
-                min_DEM=min(ar_select_DEM)
-                ind_min_DEM=np.where(ar_select_DEM==min_DEM)[0][0]
-                
-
-                if min_DEM>=tab_DEM[i,j]:
-                    nb_sink=nb_sink+1
-                    if min_DEM>tab_DEM[i,j]:
-                        print 'SINK FOR CELL',tab_label[i,j]
-                    else:
-                        print 'SINK EQUAL FOR CELL',tab_label[i,j]
-                    if len(ar_select_cells)==1. and tab_label[i,j]>0.:
-                        print 'Problem with cell number',tab_label[i,j],i,j
-                        stop
-                    tab_DEM[i,j]=np.average(ar_select_DEM)
-                    
-                tab_dir[i,j]=ar_select_dir[ind_min_DEM]
-                tab_slope[i,j]=np.arctan((tab_DEM[i,j]-min_DEM)/1000.)*180./np.pi
-                
-                ar_cell_down[ncell]=ar_select_cells[ind_min_DEM]
-                ar_tan_beta[ncell]=tab_slope[i,j]
- 
-                tab_dir[0,0]=1
-                tab_slope[0,0]=tab_slope[1,0]
-                
-    return tab_DEM,tab_slope,tab_dir,ar_cell_down,ar_tan_beta,nb_sink
+##def from_DEM_to_cell_down_and_slope(file_DEM_grid,file_label):
+##    """
+##    """
+##    tab_DEM=io.read_array(file_DEM_grid)
+##    nrows=np.shape(tab_DEM)[0]
+##    ncols=np.shape(tab_DEM)[1]
+##    tab_label=io.read_array(file_label)
+##
+##    tab_dir=np.array(tab_DEM)
+##    tab_slope=np.array(tab_DEM)
+##
+##    
+##    #Image of tab_DEM
+##    tab_DEM=np.array(tab_DEM)
+##    
+##    ar=np.reshape(tab_DEM,ncols*nrows)
+##    ar_DEM=ar[ar>-99.]
+##
+##    ar_cell_down=np.zeros(len(ar_DEM))
+##    ar_tan_beta=np.zeros(len(ar_DEM))
+##
+##    ncell=-1
+##    nb_sink=0
+##    for i in range(nrows):
+##        for j in range(ncols):
+##            label=tab_label[i,j]
+##            li_select_cells=[]
+##            li_select_DEM=[]
+##            li_select_dir=[]
+##            if label>0:
+##                ncell=ncell+1
+##                #North
+##                if i>0:
+##                    x=i-1
+##                    y=j
+##                    if tab_label[x,y]>-1:
+##                        li_select_cells.append(tab_label[x,y])
+##                        li_select_DEM.append(tab_DEM[x,y])
+##                        li_select_dir.append(64)
+##                #East
+##                if j<max(range(ncols)):
+##                    x=i
+##                    y=j+1
+##                    if tab_label[x,y]>-1:
+##                        li_select_cells.append(tab_label[x,y])
+##                        li_select_DEM.append(tab_DEM[x,y])
+##                        li_select_dir.append(1)
+##                #South
+##                if i<max(range(nrows)):
+##                    x=i+1
+##                    y=j
+##                    if tab_label[x,y]>-1:
+##                        li_select_cells.append(tab_label[x,y])
+##                        li_select_DEM.append(tab_DEM[x,y])
+##                        li_select_dir.append(4)
+##                #West
+##                if j>0:
+##                    x=i
+##                    y=j-1
+##                    if tab_label[x,y]>-1:
+##                        li_select_cells.append(tab_label[x,y])
+##                        li_select_DEM.append(tab_DEM[x,y])
+##                        li_select_dir.append(16)
+##                    
+##                
+##                ar_select_cells=np.array(li_select_cells)
+##                ar_select_DEM=np.array(li_select_DEM)
+##                ar_select_dir=np.array(li_select_dir)
+##
+##                min_DEM=min(ar_select_DEM)
+##                ind_min_DEM=np.where(ar_select_DEM==min_DEM)[0][0]
+##                
+##
+##                if min_DEM>=tab_DEM[i,j]:
+##                    nb_sink=nb_sink+1
+##                    if min_DEM>tab_DEM[i,j]:
+##                        print 'SINK FOR CELL',tab_label[i,j]
+##                    else:
+##                        print 'SINK EQUAL FOR CELL',tab_label[i,j]
+##                    if len(ar_select_cells)==1. and tab_label[i,j]>0.:
+##                        print 'Problem with cell number',tab_label[i,j],i,j
+##                        stop
+##                    tab_DEM[i,j]=np.average(ar_select_DEM)
+##                    
+##                tab_dir[i,j]=ar_select_dir[ind_min_DEM]
+##                tab_slope[i,j]=np.arctan((tab_DEM[i,j]-min_DEM)/1000.)*180./np.pi
+##                
+##                ar_cell_down[ncell]=ar_select_cells[ind_min_DEM]
+##                ar_tan_beta[ncell]=tab_slope[i,j]
+## 
+##                tab_dir[0,0]=1
+##                tab_slope[0,0]=tab_slope[1,0]
+##                
+##    return tab_DEM,tab_slope,tab_dir,ar_cell_down,ar_tan_beta,nb_sink
 
 
 def from_flowacc_to_stream(file_flowacc_grid,file_stream_grid,threshold_cell):
@@ -250,10 +250,10 @@ def from_flowacc_to_stream(file_flowacc_grid,file_stream_grid,threshold_cell):
     f.close()
 
 
-def compute_slope_8D(file_flowdir,file_DEM,file_label,file_slope_degree,file_slope,Xcell=1000.):
+def compute_slope_8D(file_flowdir,file_DEM,file_slope_degree,file_slope,Xcell=1000.):
     tab_DEM=io.read_array(file_DEM)
     tab_dir=io.read_array(file_flowdir)
-    tab_label=io.read_array(file_label)
+    tab_label=from_asciigrid_to_label(file_DEM)
     tab_slope_degree=np.array(tab_label)
     tab_slope=np.array(tab_label)
 
@@ -320,7 +320,34 @@ def compute_slope_8D(file_flowdir,file_DEM,file_label,file_slope_degree,file_slo
     f = file(file_slope, 'w')
     io.write_array(f, tab_slope)
     f.close()
-    
+
+def from_asciigrid_to_label(file_ascii_grid,file_label='label.dat',write_file=False):
+    """
+    * Objective
+      Replace values of the grid by the label of the cells.
+      The label are assigned from 0 to nb_cell, from West to East, North to South.
+    * Input
+      file_bin_grid: A binary grid file (whatever it is).
+    * Output
+      tab: a 1D array with nb_cell components.
+    """
+    tab=io.read_array(file_ascii_grid)
+    nrows=np.shape(tab)[0]
+    ncols=np.shape(tab)[1]
+    tab=np.reshape(tab,ncols*nrows)
+    ind=np.where(tab>-99)
+    tab_label=np.arange(len(tab[ind]))
+    for i in tab_label:
+        tab[ind[0][i]]=i
+    tab=np.reshape(tab,(nrows,ncols))
+    tab=tab.astype('int32')
+
+    if write_file:
+        f = file(file_label, 'w')
+        io.write_array(f, tab)
+        f.close()
+
+    return tab
 
 if __name__ == '__main__':
 ##    nb_sink=1
