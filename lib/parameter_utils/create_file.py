@@ -181,9 +181,7 @@ def run(ini_file='create_file.ini'):
     tab_param[:,18]=ar_kc
 
     #'help io.write_array' for more info
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
 ##############################################    
 ###  SUBROUTINE USED IN "creat_param_file" ###
@@ -616,9 +614,9 @@ def from_bingrid_to_coordinate(file_bin_grid):
     
     mat_coorX=np.zeros((nrows,ncols))
     mat_coorY=np.zeros((nrows,ncols))
-    for i in range(nrows):
+    for i in range(int(nrows)):
         mat_coorX[i,:]=ar_line_coorX
-    for j in range(ncols):
+    for j in range(int(ncols)):
         mat_coorY[:,j]=ar_line_coorY
 
     tab=read_arc_bin(file_bin_grid)

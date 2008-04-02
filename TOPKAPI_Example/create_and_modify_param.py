@@ -11,6 +11,8 @@ from TOPKAPI.parameter_utils import create_file
 create_file.run('create_the_parameter_files/create_file.ini')
 # Modify the created file
 from TOPKAPI.parameter_utils import modify_file
+# treat and remove zero slopes
+modify_file.zero_slope_management('create_the_parameter_files/zero_slope_management.ini')
 # create a new cell parameter file for a subcatchment
 modify_file.subcatch('create_the_parameter_files/subcatch.ini')
 # create a new cell parameter file with modified parameter values

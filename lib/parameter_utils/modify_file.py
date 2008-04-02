@@ -255,10 +255,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-
-    f = file(file_cell_param_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_cell_param_out, tab_param)
 
 
 def subcatch(ini_file='subcatch.ini'):
@@ -336,9 +333,7 @@ def subcatch(ini_file='subcatch.ini'):
 
     #~~~~~~Write parameter file~~~~~~#
     #'help io.write_array' for more info
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
     ar_image=ar_cell_label*0.;ar_image[subcatch_label]=1.;ar_image[ar_lambda==1.]=10.;ar_image[cell_outlet]=5.
     field_map(ar_image,ar_coorx,ar_coory,X,picture_out,'Subcatchment')
@@ -430,9 +425,7 @@ def new_param(ini_file='new_param.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
 
 def connect_external_flow(ini_file='connect_external_flow.ini'):
@@ -488,9 +481,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
 
 def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
@@ -587,9 +578,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
 def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     """
@@ -707,9 +696,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    f = file(file_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
+    io.write_array(file_out, tab_param)
 
 ########################################################################################
 ######## Surbroutines
