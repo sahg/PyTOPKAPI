@@ -22,12 +22,6 @@ import pretreatment as pm
 import fluxes as fl
 import ode as om
 import evap as em
-reload(ut)
-reload(pm)
-reload(fl)
-reload(om)
-reload(em)
-
 
 def run(ini_file='TOPKAPI.ini'):
 

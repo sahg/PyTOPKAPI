@@ -11,10 +11,6 @@ Modifying the created parameter files in order to
 
 """
 import sys
-############################################
-############################################
-sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/lib/')
-sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/lib/results_analysis')
 
 #Internal modules
 import numpy as np

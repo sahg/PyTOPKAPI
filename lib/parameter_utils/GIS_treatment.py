@@ -25,9 +25,6 @@ The corresponding array extracted and ordered from West to East, North to South 
 
 """
 import sys
-############################################
-############################################
-sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/lib/')
 
 #Python modules
 import numpy as np

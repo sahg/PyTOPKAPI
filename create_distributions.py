@@ -11,6 +11,7 @@ system for now.
 import os
 import shutil
 
+# Linux shell command to strip .svn directories
 command = 'find . -name .svn -type d -print0 | xargs -0 rm -rf'
 
 def make_distro(dist_path, ex_path, files):

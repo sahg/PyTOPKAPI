@@ -1,6 +1,3 @@
-import sys
-sys.path.append('C:/Theo/topkapi_model/programme/TOPKAPI_Aug07/svn_working_copy/lib/')
-
 #General module importation
 import numpy as np
 import scipy as sp
