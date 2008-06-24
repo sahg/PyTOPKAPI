@@ -145,9 +145,9 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Initialisation of the reservoirs
     #Matrix of soil,overland and channel store at the begining of the time step
-    ar_Vs0=fl.initial_volume_soil(ar_pVs_t0,ar_Vsm)
-    ar_Vo0=ar_Vo_t0
-    ar_Vc0=fl.initial_volume_channel(ar_Qc_t0,ar_W,X,ar_n_c)
+    ar_Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
+    ar_Vo0 = ar_Vo_t0
+    ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
@@ -220,48 +220,67 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== SOIL STORE ===== ##
             ## ====================== ##
             #~~~~ Computation of soil input
-            ar_a_s[cell] \
-                = fl.input_soil(ndar_rain[t,cell],Dt,X,ar_Q_to_next_cell,li_cell_up[cell])
+            ar_a_s[cell] = fl.input_soil(ndar_rain[t, cell],
+                                         Dt, X,
+                                         ar_Q_to_next_cell,
+                                         li_cell_up[cell])
+            
             #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
-            if ar_a_s[cell]==0.:
-                Vs_prim=om.input_zero_solution(ar_b_s[cell], alpha_s, ar_Vs0[cell], Dt)
-            elif ar_b_s[cell]==0.:
-                Vs_prim=om.coefb_zero_solution(ar_a_s[cell], ar_Vs0[cell], Dt)
+            # Calculate the volume in the soil store at the end of the
+            # current time-step.
+            if ar_a_s[cell] == 0.:
+                Vs_prim = om.input_zero_solution(ar_b_s[cell], 
+                                                 alpha_s, ar_Vs0[cell], Dt)
+            elif ar_b_s[cell] == 0.:
+                Vs_prim = om.coefb_zero_solution(ar_a_s[cell], ar_Vs0[cell], Dt)
             else:
-                if solve_s==1:
+                if solve_s == 1:
                     #qas
-                    Vs_prim =om.qas(ar_a_s[cell], ar_b_s[cell], alpha_s, ar_Vs0[cell], Dt)
-                    if(Vs_prim-ar_Vs0[cell])/Dt > ar_a_s[cell]:
-                        #Definition of the convergence error
-                        if(ar_Vs0[cell]==0.):
-                            err_min=1e-7;err_max=1e-3
-                        else:
-                            err_min=1e-7/100.*ar_Vs0[cell];err_max=10e-3/100.*ar_Vs0[cell]
-                        #RKF
-                        f=om.fonction(ar_a_s[cell],ar_b_s[cell],alpha_s)
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                      min_tol=err_min, max_tol=err_max,\
-                                      init_time_step=Dt)
-                        Vs_prim =cl_a.step(f,ar_Vs0[cell], 0, Dt)
-                if solve_s==0:
-                    #Definition of the convergence error
-                    if(ar_Vs0[cell]==0.):
-                        err_min=1e-7;err_max=1e-3
-                    else:
-                        err_min=1e-7/100.*ar_Vs0[cell];err_max=10e-3/100.*ar_Vs0[cell]
-                    #RKF
-                    f=om.fonction(ar_a_s[cell],ar_b_s[cell],alpha_s)
-                    cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                  min_tol=err_min, max_tol=err_max,\
-                                  init_time_step=Dt)
-                    Vs_prim =cl_a.step(f,ar_Vs0[cell], 0, Dt)
+                    Vs_prim = om.qas(ar_a_s[cell], 
+                                     ar_b_s[cell], alpha_s, ar_Vs0[cell], Dt)
                     
-            #~~~~ Computation of soil outlflow and overland input
-            ar_Qs_out[cell],ar_Vs1[cell] \
-                = fl.output_soil(ar_Vs0[cell],Vs_prim,ar_Vsm[cell],ar_a_s[cell],ar_b_s[cell],alpha_s,Dt)
-            if ar_Qs_out[cell]<0:
+                    if (Vs_prim-ar_Vs0[cell])/Dt > ar_a_s[cell]:
+                        #Definition of the convergence error
+                        if ar_Vs0[cell] == 0.:
+                            err_min=1e-7; err_max=1e-3
+                        else:
+                            err_min = 1e-7/100.*ar_Vs0[cell]
+                            err_max = 10e-3/100.*ar_Vs0[cell]
+                        #RKF
+                        f = om.fonction(ar_a_s[cell], ar_b_s[cell], alpha_s)
+                        
+                        cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                      min_tol=err_min, max_tol=err_max, 
+                                      init_time_step=Dt)
+                        
+                        Vs_prim =cl_a.step(f, ar_Vs0[cell], 0, Dt)
+                        
+                if solve_s == 0:
+                    #Definition of the convergence error
+                    if ar_Vs0[cell] == 0.:
+                        err_min=1e-7; err_max=1e-3
+                    else:
+                        err_min = 1e-7/100.*ar_Vs0[cell]
+                        err_max = 10e-3/100.*ar_Vs0[cell]
+                    #RKF
+                    f = om.fonction(ar_a_s[cell], ar_b_s[cell], alpha_s)
+                    
+                    cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                  min_tol=err_min, max_tol=err_max, 
+                                  init_time_step=Dt)
+                    
+                    Vs_prim = cl_a.step(f, ar_Vs0[cell], 0, Dt)
+                    
+            #~~~~ Computation of soil outflow and overland input
+            ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell], 
+                                                           Vs_prim,
+                                                           ar_Vsm[cell],
+                                                           ar_a_s[cell],
+                                                           ar_b_s[cell],
+                                                           alpha_s, Dt)
+            if ar_Qs_out[cell] < 0:
                 print 'Problem Soil:output greater than input....'
-                print 'n=',n,'label=',cell
+                print 'n=', n, 'label=', cell
                 stop
 
             ## ========================== ##
@@ -269,118 +288,155 @@ def run(ini_file='TOPKAPI.ini'):
             ## ========================== ##
             #~~~~ Computation of overland input        
             if Vs_prim > ar_Vsm[cell]:
-                ar_a_o[cell]=max(0.,ar_a_s[cell]-((ar_Vs1[cell]-ar_Vs0[cell])/Dt+ar_Qs_out[cell]))
+                ar_a_o[cell] = max(0., 
+                                   ar_a_s[cell]
+                                   - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt
+                                   + ar_Qs_out[cell]))
             else:
-                ar_a_o[cell]=0.
+                ar_a_o[cell] = 0.
              
             #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
-            if ar_a_o[cell]==0.:
-                #print 'Shortcut Overland a_o=0'
-                ar_Vo1[cell]=om.input_zero_solution(ar_b_o[cell], alpha_o, ar_Vo0[cell], Dt)
-            elif ar_b_o[cell]==0.:
-                Vs_prim=om.coefb_zero_solution(ar_a_o[cell], ar_Vo0[cell], Dt)
+            if ar_a_o[cell] == 0.:
+                ar_Vo1[cell] = om.input_zero_solution(ar_b_o[cell], 
+                                                      alpha_o, ar_Vo0[cell], Dt)
+            elif ar_b_o[cell] == 0.:
+                Vs_prim = om.coefb_zero_solution(ar_a_o[cell], ar_Vo0[cell], Dt)
             else:
-                if solve_o==1:
+                if solve_o == 1:
                     #qas
-                    ar_Vo1[cell] = om.qas(ar_a_o[cell], ar_b_o[cell], alpha_o, ar_Vo0[cell], Dt)
-                    if(ar_Vo1[cell]-ar_Vo0[cell])/Dt > ar_a_o[cell]:
+                    ar_Vo1[cell] = om.qas(ar_a_o[cell], ar_b_o[cell], 
+                                          alpha_o, ar_Vo0[cell], Dt)
+                    
+                    if (ar_Vo1[cell]-ar_Vo0[cell])/Dt > ar_a_o[cell]:
                         #Definition of the convergence error
-                        if(ar_Vo0[cell]==0.):
-                            err_min=1e-7;err_max=1e-3
+                        if ar_Vo0[cell] == 0.:
+                            err_min=1e-7; err_max=1e-3
                         else:
-                            err_min=1e-7/100.*ar_Vo0[cell];err_max=1e-3/100.*ar_Vo0[cell]
+                            err_min = 1e-7/100.*ar_Vo0[cell]
+                            err_max = 1e-3/100.*ar_Vo0[cell]
                         #RKF
-                        f=om.fonction(ar_a_o[cell],ar_b_o[cell],alpha_o)
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                      min_tol=err_min, max_tol=err_max,\
+                        f = om.fonction(ar_a_o[cell], ar_b_o[cell], alpha_o)
+                        
+                        cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                      min_tol=err_min, max_tol=err_max, 
                                       init_time_step=Dt)
-                        ar_Vo1[cell] = cl_a.step(f,ar_Vo0[cell], 0, Dt)
-                if solve_o==0:
+                        
+                        ar_Vo1[cell] = cl_a.step(f, ar_Vo0[cell], 0, Dt)
+                        
+                if solve_o == 0:
                     #Definition of the convergence error
-                    if(ar_Vo0[cell]==0.):
-                        err_min=1e-7;err_max=1e-3
+                    if ar_Vo0[cell] == 0.:
+                        err_min=1e-7; err_max=1e-3
                     else:
-                        err_min=1e-7/100.*ar_Vo0[cell];err_max=1e-3/100.*ar_Vo0[cell]
+                        err_min = 1e-7/100.*ar_Vo0[cell]
+                        err_max = 1e-3/100.*ar_Vo0[cell]
                     #RKF
-                    f=om.fonction(ar_a_o[cell],ar_b_o[cell],alpha_o)
-                    cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                  min_tol=err_min, max_tol=err_max,\
+                    f = om.fonction(ar_a_o[cell], ar_b_o[cell], alpha_o)
+                    
+                    cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                  min_tol=err_min, max_tol=err_max, 
                                   init_time_step=Dt)
-                    ar_Vo1[cell] = cl_a.step(f,ar_Vo0[cell], 0, Dt)
+                    
+                    ar_Vo1[cell] = cl_a.step(f, ar_Vo0[cell], 0, Dt)
                 
 
-            #~~~~ Computation of overland outlflows
-            ar_Qo_out[cell] \
-                = fl.Qout_computing(ar_Vo0[cell],ar_Vo1[cell],ar_a_o[cell],Dt)
-            if ar_Qo_out[cell]<0:
+            #~~~~ Computation of overland outflows
+            ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell], ar_Vo1[cell], 
+                                                ar_a_o[cell], Dt)
+            
+            if ar_Qo_out[cell] < 0:
                 print 'Problem Overland:output greater than input....'
-                print 'n=',n,'label=',cell
+                print 'n=', n, 'label=', cell
                 stop
 
             ## ============================= ##
             ## ===== FLOW PARTITIONING ===== ##
             ## ============================= ##
-            ar_Q_to_next_cell[cell],ar_Q_to_channel[cell],ar_Q_to_channel_sub[cell] \
-                = fl.flow_partitioning(ar_lambda[cell],ar_Qs_out[cell],\
-                                       ar_Qo_out[cell],ar_W[cell],X,ar_Xc[cell])
-
+            # ar_Q_to_channel_sub doesn't get used for anything.
+            
+            ar_Q_to_next_cell[cell], \
+            ar_Q_to_channel[cell], \
+            ar_Q_to_channel_sub[cell] = fl.flow_partitioning(ar_lambda[cell], 
+                                                             ar_Qs_out[cell], 
+                                                             ar_Qo_out[cell], 
+                                                             ar_W[cell], 
+                                                             X, ar_Xc[cell])
 
             ## ======================== ##
             ## ===== CHANNEL STORE ==== ##
             ## ======================== ##
-            if ar_lambda[cell]==1:
-                if ar_cell_down[cell]>=0 and ar_lambda[ar_cell_down[cell]]==0:
+            if ar_lambda[cell] == 1:
+                if ar_cell_down[cell] >= 0 \
+                   and ar_lambda[ar_cell_down[cell]] == 0:
+                    
                     print 'Problem: the present cell has a channel but not the cell down...'
                     Stop
+                    
                 #~~~~ Computation of channel input
-                ar_a_c[cell],ar_Qc_cell_up[cell] \
-                    = fl.input_channel(ar_Qc_out,ar_Q_to_channel[cell],li_cell_up[cell])
+                ar_a_c[cell], \
+                ar_Qc_cell_up[cell] = fl.input_channel(ar_Qc_out, 
+                                                       ar_Q_to_channel[cell],
+                                                       li_cell_up[cell])
                 
-                if external_flow and cell==np.where(ar_cell_label==cell_external_flow)[0][0]:
-                    ar_a_c[cell]=ar_a_c[cell]+ar_Qexternal_flow[t]
+                if external_flow \
+                and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
+                    ar_a_c[cell] = ar_a_c[cell] + ar_Qexternal_flow[t]
 
                 #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
-                if ar_a_c[cell]==0.:
-                    ar_Vc1[cell]=om.input_zero_solution(ar_b_c[cell], alpha_c, Vc0[cell], Dt)
-                elif ar_b_c[cell]==0.:
-                    ar_Vc1[cell]=om.coefb_zero_solution(ar_a_c[cell], ar_Vc0[cell], Dt)
+                if ar_a_c[cell] == 0.:
+                    ar_Vc1[cell] = om.input_zero_solution(ar_b_c[cell], 
+                                                          alpha_c, 
+                                                          Vc0[cell], Dt)
+                elif ar_b_c[cell] == 0.:
+                    ar_Vc1[cell] = om.coefb_zero_solution(ar_a_c[cell], 
+                                                          ar_Vc0[cell], Dt)
                 else:
-                    if solve_c==1:
+                    if solve_c == 1:
                         #qas
-                        ar_Vc1[cell] = om.qas(ar_a_c[cell],ar_b_c[cell], alpha_c, ar_Vc0[cell], Dt)
+                        ar_Vc1[cell] = om.qas(ar_a_c[cell],ar_b_c[cell], 
+                                              alpha_c, ar_Vc0[cell], Dt)
+                        
                         if(ar_Vc1[cell]-ar_Vc0[cell])/Dt > ar_a_c[cell]:
                             #Definition of the convergence error
-                            if(ar_Vc0[cell]==0.):
-                                err_min=1e-7;err_max=1e-3
+                            if ar_Vc0[cell]==0.:
+                                err_min=1e-7; err_max=1e-3
                             else:
-                                err_min=1e-7/100.*ar_Vc0[cell];err_max=1e-3/100.*ar_Vc0[cell]
+                                err_min = 1e-7/100.*ar_Vc0[cell]
+                                err_max = 1e-3/100.*ar_Vc0[cell]
                             #RKF
-                            f=om.fonction(ar_a_c[cell],ar_b_c[cell],alpha_c)
-                            cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                          min_tol=err_min, max_tol=err_max,\
+                            f = om.fonction(ar_a_c[cell], ar_b_c[cell], alpha_c)
+                            
+                            cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                          min_tol=err_min, max_tol=err_max, 
                                           init_time_step=Dt)
-                            ar_Vc1[cell] = cl_a.step(f,ar_Vc0[cell], 0, Dt)
+                            
+                            ar_Vc1[cell] = cl_a.step(f, ar_Vc0[cell], 0, Dt)
                              
-                    if solve_c==0:
+                    if solve_c == 0:
                         #Definition of the convergence error
-                        if(ar_Vc0[cell]==0.):
-                            err_min=1e-7;err_max=1e-3
+                        if ar_Vc0[cell]==0.:
+                            err_min=1e-7; err_max=1e-3
                         else:
-                            err_min=1e-7/100.*ar_Vc0[cell];err_max=1e-3/100.*ar_Vc0[cell]
+                            err_min = 1e-7/100.*ar_Vc0[cell]
+                            err_max = 1e-3/100.*ar_Vc0[cell]
                         #RKF
-                        f=om.fonction(ar_a_c[cell],ar_b_c[cell],alpha_c)
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,\
-                                      min_tol=err_min, max_tol=err_max,\
+                        f = om.fonction(ar_a_c[cell], ar_b_c[cell], alpha_c)
+                        
+                        cl_a = om.RKF(min_step=10e-10, max_step=Dt, 
+                                      min_tol=err_min, max_tol=err_max, 
                                       init_time_step=Dt)
-                        ar_Vc1[cell] = cl_a.step(f,ar_Vc0[cell], 0, Dt)
+                        
+                        ar_Vc1[cell] = cl_a.step(f, ar_Vc0[cell], 0, Dt)
 
-                #~~~~ Computation of channel outlflows
-                ar_Qc_out[cell] \
-                    = fl.Qout_computing(ar_Vc0[cell],ar_Vc1[cell],ar_a_c[cell],Dt)
-                if ar_Qc_out[cell]<0:
+                #~~~~ Computation of channel outflows
+                ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],
+                                                    ar_Vc1[cell],
+                                                    ar_a_c[cell], Dt)
+                
+                if ar_Qc_out[cell] < 0:
                     print 'Problem Channel: output greater than input....'
                     stop
-                if str(ar_Qc_out[cell]).count('N')>0:
+                if str(ar_Qc_out[cell]).count('N') > 0:
                     print ar_Qc_out[cell]
                     print 'Problem Channel: Non authorized operand....'
                     stop
@@ -395,19 +451,27 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== EVAPOTRANSPIRATION ===== ##
             ## ============================== ##
             #~~~~~ From soil
-            ar_ETa[cell],ar_Vs1[cell],ar_Vo1[cell]=\
-            em.evapot_soil_overland(ar_Vo1[cell],ar_Vs1[cell],ar_Vsm[cell],ar_kc[cell],ndar_ETr[t,cell],X)
+            ar_ETa[cell], \
+            ar_Vs1[cell], \
+            ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], 
+                                                   ar_Vs1[cell], 
+                                                   ar_Vsm[cell], 
+                                                   ar_kc[cell], 
+                                                   ndar_ETr[t, cell], X)
 
             #~~~~~ Evaporation from channel
-            if ar_lambda[cell]==1:
-                 ar_ET_channel[cell],ar_Vc1[cell]=em.evapor_channel(ar_Vc1[cell],ndar_ETo[t,cell],ar_W[cell],ar_Xc[cell])
+            if ar_lambda[cell] == 1:
+                 ar_ET_channel[cell], \
+                 ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell], 
+                                                  ndar_ETo[t, cell], 
+                                                  ar_W[cell], ar_Xc[cell])
 
         ####===================================####
         #### Affectation of new vector values  ####
         ####===================================####
-        ar_Vs0=np.array(ar_Vs1)
-        ar_Vo0=np.array(ar_Vo1)
-        ar_Vc0=np.array(ar_Vc1)
+        ar_Vs0 = np.array(ar_Vs1)
+        ar_Vo0 = np.array(ar_Vo1)
+        ar_Vc0 = np.array(ar_Vc1)
 
         ####===================================####
         #### Results writing at each time step ####
