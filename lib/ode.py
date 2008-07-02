@@ -4,10 +4,6 @@ Routines used to solve the Ordinary Differential Equations in TOPKAPI
 
 """
 
-__author__ = "Theo Vischel"
-__version__ = "$Revision: 1.1 $"
-__date__ = "$Date: 01/15/2007 $"
-
 from copy import *
 from math import * 
 from scipy import *

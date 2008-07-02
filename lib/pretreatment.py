@@ -4,10 +4,6 @@ Functions required to compute the intrinsic TOPKAPI parameters from the
 physical parameters
 """
 
-__author__ = "Theo Vischel"
-__version__ = "$Revision: 1.0 $"
-__date__ = "$Date: 09/10/2006 $"
-
 import scipy as sp
 import numpy as np
 import scipy.io as io

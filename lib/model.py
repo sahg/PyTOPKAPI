@@ -2,11 +2,6 @@
 Main programm of the TOPKAPI model.
 """
 
-__author__ = "Theo Vischel"
-__version__ = "$Revision: 1.0 $"
-__date__ = "$Date: 08/08/2007 $"
-
-
 #General module importation
 from ConfigParser import SafeConfigParser
 

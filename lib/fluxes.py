@@ -8,10 +8,6 @@ NB:The subroutines solving the differential equation are not in this module
 
 """
 
-__author__ = "Theo Vischel"
-__version__ = "$Revision: 1.0 $"
-__date__ = "$Date: 09/10/2006 $"
-
 import scipy as sp
 import numpy as np
 
