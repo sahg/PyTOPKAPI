@@ -5,7 +5,7 @@ to make a clean distribution. The manual is included in MSWord format for now
 because this is how it's stored in SVN.
 
 This script currently relies on Linux tools and will only work on a Linux
-system for now.
+system.
 
 """
 import os
@@ -14,7 +14,7 @@ import shutil
 # Linux shell command to strip .svn directories
 command = 'find . -name .svn -type d -print0 | xargs -0 rm -rf'
 
-def make_distro(dist_path, ex_path, files):
+def make_distro(dist_path, ex_path, add_files):
     path = os.path.join(dist_path, ex_path)
     
     if os.path.isdir(dist_path):
@@ -23,6 +23,8 @@ def make_distro(dist_path, ex_path, files):
                 os.remove(os.path.join(root, name))
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
+    else:
+        os.mkdir(dist_path)
             
     shutil.copytree(ex_path, path)
     curr_dir = os.getcwd()
@@ -30,11 +32,11 @@ def make_distro(dist_path, ex_path, files):
     os.system(command)
     os.chdir(curr_dir)
     
-    for fname in files:
+    for fname in add_files:
         shutil.copy(fname, dist_path)
     
 if __name__ == "__main__":
-    # make sure the source distributions are built
+    # build source distributions
     os.system('python setup.py sdist --formats=gztar,zip')
     
     # make Linux distribution
