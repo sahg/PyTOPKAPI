@@ -8,7 +8,6 @@ NB:The subroutines solving the differential equation are not in this module
 
 """
 
-import scipy as sp
 import numpy as np
 
 ##        ROUTINES FOR SOIL STORE

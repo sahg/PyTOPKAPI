@@ -6,7 +6,6 @@ Main programm of the TOPKAPI model.
 from ConfigParser import SafeConfigParser
 
 import numpy as np
-import scipy as sp
 import tables as h5
 import scipy.io as io
 
@@ -179,25 +178,25 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
-    ar_Vs1 = sp.ones(nb_cell)*-99.9
-    ar_Vo1 = sp.ones(nb_cell)*-99.9
-    ar_Vc1 = sp.ones(nb_cell)*-99.9
+    ar_Vs1 = np.ones(nb_cell)*-99.9
+    ar_Vo1 = np.ones(nb_cell)*-99.9
+    ar_Vc1 = np.ones(nb_cell)*-99.9
     
     #Matrix of outflows between two time steps
-    ar_Qs_out = sp.ones(nb_cell)*-99.9
-    ar_Qo_out = sp.ones(nb_cell)*-99.9
-    ar_Qc_out = sp.zeros(nb_cell)
+    ar_Qs_out = np.ones(nb_cell)*-99.9
+    ar_Qo_out = np.ones(nb_cell)*-99.9
+    ar_Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
-    ar_a_s = sp.ones(nb_cell)*-99.9
-    ar_a_o = sp.ones(nb_cell)*-99.9
-    ar_a_c = sp.ones(nb_cell)*-99.9
-    ar_Q_to_next_cell = sp.ones(nb_cell)*-99.9
-    ar_Q_to_channel = sp.ones(nb_cell)*-99.9
-    ar_Q_to_channel_sub = sp.zeros(nb_cell)
-    ar_Qc_cell_up = sp.zeros(nb_cell)
-    ar_ETa = sp.zeros(nb_cell)
-    ar_ET_channel = sp.zeros(nb_cell)
+    ar_a_s = np.ones(nb_cell)*-99.9
+    ar_a_o = np.ones(nb_cell)*-99.9
+    ar_a_c = np.ones(nb_cell)*-99.9
+    ar_Q_to_next_cell = np.ones(nb_cell)*-99.9
+    ar_Q_to_channel = np.ones(nb_cell)*-99.9
+    ar_Q_to_channel_sub = np.zeros(nb_cell)
+    ar_Qc_cell_up = np.zeros(nb_cell)
+    ar_ETa = np.zeros(nb_cell)
+    ar_ET_channel = np.zeros(nb_cell)
       
 
     ##=============================##

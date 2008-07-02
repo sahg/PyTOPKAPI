@@ -17,6 +17,7 @@ from numpy import *
 def input_zero_solution(b, alpha, V0, delta_t):
     V1=(V0**(1-alpha)+b*(alpha-1)*delta_t)**(1/(1-alpha))
     return V1
+
 #### Solution if b=0
 def coefb_zero_solution(a, V0, Dt):
     V1=a*Dt+V0

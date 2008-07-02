@@ -4,7 +4,6 @@ Functions required to compute the intrinsic TOPKAPI parameters from the
 physical parameters
 """
 
-import scipy as sp
 import numpy as np
 import scipy.io as io
 
@@ -176,9 +175,9 @@ def sort_cell(ar_cell_label, ar_cell_down):
         Sorted array of cell labels.
     
     """
-    ar_label_sort=sp.ones(len(ar_cell_label))*-99.9
-    ar_dist_2_outlet=sp.ones(len(ar_cell_label))*-99.9
-    ar_drained_area=sp.ones(len(ar_cell_label))*-99.9
+    ar_label_sort=np.ones(len(ar_cell_label))*-99.9
+    ar_dist_2_outlet=np.ones(len(ar_cell_label))*-99.9
+    ar_drained_area=np.ones(len(ar_cell_label))*-99.9
     nb_cell=len(ar_cell_label)
     for cell in range(nb_cell):
         cell_down=ar_cell_down[cell]
@@ -249,7 +248,7 @@ def drained_area(ar_label_sort, li_cell_up, X):
     """
     A_cell=X**2
     nb_cell=len(ar_label_sort)
-    ar_A_drained=sp.ones(nb_cell)*-99.9
+    ar_A_drained=np.ones(nb_cell)*-99.9
     for cell in ar_label_sort:
         up_cell=li_cell_up[cell]
         ar_A_drained[cell]=sum(ar_A_drained[up_cell])+A_cell
@@ -370,7 +369,7 @@ def read_column_input(file_name,nb_cell):
     tab_read=file_read.readlines()
 
     nb_time_step=len(tab_read)-1
-    a=sp.zeros(nb_cell*nb_time_step)
+    a=np.zeros(nb_cell*nb_time_step)
     mat_out=a.reshape(nb_time_step,nb_cell)
 
     i=-1
