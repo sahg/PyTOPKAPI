@@ -8,13 +8,12 @@ __date__ = "$Date: 08/08/2007 $"
 
 
 #General module importation
+from ConfigParser import SafeConfigParser
+
 import numpy as np
 import scipy as sp
 import tables as h5
 import scipy.io as io
-from ConfigParser import SafeConfigParser
-config = SafeConfigParser()
-
 
 #Personnal module importation
 import utils as ut
@@ -28,42 +27,46 @@ def run(ini_file='TOPKAPI.ini'):
     ##================================##
     ##  Read the input file (*.ini)   ##
     ##================================##
+    config = SafeConfigParser()
     config.read(ini_file)
     print 'Read the file ',ini_file
+    
     ##~~~~~~ Numerical_options ~~~~~~##
-    solve_s=config.getfloat('numerical_options','solve_s')
-    solve_o=config.getfloat('numerical_options','solve_o')
-    solve_c=config.getfloat('numerical_options','solve_c')
-    only_channel_output=config.getboolean('numerical_options','only_channel_output')
+    solve_s = config.getfloat('numerical_options', 'solve_s')
+    solve_o = config.getfloat('numerical_options', 'solve_o')
+    solve_c = config.getfloat('numerical_options', 'solve_c')
+    only_channel_output = config.getboolean('numerical_options', 
+                                            'only_channel_output')
  
     ##~~~~~~~~~~~ input files ~~~~~~~~~~~##
     #Param
-    file_global_param=config.get('input_files','file_global_param')
-    file_cell_param=config.get('input_files','file_cell_param')
+    file_global_param = config.get('input_files', 'file_global_param')
+    file_cell_param = config.get('input_files', 'file_cell_param')
     #Rain
-    file_rain=config.get('input_files', 'file_rain')
+    file_rain = config.get('input_files', 'file_rain')
     #ETP
-    file_ET=config.get('input_files','file_ET')
+    file_ET = config.get('input_files', 'file_ET')
 
     #~~~~~~~~~~~ Group (simulated event) ~~~~~~~~~~~##
-    group_name=config.get('groups','group_name')
+    group_name = config.get('groups', 'group_name')
 
     ##~~~~~~ Calibration ~~~~~~##
-    fac_L=config.getfloat('calib_params','fac_L')
-    fac_Ks=config.getfloat('calib_params','fac_Ks')
-    fac_n_o=config.getfloat('calib_params','fac_n_o')
-    fac_n_c=config.getfloat('calib_params','fac_n_c')
+    fac_L = config.getfloat('calib_params', 'fac_L')
+    fac_Ks = config.getfloat('calib_params', 'fac_Ks')
+    fac_n_o = config.getfloat('calib_params', 'fac_n_o')
+    fac_n_c = config.getfloat('calib_params', 'fac_n_c')
 
     ##~~~~~~ External flows ~~~~~~##
-    external_flow=config.getboolean('external_flow','external_flow')
+    external_flow = config.getboolean('external_flow', 'external_flow')
     if external_flow:
-        file_Qexternal_flow=config.get('external_flow','file_Qexternal_flow')
-        Xexternal_flow=config.getfloat('external_flow','Xexternal_flow')
-        Yexternal_flow=config.getfloat('external_flow','Yexternal_flow')
+        file_Qexternal_flow = config.get('external_flow', 
+                                         'file_Qexternal_flow')
+        Xexternal_flow = config.getfloat('external_flow', 'Xexternal_flow')
+        Yexternal_flow = config.getfloat('external_flow', 'Yexternal_flow')
         
     ##~~~~~~~~~~~ output files ~~~~~~~~~~##
-    file_out=config.get('output_files','file_out')
-    #create path_out if it does'nt exist
+    file_out = config.get('output_files', 'file_out')
+    #create path_out if it doesn't exist
     ut.check_file_exist(file_out)
 
 
@@ -71,72 +74,102 @@ def run(ini_file='TOPKAPI.ini'):
     ##   Read the forcing data    ##
     ##============================##
     print 'Read the forcing data'
+    
     #~~~~Rainfall
-    h5file_in=h5.openFile(file_rain,mode='r')
-    group='/'+group_name+'/'
+    h5file_in = h5.openFile(file_rain,mode='r')
+    group = '/'+group_name+'/'
     node = h5file_in.getNode(group+'rainfall')
-    ndar_rain=node.read()
+    ndar_rain = node.read()
     h5file_in.close()
-    #~~~~ETr 
-    h5file_in=h5.openFile(file_ET,mode='r')
-    group='/'+group_name+'/'
+    
+    #~~~~ETr - Reference crop ET
+    h5file_in = h5.openFile(file_ET,mode='r')
+    group = '/'+group_name+'/'
     node = h5file_in.getNode(group+'ETr')
-    ndar_ETr=node.read()
+    ndar_ETr = node.read()
     h5file_in.close()
-    #~~~~ETo
-    h5file_in=h5.openFile(file_ET,mode='r')
-    group='/'+group_name+'/'
+    
+    #~~~~ETo - Open water potential evap.
+    h5file_in = h5.openFile(file_ET,mode='r')
+    group = '/'+group_name+'/'
     node = h5file_in.getNode(group+'ETo')
-    ndar_ETo=node.read()
+    ndar_ETo = node.read()
     h5file_in.close()
+    
     #~~~~external_flow flows
     if external_flow:
-        ar_Qexternal_flow=io.read_array(file_Qexternal_flow)[:,5]
+        ar_Qexternal_flow = io.read_array(file_Qexternal_flow)[:, 5]
 
 
     ##============================##
     ## Pretreatment of input data ##
     ##============================##
     print 'Pretreatment of input data'
+    
     #~~~~Read Global parameters file
-    X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
-      =pm.read_global_parameters(file_global_param)
+    X, Dt, alpha_s, \
+    alpha_o, alpha_c, \
+    A_thres, W_min, W_max = pm.read_global_parameters(file_global_param)
+    
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,\
-    ar_L0,ar_Ks0,ar_theta_r,ar_theta_s,ar_n_o0,ar_n_c0,\
-    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
-        =pm.read_cell_parameters(file_cell_param)
+    ar_cell_label, ar_coorx, \
+    ar_coory, ar_lambda, \
+    ar_Xc, ar_dam, \
+    ar_tan_beta, ar_tan_beta_channel, \
+    ar_L0, ar_Ks0, \
+    ar_theta_r, ar_theta_s, \
+    ar_n_o0, ar_n_c0, \
+    ar_cell_down, ar_pVs_t0, \
+    ar_Vo_t0, ar_Qc_t0, ar_kc = pm.read_cell_parameters(file_cell_param)
+        
     #~~~~Number of cell in the catchment
-    nb_cell=len(ar_cell_label)
+    nb_cell = len(ar_cell_label)
+    
     #~~~~Computation of cell order
-    ar_label_sort=pm.sort_cell(ar_cell_label,ar_cell_down)
+    ar_label_sort = pm.sort_cell(ar_cell_label, ar_cell_down)
+    
     #~~~~Computation of upcells
-    li_cell_up=pm.direct_up_cell(ar_cell_label,ar_cell_down,ar_label_sort)
+    li_cell_up = pm.direct_up_cell(ar_cell_label, ar_cell_down, ar_label_sort)
+    
     #~~~~Computation of drained area
-    ar_A_drained=pm.drained_area(ar_label_sort,li_cell_up,X)
-    #~~~~Modifies the values of the parameters
-    ar_L=ar_L0*fac_L
-    ar_Ks=ar_Ks0*fac_Ks
-    ar_n_o=ar_n_o0*fac_n_o
-    ar_n_c=ar_n_c0*fac_n_c
-    print 'Max L=',max(ar_L)
-    print 'Max Ks=',max(ar_Ks)
-    print 'Max n_o=',max(ar_n_o)
-    print 'Max n_c=',max(ar_n_c)
+    ar_A_drained = pm.drained_area(ar_label_sort, li_cell_up, X)
+    
+    #~~~~Apply calibration factors to the parameter values
+    ar_L = ar_L0*fac_L
+    ar_Ks = ar_Ks0*fac_Ks
+    ar_n_o = ar_n_o0*fac_n_o
+    ar_n_c = ar_n_c0*fac_n_c
+    
+    print 'Max L=', max(ar_L)
+    print 'Max Ks=', max(ar_Ks)
+    print 'Max n_o=', max(ar_n_o)
+    print 'Max n_c=', max(ar_n_c)
+    
     #~~~~Computation of model parameters from physical parameters
-    ar_Vsm, ar_b_s, ar_b_o, ar_W, ar_b_c\
-      =pm.compute_cell_param(X,ar_Xc,Dt,alpha_s,alpha_o,alpha_c,nb_cell,\
-                              A_thres,W_max,W_min,\
-                              ar_lambda,ar_tan_beta,ar_tan_beta_channel,\
-                              ar_L,ar_Ks,ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-                              ar_A_drained)
+    ar_Vsm, ar_b_s, ar_b_o, \
+    ar_W, ar_b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s, 
+                                         alpha_o, alpha_c, nb_cell, 
+                                         A_thres, W_max, W_min, 
+                                         ar_lambda, ar_tan_beta, 
+                                         ar_tan_beta_channel, ar_L, 
+                                         ar_Ks, ar_theta_r, ar_theta_s, 
+                                         ar_n_o, ar_n_c, ar_A_drained)
+    
     #~~~~Look for the cell of external_flow tunnel
     if external_flow:
-        cell_external_flow=ut.find_cell_coordinates(ar_cell_label,Xexternal_flow,Yexternal_flow,ar_coorx,ar_coory,ar_lambda)
-        print 'external flows will be taken into account for cell no',cell_external_flow,\
-              ' coordinates (',Xexternal_flow,',',Yexternal_flow,')'
+        cell_external_flow = ut.find_cell_coordinates(ar_cell_label, 
+                                                      Xexternal_flow, 
+                                                      Yexternal_flow, 
+                                                      ar_coorx, 
+                                                      ar_coory, 
+                                                      ar_lambda)
+        
+        print 'external flows will be taken into account for cell no',\
+            cell_external_flow, ' coordinates ('\
+            ,Xexternal_flow,',',Yexternal_flow,')'
+              
     #~~~~Number of simulation time steps
-    nb_time_step=len(ndar_rain[:,0])
+    nb_time_step = len(ndar_rain[:,0])
 
 
     ##=============================##
@@ -151,42 +184,51 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
-    ar_Vs1=sp.ones(nb_cell)*-99.9
-    ar_Vo1=sp.ones(nb_cell)*-99.9
-    ar_Vc1=sp.ones(nb_cell)*-99.9
+    ar_Vs1 = sp.ones(nb_cell)*-99.9
+    ar_Vo1 = sp.ones(nb_cell)*-99.9
+    ar_Vc1 = sp.ones(nb_cell)*-99.9
+    
     #Matrix of outflows between two time steps
-    ar_Qs_out=sp.ones(nb_cell)*-99.9
-    ar_Qo_out=sp.ones(nb_cell)*-99.9
-    ar_Qc_out=sp.zeros(nb_cell)
+    ar_Qs_out = sp.ones(nb_cell)*-99.9
+    ar_Qo_out = sp.ones(nb_cell)*-99.9
+    ar_Qc_out = sp.zeros(nb_cell)
 
     ## Intermediate variables
-    ar_a_s=sp.ones(nb_cell)*-99.9
-    ar_a_o=sp.ones(nb_cell)*-99.9
-    ar_a_c=sp.ones(nb_cell)*-99.9
-    ar_Q_to_next_cell=sp.ones(nb_cell)*-99.9
-    ar_Q_to_channel=sp.ones(nb_cell)*-99.9
-    ar_Q_to_channel_sub=sp.zeros(nb_cell)
-    ar_Qc_cell_up=sp.zeros(nb_cell)
-    ar_ETa=sp.zeros(nb_cell)
-    ar_ET_channel=sp.zeros(nb_cell)
+    ar_a_s = sp.ones(nb_cell)*-99.9
+    ar_a_o = sp.ones(nb_cell)*-99.9
+    ar_a_c = sp.ones(nb_cell)*-99.9
+    ar_Q_to_next_cell = sp.ones(nb_cell)*-99.9
+    ar_Q_to_channel = sp.ones(nb_cell)*-99.9
+    ar_Q_to_channel_sub = sp.zeros(nb_cell)
+    ar_Qc_cell_up = sp.zeros(nb_cell)
+    ar_ETa = sp.zeros(nb_cell)
+    ar_ET_channel = sp.zeros(nb_cell)
       
 
     ##=============================##
     ## HDF5 output file definition ##
     ##=============================##
-    h5file=h5.openFile(file_out,mode='w',title='TOPKAPI_out')
+    h5file = h5.openFile(file_out, mode='w', title='TOPKAPI_out')
     atom = h5.Float32Atom()
     h5filter = h5.Filters(9)# maximum compression
 
-    group_soil=h5file.createGroup('/','Soil','Soil arrays')
-    array_Vs = h5file.createEArray(group_soil, 'V_s', atom, shape=(0,nb_cell), title='m3', \
-                                    filters=h5filter,expectedrows=nb_time_step+1)
-    group_overland=h5file.createGroup('/','Overland','Overland arrays')
-    array_Vo = h5file.createEArray(group_overland, 'V_o', atom, shape=(0,nb_cell), title='m3', \
-                                    filters=h5filter,expectedrows=nb_time_step+1)
-    group_channel=h5file.createGroup('/','Channel','Channel arrays')
-    array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', atom, shape=(0,nb_cell), title='m3/s', \
-                                    filters=h5filter,expectedrows=nb_time_step)
+    group_soil = h5file.createGroup('/', 'Soil', 'Soil arrays')
+    array_Vs = h5file.createEArray(group_soil, 'V_s', 
+                                   atom, shape=(0, nb_cell), 
+                                   title='m3', filters=h5filter, 
+                                   expectedrows=nb_time_step+1)
+    
+    group_overland = h5file.createGroup('/', 'Overland', 'Overland arrays')
+    array_Vo = h5file.createEArray(group_overland, 'V_o', 
+                                   atom, shape=(0,nb_cell), 
+                                   title='m3', filters=h5filter,
+                                   expectedrows=nb_time_step+1)
+    
+    group_channel = h5file.createGroup('/', 'Channel', 'Channel arrays')
+    array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', 
+                                       atom, shape=(0,nb_cell), 
+                                       title='m3/s', filters=h5filter,
+                                       expectedrows=nb_time_step)
 
     #Write the initial values into the output file
     array_Vs.append(ar_Vs0.reshape((1,nb_cell)))

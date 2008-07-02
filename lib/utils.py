@@ -61,7 +61,7 @@ def check_folder_exist(folder_name):
     if not os.path.exists(folder_name):
         print folder_name, 'has been created'
         os.mkdir(folder_name)
-        
+
 def read_one_array_hdf(file_h5,group,name):
     h5file_in=h5.openFile(file_h5,mode='r')
     node = h5file_in.getNode(group+name)
@@ -77,7 +77,7 @@ def mov_avg(ar_float,period):
     '''
     period is a multiple of 2
     '''
-    
+
     nb_ind=len(ar_float)-period
     ar_out=np.zeros(nb_ind)
     for i in range(nb_ind):
@@ -92,11 +92,11 @@ def mov_avg(ar_float,period):
 ## REFERENCE is Y
 def R(ar_x,ar_y):
     R=np.corrcoef(ar_x,ar_y)
-    return R[0,1]    
+    return R[0,1]
 
 def R2(ar_x,ar_y):
     R=np.corrcoef(ar_x,ar_y)
-    return R[0,1]**2   
+    return R[0,1]**2
 
 def Nash(ar_x,ar_y):
     eff=1-sum((ar_y-ar_x)**2)/sum((ar_y-np.mean(ar_y))**2)
@@ -110,7 +110,7 @@ def RMSE_norm(ar_x,ar_y):
     rmserr=(np.mean((ar_y-ar_x)**2))**0.5
     rmsenorm=rmserr/np.mean(ar_y)
     return rmsenorm
-        
+
 def Bias_cumul(ar_x,ar_y):
     b=sum(ar_x)/sum(ar_y)
     return b
@@ -148,7 +148,7 @@ def find_dist_max(ar_coorx,ar_coory):
     for i in range(nb_cell):
         for j in range(nb_cell):
             max_dist=max(max_dist,distance(ar_coorx[i],ar_coory[i],ar_coorx[j],ar_coory[j]))
-    return max_dist     
+    return max_dist
 
 def distance(x1,y1,x2,y2):
     """
@@ -157,9 +157,43 @@ def distance(x1,y1,x2,y2):
     dist=((x1-x2)**2+(y1-y2)**2)**0.5
     return dist
 
-def find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lambda,channel=True):
-    """
-    Find the label of the closest cell from (Xoutlet, Youtlet)
+def find_cell_coordinates(ar_cell_label, Xoutlet, Youtlet,
+                          ar_coorx, ar_coory, ar_lambda, channel=True):
+    """Find the label of the cell closest to (Xoutlet, Youtlet).
+    
+    Find the label of the model cell containing the specified location. The
+    co-ordinates of the location must be given in the same co-ordinate system
+    as that specifying the model catchment.
+
+    Parameters
+    ----------
+    ar_cell_label : (N,) int array
+        Numbers labelling each cell.
+    Xoutlet : float
+        The x co-ordinate of a point. This is the Longitude expressed in
+        metres using the same projection as `ar_coorx`.
+    Youtlet : float
+        The y co-ordinate of a point. This is the Longitude expressed in
+        metres using the same projection as `ar_coory`.
+    ar_coorx : (N,) float array
+        The x co-ordinate of the centre of each cell (m). This is the Longitude
+        expressed in metres using a Transverse Mercator projection, but any
+        appropriate projection can be used.
+    ar_coory : (N,) float array
+        The y co-ordinate of the centre of each cell (m). This is the Latitude
+        expressed in metres using a Transverse Mercator projection, but any
+        appropriate projection can be used.
+    ar_lambda : (N,) int array
+        Switch indicating whether the current cell contains a channel. A value
+        of `1` indicates a channel cell, `0` indicates no channel.
+    channel : boolean (default=True)
+        Allows cells with or without channels to be chosen.
+
+    Returns
+    -------
+    cell_outlet : int
+        The label for the cell closest to the defined location.
+
     """
     tab_x=np.unique(ar_coorx);X=abs(tab_x[0]-tab_x[1])
     dist_max=3*X
@@ -176,8 +210,8 @@ def find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lam
             if dist<dist_min:
                 dist_min=dist
                 cell_outlet=ar_cell_label[i]
-                
-                
+
+
     if cell_outlet<0:
         print "Wrong coordinates"
         stop
