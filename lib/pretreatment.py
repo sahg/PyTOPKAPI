@@ -110,9 +110,9 @@ def read_cell_parameters(file_name):
     ar_theta_s : (N,) float array
         The saturated soil moisture content for each cell.
     ar_n_o : (N,) float array
-        Manning’s roughness coefficient for overland flows in each cell.
+        Manning's roughness coefficient for overland flows in each cell.
     ar_n_c : (N,) float array
-        Manning’s roughness coefficient for channel flows in each cell.
+        Manning's roughness coefficient for channel flows in each cell.
     ar_cell_down : (N,) int array
         The label (from `ar_cell_label`) associated with the cell downstream 
         of the current cell.
@@ -314,9 +314,9 @@ def compute_cell_param(X, ar_Xc, Dt, alpha_s, alpha_o,
     ar_theta_s : (N,) float array
         The saturated soil moisture content for each cell.
     ar_n_o : (N,) float array
-        Manning’s roughness coefficient for overland flows in each cell.
+        Manning's roughness coefficient for overland flows in each cell.
     ar_n_c : (N,) float array
-        Manning’s roughness coefficient for channel flows in each cell.
+        Manning's roughness coefficient for channel flows in each cell.
     ar_A_drained : (N,) float array
         The total drained area associated with each cell (m^2).
     
