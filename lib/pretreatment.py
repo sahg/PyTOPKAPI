@@ -127,6 +127,7 @@ def read_cell_parameters(file_name):
     
     """
     tab_read = io.read_array(file_name)
+    tab_read = np.atleast_2d(tab_read)
 
     ar_cell_label=np.array(tab_read[:,0], int)
     ar_coorx=tab_read[:,1]

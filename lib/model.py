@@ -238,7 +238,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Loop on time
     for t in range(nb_time_step):
-        print t,'/',nb_time_step
+        print t+1, '/', nb_time_step
 
         ## Loop on cells
         n=-1
@@ -422,7 +422,7 @@ def run(ini_file='TOPKAPI.ini'):
                 if ar_a_c[cell] == 0.:
                     ar_Vc1[cell] = om.input_zero_solution(ar_b_c[cell], 
                                                           alpha_c, 
-                                                          Vc0[cell], Dt)
+                                                          ar_Vc0[cell], Dt)
                 elif ar_b_c[cell] == 0.:
                     ar_Vc1[cell] = om.coefb_zero_solution(ar_a_c[cell], 
                                                           ar_Vc0[cell], Dt)
