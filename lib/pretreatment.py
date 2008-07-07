@@ -178,7 +178,6 @@ def sort_cell(ar_cell_label, ar_cell_down):
     """
     ar_label_sort=np.ones(len(ar_cell_label))*-99.9
     ar_dist_2_outlet=np.ones(len(ar_cell_label))*-99.9
-    ar_drained_area=np.ones(len(ar_cell_label))*-99.9
     nb_cell=len(ar_cell_label)
     for cell in range(nb_cell):
         cell_down=ar_cell_down[cell]
