@@ -223,10 +223,15 @@ def run(ini_file='TOPKAPI.ini'):
                                        atom, shape=(0,nb_cell), 
                                        title='m3/s', filters=h5filter,
                                        expectedrows=nb_time_step)
+    array_Vc = h5file.createEArray(group_channel, 'Vc', 
+                                   atom, shape=(0,nb_cell), 
+                                   title='m3', filters=h5filter,
+                                   expectedrows=nb_time_step)
 
     #Write the initial values into the output file
     array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
     array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
+    array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
 
 
     ##===========================##
@@ -388,7 +393,7 @@ def run(ini_file='TOPKAPI.ini'):
             ## ============================= ##
             ## ===== FLOW PARTITIONING ===== ##
             ## ============================= ##
-            # ar_Q_to_channel_sub doesn't get used for anything.
+            # ar_Q_to_channel_sub doesn't get used for anything?
             
             ar_Q_to_next_cell[cell], \
             ar_Q_to_channel[cell], \
@@ -514,6 +519,7 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         array_Vs.append(ar_Vs1.reshape((1,nb_cell)))
         array_Vo.append(ar_Vo1.reshape((1,nb_cell)))
+        array_Vc.append(ar_Vc1.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell))) 
 
     h5file.close()
