@@ -223,7 +223,7 @@ def run(ini_file='TOPKAPI.ini'):
                                        atom, shape=(0,nb_cell), 
                                        title='m3/s', filters=h5filter,
                                        expectedrows=nb_time_step)
-    array_Vc = h5file.createEArray(group_channel, 'Vc', 
+    array_Vc = h5file.createEArray(group_channel, 'V_c', 
                                    atom, shape=(0,nb_cell), 
                                    title='m3', filters=h5filter,
                                    expectedrows=nb_time_step)
