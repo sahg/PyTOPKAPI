@@ -235,6 +235,15 @@ def run(ini_file='TOPKAPI.ini'):
                                    atom, shape=(0,nb_cell), 
                                    title='m3', filters=h5filter,
                                    expectedrows=nb_time_step)
+    array_Ec_out = h5file.createEArray(group_channel, 'Ec_out', 
+                                       atom, shape=(0,nb_cell), 
+                                       title='m3', filters=h5filter,
+                                       expectedrows=nb_time_step)
+
+    array_ET_out = h5file.createEArray('/', 'ET_out',
+                                        atom, shape=(0,nb_cell),
+                                        title='mm', filters=h5filter,
+                                        expectedrows=nb_time_step)
 
     #Write the initial values into the output file
     array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
@@ -532,6 +541,11 @@ def run(ini_file='TOPKAPI.ini'):
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell))) 
         array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell))) 
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell))) 
+
+        array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
+        
+        E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc 
+        array_Ec_out.append(E_vol.reshape((1,nb_cell))) 
 
     h5file.close()
 
