@@ -3,6 +3,7 @@ Main programm of the TOPKAPI model.
 """
 
 #General module importation
+import os.path
 from ConfigParser import SafeConfigParser
 
 import numpy as np
@@ -60,10 +61,18 @@ def run(ini_file='TOPKAPI.ini'):
         
     ##~~~~~~~~~~~ output files ~~~~~~~~~~##
     file_out = config.get('output_files', 'file_out')
-    #create path_out if it doesn't exist
-    ut.check_file_exist(file_out)
-
-
+    ut.check_file_exist(file_out) #create path_out if it doesn't exist
+    if os.path.exists(file_out):
+        first_run = False
+    else:
+        first_run = True
+        
+    append_output = config.getboolean('output_files', 'append_output')
+    if append_output is True:
+        fmode = 'a'
+    else:
+        fmode = 'w'
+        
     ##============================##
     ##   Read the forcing data    ##
     ##============================##
@@ -172,9 +181,26 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Initialisation of the reservoirs
     #Matrix of soil,overland and channel store at the begining of the time step
-    ar_Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
-    ar_Vo0 = ar_Vo_t0
-    ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
+    if append_output and not first_run:
+        print 'Initialize from file'
+        # read from file
+        h5file_in = h5.openFile(file_out, mode='r')
+
+        node = h5file_in.getNode('/Soil/V_s')
+        ar_Vs0 = node.read()[-1, :]
+        
+        node = h5file_in.getNode('/Overland/V_o')
+        ar_Vo0 = node.read()[-1, :]
+        
+        node = h5file_in.getNode('/Channel/V_c')
+        ar_Vc0 = node.read()[-1, :]
+        
+        h5file_in.close()
+    else:
+        print 'Initialize from parms'
+        ar_Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
+        ar_Vo0 = ar_Vo_t0
+        ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
@@ -202,54 +228,94 @@ def run(ini_file='TOPKAPI.ini'):
     ##=============================##
     ## HDF5 output file definition ##
     ##=============================##
-    h5file = h5.openFile(file_out, mode='w', title='TOPKAPI_out')
+    h5file = h5.openFile(file_out, mode=fmode, title='TOPKAPI_out')
     atom = h5.Float32Atom()
     h5filter = h5.Filters(9)# maximum compression
-
-    group_soil = h5file.createGroup('/', 'Soil', 'Soil arrays')
-    array_Qs_out = h5file.createEArray(group_soil, 'Qs_out', 
-                                       atom, shape=(0,nb_cell), 
-                                       title='m3/s', filters=h5filter,
-                                       expectedrows=nb_time_step)
-    array_Vs = h5file.createEArray(group_soil, 'V_s', 
-                                   atom, shape=(0, nb_cell), 
-                                   title='m3', filters=h5filter, 
-                                   expectedrows=nb_time_step+1)
     
-    group_overland = h5file.createGroup('/', 'Overland', 'Overland arrays')
-    array_Qo_out = h5file.createEArray(group_overland, 'Qo_out', 
-                                       atom, shape=(0,nb_cell), 
-                                       title='m3/s', filters=h5filter,
-                                       expectedrows=nb_time_step)
-    array_Vo = h5file.createEArray(group_overland, 'V_o', 
-                                   atom, shape=(0,nb_cell), 
-                                   title='m3', filters=h5filter,
-                                   expectedrows=nb_time_step+1)
+    # create file structure as necessary
+    grp_name = '/Soil'
+    if grp_name not in h5file:
+        h5file.createGroup('/', 'Soil', 'Soil arrays')
+    if grp_name+'/Qs_out' not in h5file:
+        array_Qs_out = h5file.createEArray(grp_name, 'Qs_out',
+                                           atom, shape=(0,nb_cell),
+                                           title='m3/s', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_Qs_out = h5file.getNode(grp_name+'/Qs_out')
+    if grp_name+'/V_s' not in h5file:
+        array_Vs = h5file.createEArray(grp_name, 'V_s',
+                                       atom, shape=(0, nb_cell),
+                                       title='m3', filters=h5filter,
+                                       expectedrows=nb_time_step+1)
+    else:
+        array_Vs = h5file.getNode(grp_name+'/V_s')
     
-    group_channel = h5file.createGroup('/', 'Channel', 'Channel arrays')
-    array_Qc_out = h5file.createEArray(group_channel, 'Qc_out', 
-                                       atom, shape=(0,nb_cell), 
-                                       title='m3/s', filters=h5filter,
-                                       expectedrows=nb_time_step)
-    array_Vc = h5file.createEArray(group_channel, 'V_c', 
-                                   atom, shape=(0,nb_cell), 
-                                   title='m3', filters=h5filter,
-                                   expectedrows=nb_time_step)
-    array_Ec_out = h5file.createEArray(group_channel, 'Ec_out', 
+    grp_name = '/Overland'
+    if grp_name not in h5file:
+        h5file.createGroup('/', 'Overland', 'Overland arrays')
+    if grp_name+'/Qo_out' not in h5file:
+        array_Qo_out = h5file.createEArray(grp_name, 'Qo_out',
+                                           atom, shape=(0,nb_cell),
+                                           title='m3/s', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_Qo_out = h5file.getNode(grp_name+'/Qo_out')
+    if grp_name+'/V_o' not in h5file:
+        array_Vo = h5file.createEArray(grp_name, 'V_o',
+                                       atom, shape=(0,nb_cell),
+                                       title='m3', filters=h5filter,
+                                       expectedrows=nb_time_step+1)
+    else:
+        array_Vo = h5file.getNode(grp_name+'/V_o')
+    
+    grp_name = '/Channel'
+    if grp_name not in h5file:
+        h5file.createGroup('/', 'Channel', 'Channel arrays')
+    if grp_name+'/Qc_out' not in h5file:
+        array_Qc_out = h5file.createEArray(grp_name, 'Qc_out', 
+                                           atom, shape=(0,nb_cell), 
+                                           title='m3/s', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_Qc_out = h5file.getNode(grp_name+'/Qc_out')
+    if grp_name+'/V_c' not in h5file:
+        array_Vc = h5file.createEArray(grp_name, 'V_c', 
                                        atom, shape=(0,nb_cell), 
                                        title='m3', filters=h5filter,
                                        expectedrows=nb_time_step)
+    else:
+        array_Vc = h5file.getNode(grp_name+'/V_c')
+    if grp_name+'/Ec_out' not in h5file:
+        array_Ec_out = h5file.createEArray(grp_name, 'Ec_out', 
+                                           atom, shape=(0,nb_cell), 
+                                           title='m3', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_Ec_out = h5file.getNode(grp_name+'/Ec_out')
 
-    array_ET_out = h5file.createEArray('/', 'ET_out',
-                                        atom, shape=(0,nb_cell),
-                                        title='mm', filters=h5filter,
-                                        expectedrows=nb_time_step)
+    if '/ET_out' not in h5file:
+        array_ET_out = h5file.createEArray('/', 'ET_out',
+                                           atom, shape=(0,nb_cell),
+                                           title='mm', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_ET_out = h5file.getNode('/ET_out')
 
-    #Write the initial values into the output file
-    array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
-    array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
-    array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
-
+    if append_output is False or first_run is True:
+        #Write the initial values into the output file
+        array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
+        array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
+        array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
+    
+        array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell))) 
+        array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell))) 
+        array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell))) 
+    
+        array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
+        
+        E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc 
+        array_Ec_out.append(E_vol.reshape((1,nb_cell))) 
 
     ##===========================##
     ##     Core of the Model     ##
