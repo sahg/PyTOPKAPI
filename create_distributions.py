@@ -42,13 +42,13 @@ if __name__ == "__main__":
     # make Linux distribution
     dist_path = 'TOPKAPI_linux'
     ex_path = 'TOPKAPI_Example'
-    linux_files = ['dist/TOPKAPI-0.1.tar.gz', 'TOPKAPI_Manual.doc']
+    linux_files = ['dist/TOPKAPI-0.1.1.tar.gz', 'TOPKAPI_Manual.doc']
     
     make_distro(dist_path, ex_path, linux_files)
     
     # make Windows distribution
     dist_path = 'TOPKAPI_windows'
     ex_path = 'TOPKAPI_Example'
-    windows_files = ['dist/TOPKAPI-0.1.zip', 'TOPKAPI_Manual.doc']
+    windows_files = ['dist/TOPKAPI-0.1.1.zip', 'TOPKAPI_Manual.doc']
     
     make_distro(dist_path, ex_path, windows_files)
