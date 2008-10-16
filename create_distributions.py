@@ -37,7 +37,7 @@ def make_distro(dist_path, ex_path, add_files):
     
 if __name__ == "__main__":
     # build source distributions
-    os.system('python setup.py sdist --formats=gztar,zip')
+    os.system('python setup.py sdist --formats=gztar,zip --force-manifest')
     
     # make Linux distribution
     dist_path = 'TOPKAPI_linux'
