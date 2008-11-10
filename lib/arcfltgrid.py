@@ -24,7 +24,7 @@ def read_bin(fname):
     f.close()
     data = np.fromstring(raw, 'f')
     if sys.byteorder == 'big':
-            data = data.byteswap()
+        data = data.byteswap()
 
     return data
 

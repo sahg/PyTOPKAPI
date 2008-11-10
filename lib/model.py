@@ -585,10 +585,10 @@ def run(ini_file='TOPKAPI.ini'):
 
             #~~~~~ Evaporation from channel
             if ar_lambda[cell] == 1:
-                 ar_ET_channel[cell], \
-                 ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell], 
-                                                  ndar_ETo[t, cell], 
-                                                  ar_W[cell], ar_Xc[cell])
+                ar_ET_channel[cell], \
+                ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell], 
+                                                 ndar_ETo[t, cell], 
+                                                 ar_W[cell], ar_Xc[cell])
 
         ####===================================####
         #### Affectation of new vector values  ####

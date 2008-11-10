@@ -153,9 +153,9 @@ class RKF:
 
     def step(self, f, x, t, delta_t=0):
         if delta_t==0:
-	    # we should have called getnewdelta_t before, to obtain the time
-	    # step used and hence the solution should already be computed and
-	    # put in resultbuffer            
+            # we should have called getnewdelta_t before, to obtain the time
+            # step used and hence the solution should already be computed and
+            # put in resultbuffer            
             if self.timebuffer!=t+self.delta_t:
 #                print 'WARNING: This was not expected to ever occur!!!!'
                 self.getnewdelta_t(f, x, t, delta_t)

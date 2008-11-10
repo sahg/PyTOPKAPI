@@ -202,7 +202,7 @@ def read_bin_data(fname):
     f.close()
     data = np.fromstring(raw, 'f')
     if sys.byteorder == 'big':
-            data = data.byteswap()
+        data = data.byteswap()
 
     return data
 
