@@ -51,7 +51,7 @@ def krige_to_grid(grid_fname, obs_x, obs_y, obs_data, vgm_par):
 
     # define the grid (pixel centre's)
     xt, yt = np.meshgrid(np.linspace(x0, x0 + (cols-1)*cell_size, num=cols),
-                         np.linspace(y0, y0 + (rows-1)*cell_size, num=rows))
+                         np.linspace(y0 + (rows-1)*cell_size, y0, num=rows))
 
     xt = xt.flatten()
     yt = yt.flatten()
@@ -75,6 +75,5 @@ def krige_to_grid(grid_fname, obs_x, obs_y, obs_data, vgm_par):
 
     kriged_est = np.array(result['var1.pred'])
     kriged_est = kriged_est.reshape(rows, cols)
-    kriged_est = np.flipud(kriged_est)
 
     return kriged_est
