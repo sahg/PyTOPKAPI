@@ -101,7 +101,7 @@ def run(ini_file='TOPKAPI.ini'):
     
     #~~~~external_flow flows
     if external_flow:
-        ar_Qexternal_flow = io.read_array(file_Qexternal_flow)[:, 5]
+        ar_Qexternal_flow = np.loadtxt(file_Qexternal_flow)[:, 5]
 
 
     ##============================##

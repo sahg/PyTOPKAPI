@@ -48,6 +48,7 @@ def krige_to_grid(grid_fname, obs_x, obs_y, obs_data, vgm_par):
     x0 = headers[2]
     y0 = headers[3]
     cell_size = headers[4]
+    # TO DO: adjust x0, y0 by 0.5*cell_size if llcorner..
 
     # define the grid (pixel centre's)
     xt, yt = np.meshgrid(np.linspace(x0, x0 + (cols-1)*cell_size, num=cols),

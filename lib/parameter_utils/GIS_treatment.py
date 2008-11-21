@@ -83,7 +83,7 @@ def from_asciigrid_to_label(file_ascii_grid,file_label='label.dat',write_file=Fa
     * Output
       tab: a 1D array with nb_cell components.
     """
-    tab=io.read_array(file_ascii_grid)
+    tab=np.loadtxt(file_ascii_grid)
     nrows=np.shape(tab)[0]
     ncols=np.shape(tab)[1]
     tab=np.reshape(tab,ncols*nrows)
@@ -102,7 +102,7 @@ def from_asciigrid_to_label(file_ascii_grid,file_label='label.dat',write_file=Fa
     return tab
 
 def from_flowacc_to_stream(file_flowacc_grid,file_stream_grid,threshold_cell):
-    tab_flowacc=io.read_array(file_flowacc_grid)
+    tab_flowacc=np.loadtxt(file_flowacc_grid)
     nrows=np.shape(tab_flowacc)[0]
     ncols=np.shape(tab_flowacc)[1]  
 
@@ -150,8 +150,8 @@ def compute_slope_8D(file_flowdir, file_DEM,
         the cells upstream of the current cell.
         
     """
-    tab_DEM=io.read_array(file_DEM)
-    tab_dir=io.read_array(file_flowdir)
+    tab_DEM=np.loadtxt(file_DEM)
+    tab_dir=np.loadtxt(file_flowdir)
     tab_label=from_asciigrid_to_label(file_DEM)
     tab_slope_degree=np.array(tab_label)
     tab_slope=np.array(tab_label)

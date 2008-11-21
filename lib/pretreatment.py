@@ -126,7 +126,7 @@ def read_cell_parameters(file_name):
         The crop co-efficient for each cell.
     
     """
-    tab_read = io.read_array(file_name)
+    tab_read = np.loadtxt(file_name)
     tab_read = np.atleast_2d(tab_read)
 
     ar_cell_label=np.array(tab_read[:,0], int)
