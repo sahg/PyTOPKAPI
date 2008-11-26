@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; TOPKAPI v0.2dev documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '0.2dev',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TOPKAPI v0.2dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>This is where the tutorial will live..</p>
+<p>Open the directory TOPKAPI_Example/. It contains three sub-directories that
+correspond to the three steps of the process presented in the introduction
+(create_the_parameter_files, run_the_model and analyse_the_results).  In
+addition there is a small file called run_example.py which is a Python command
+file, designed to run the tutorial in one action.  The following discussion
+takes the reader step-by-step through the process to provide a better idea of
+the structure of the processes.</p>
+<p>Open a Python shell
+Open a command shell for Python.
+If you installed IPython on Windows then click on Start-&gt;All programs-&gt;IPython.</p>
+<p>Run the model
+Type the following commands in the Python Shell (the shell commands are
+hereafter highlighted in grey).
+Import the package TOPKAPI
+In [1]:  import TOPKAPI
+In the Python shell, navigate to the TOPKAPI_Example directory by copying the
+address in the Windows folder. Typically this can be achieved using the <cite>cd</cite>
+command:
+In [2]: cd C:… TOPKAPI_Example
+Then run the model by typing (or copying without a leading space):
+ln [3]: TOPKAPI.model.run(‘run_the_model/TOPKAPI.ini’)
+The simulation starts and will last around 3 to 5 minutes depending on your
+machine. Some comments are written and the number of time steps (to 169 of 6
+hours each) scrolls followed by ‘***** THE END <a href="#id1" name="id2"><span class="problematic" id="id2">**</span></a><a href="#id3" name="id4"><span class="problematic" id="id4">**</span></a><a href="#id5" name="id6"><span class="problematic" id="id6">*</span></a>’.  Leave the iPython
+window open - we will use it shortly.</p>
+<p>At the end of the simulation, a folder results/ should have been created in
+the run_the_model folder, containing an HDF5 file called
+Example_simulation_results.h5; to open it you will have to associate the file
+(if it’s the first <a href="#id7" name="id8"><span class="problematic" id="id8">*</span></a>.h5 file you’ve opened) with HDF_Explorer. This file is
+composed of three groups: Channel, Overland and Soil. The group Channel
+contains the table Qc_out that is the channel flow of each cell (in m3/s)
+[to view a file’s content, double click on the little green square under the
+yellow label in the left panel of the window - see Figure 7.]   The group
+Overland contains the table V_o that is the volume of the overland reservoir
+(in m3). The group Soil contains the table V_s that is the volume of the soil
+reservoir (in m3). For the three tables Qc_out, V_o and V_s, the 3563 columns
+are the cells and the 170 rows are the time steps.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="intro.html" title="previous chapter">Introduction</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/tutorial.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="intro.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">TOPKAPI v0.2dev documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, Theo Vischel, Scott Sinclair &amp; Geoff Pegram.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+    </div>
+  </body>
+</html>

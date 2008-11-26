@@ -39,7 +39,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'TOPKAPI'
-copyright = u'2008, Theo Vischel & Scott Sinclair'
+copyright = u'2008, Theo Vischel, Scott Sinclair & Geoff Pegram'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -166,7 +166,7 @@ htmlhelp_basename = 'TOPKAPIdoc'
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
   ('index', 'TOPKAPI.tex', ur'TOPKAPI Documentation',
-   ur'Theo Vischel and Scott Sinclair', 'manual'),
+   ur'Theo Vischel, Scott Sinclair and Geoff Pegram', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
