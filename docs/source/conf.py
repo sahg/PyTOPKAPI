@@ -166,7 +166,7 @@ htmlhelp_basename = 'TOPKAPIdoc'
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
   ('index', 'TOPKAPI.tex', ur'TOPKAPI Documentation',
-   ur'Theo Vischel & Scott Sinclair', 'manual'),
+   ur'Theo Vischel and Scott Sinclair', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -185,3 +185,6 @@ latex_documents = [
 
 # If false, no module index is generated.
 #latex_use_modindex = True
+
+#latex_elements = {'fancychap' : ''}
+
