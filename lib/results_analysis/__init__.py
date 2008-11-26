@@ -1,5 +1,5 @@
 """
-Blabla
+Sub-package with tools for the analysis of results.
 """
 
 import TOPKAPI.results_analysis
