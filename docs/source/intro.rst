@@ -1,13 +1,18 @@
 Introduction
 ============
 
-1.Generalities
+This section introduces the TOPKAPI model as it has been implemented and
+presents the general layout of the documentation.
+
+Generalities
+------------
 
 The TOPKAPI_SA  package
 The file TOPKAPI_SA.zip contains:
- * Software_package: a directory containing the Python installation executable and the Python packages required by the TOPKAPI model, as well as some other useful software utilities.
- * TOPKAPI_python_package.exe: the package containing the TOPKAPI program.
- * TOPKAPI_Example: a directory containing an example to run the model.
+
+* Software_package: a directory containing the Python installation executable and the Python packages required by the TOPKAPI model, as well as some other useful software utilities.
+* TOPKAPI_python_package.exe: the package containing the TOPKAPI program.
+* TOPKAPI_Example: a directory containing an example to run the model.
 
 Conditions of use of the TOPKAPI package
 The use of the TOPKAPI package is free, however it is the property of the developers of the model: Théo Vischel, Geoff Pegram, Scott Sinclair. Under this condition:
