@@ -8,10 +8,10 @@ The TOPKAPI hydrological modelling system
 Overview
 --------
 
-TOPKAPI is a Python library implementing the TOPKAPI distributed Hydrological
+TOPKAPI is a Python library implementing the TOPKAPI Hydrological
 model (Liu and Todini, 2002).  The model is a physically-based and fully 
 distributed hydrological model, which has already been successfully applied in
-several countries in the world (Liu and Todini, 2002; Bartholomes and Todini, 
+several countries around the world (Liu and Todini, 2002; Bartholomes and Todini, 
 2005; Liu et al., 2005; Martina et al., 2006; Vischel et al., 2008).
 
 The physical basis of the equations, the fine-scale representation of the 
