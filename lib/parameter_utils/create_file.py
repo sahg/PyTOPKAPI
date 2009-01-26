@@ -134,7 +134,8 @@ def run(ini_file='create_file.ini'):
     ### !!!USER MUST CHECK THESE 4 SUBROUTINES BEFORE RUNNING THE CODE!!! ###
     ar_n_o=from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning)
     ar_L,ar_Theta_s=from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil)
-    ar_Theta_r,ar_Ks=from_WRC90_to_soil_properties(file_bin_WRC90,file_table_WRC90_soil)
+    ar_Theta_r, ar_Ks = from_WRC90_to_soil_properties(file_bin_WRC90,
+                                                      file_table_WRC90_soil)
     ar_n_c=from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,np.array(ar_lambda))
 
     #~~~~~Parameters computed~~~~~#
@@ -372,15 +373,22 @@ def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
     
     return ar_L, ar_theta_s
 
-def from_WRC90_to_soil_properties(file_bin_WRC90,file_table_WRC90_soil):
+def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
     """
     * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or humidity at saturation) for each catchment cell from the SIRI map
+      Extraction of the parameters L (soil depth) and theta_s (porosity or 
+      humidity at saturation) for each catchment cell from the SIRI map
     * Input
-      - file_bin_WRC90 is the binary grid file containing the WRC90 soil property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam, 1 for Clay)
-      - file_table_WRC90_soil is an ASCII file containing a table of correspondance between the WRC90 codes and the values of Ks (permeability) and theta_r (residual soil moisture)
+      - file_bin_WRC90 is the binary grid file containing the WRC90 soil 
+        property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam, 
+        1 for Clay)
+      - file_table_WRC90_soil is an ASCII file containing a table of 
+        correspondance between the WRC90 codes and the values of Ks 
+        (permeability) and theta_r (residual soil moisture)
     * Ouput
-      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing respectively the values of Ks and theta_r for each cell. Cells are ordered from West to East, North to South.
+      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing 
+      respectively the values of Ks and theta_r for each cell. Cells are 
+      ordered from West to East, North to South.
     """
     #Read the binary grid file of GLCC land use type
     tab=read_arc_bin(file_bin_WRC90)
@@ -405,7 +413,7 @@ def from_WRC90_to_soil_properties(file_bin_WRC90,file_table_WRC90_soil):
         ar_theta_r[ind]=ar_theta_r_moy[np.where(ar_code==i)][0]
         ar_Ks[ind]=ar_conduct[np.where(ar_code==i)][0]
          
-    return ar_theta_r,ar_Ks
+    return ar_theta_r, ar_Ks
 
 def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,ar_lambda):
     """
