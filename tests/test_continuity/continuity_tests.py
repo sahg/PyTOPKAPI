@@ -87,7 +87,7 @@ def compute_channel_runoff(result_fname, delta_t, cell_id):
     h5file = h5.openFile(result_fname)
 
     node = h5file.getNode('/'+'Channel', 'Qc_out')
-    flows = node.read()[:, cell_id]
+    flows = node.read()[1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -98,7 +98,7 @@ def compute_overland_runoff(result_fname, delta_t, cell_id):
     h5file = h5.openFile(result_fname)
 
     node = h5file.getNode('/'+'Overland', 'Qo_out')
-    flows = node.read()[:, cell_id]
+    flows = node.read()[1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -109,7 +109,7 @@ def compute_soil_drainage(result_fname, delta_t, cell_id):
     h5file = h5.openFile(result_fname)
 
     node = h5file.getNode('/'+'Soil', 'Qs_out')
-    flows = node.read()[:, cell_id]
+    flows = node.read()[1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -141,17 +141,17 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     print 'Evapotranspiration = ', evapo_vol
 
     open_water_evap_vol = compute_evap_volume(result_fname, channel_indices)
-    print 'Evaporation = ', open_water_evap_vol
+    print 'Channel evaporation = ', open_water_evap_vol
 
     channel_runoff_vol = compute_channel_runoff(result_fname, delta_t, cell_id)
-    print 'Channel runoff = ', channel_runoff_vol
+    print 'Channel runoff (outlet) = ', channel_runoff_vol
 
     overland_runoff_vol = compute_overland_runoff(result_fname,
                                                   delta_t, cell_id)
-    print 'Overland runoff = ', overland_runoff_vol
+    print 'Overland runoff (outlet) = ', overland_runoff_vol
 
     soil_drainage_vol = compute_soil_drainage(result_fname, delta_t, cell_id)
-    print 'Soil drainage = ', soil_drainage_vol
+    print 'Soil drainage (outlet) = ', soil_drainage_vol
 
     input = precip_vol
     output = evapo_vol \
@@ -160,14 +160,22 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
              + overland_runoff_vol \
              + soil_drainage_vol
 
-    error = input - output + initial_storage - final_storage
-    rel_error = (error/precip_vol)*100.0
-    print 'Error = ', error
-    print 'Relative Error = ', rel_error
+    delta_storage = final_storage - initial_storage
+    error = delta_storage - (input - output)
+
+    if precip_vol > 0:
+        precip_error = abs((error/precip_vol)*100.0)
+    else:
+        precip_error = None
+    stor_error = abs((error/initial_storage)*100.0)
+    
+    print 'Continuity error = ', error
+    print 'Error as % precip. = ', precip_error
+    print 'Error as % initial storage = ', stor_error
 
     os.remove(result_fname)
 
-    return error, rel_error
+    return error, precip_error, stor_error
 
 def test_4cell_continuity():
     """Test continuity on the 4 cell catchment (Parak, 2006).
@@ -179,10 +187,13 @@ def test_4cell_continuity():
     X = 1000.0
     channel_indices = [1, 2, 3]
 
-    error, rel_error = continuity_error(ini_fname, delta_t,
-                                        cell_id, X, channel_indices)
+    error, precip_error, stor_error = continuity_error(ini_fname,
+                                                       delta_t,
+                                                       cell_id, X,
+                                                       channel_indices)
 
-    assert rel_error <= 0.001
+    assert precip_error < 0.5
+    assert stor_error < 33.0
 
 def test_d8_continuity():
     """Test continuity on a generic catchment.
@@ -197,7 +208,31 @@ def test_d8_continuity():
     X = 1000.0
     channel_indices = [0, 1, 4]
 
-    error, rel_error = continuity_error(ini_fname, delta_t,
-                                        cell_id, X, channel_indices)
+    error, precip_error, stor_error = continuity_error(ini_fname,
+                                                       delta_t,
+                                                       cell_id, X,
+                                                       channel_indices)
 
-    assert rel_error <= 0.001
+    assert precip_error < 2.6
+    assert stor_error < 9.0
+    
+def test_lieb_continuity():
+    """Test continuity on a sub-catchment of Liebenbergsvlei.
+
+    The cell connectivity is D8, rainfall and evaporative forcing are
+    both zero.
+
+    """
+    ini_fname = 'lieb.ini'
+    delta_t = 21600.0
+    cell_id = 0
+    X = 1000.0
+    channel_indices = [0]
+
+    error, precip_error, stor_error = continuity_error(ini_fname,
+                                                       delta_t,
+                                                       cell_id, X,
+                                                       channel_indices)
+
+    assert precip_error == None
+    assert stor_error < 1.42
