@@ -305,6 +305,14 @@ def run(ini_file='TOPKAPI.ini'):
     else:
         array_ET_out = h5file.getNode('/ET_out')
 
+    if '/Q_down' not in h5file:
+        array_Q_down = h5file.createEArray('/', 'Q_down',
+                                           atom, shape=(0,nb_cell),
+                                           title='m3', filters=h5filter,
+                                           expectedrows=nb_time_step)
+    else:
+        array_Q_down = h5file.getNode('/Q_down')
+
     if append_output is False or first_run is True:
         #Write the initial values into the output file
         array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
@@ -314,6 +322,8 @@ def run(ini_file='TOPKAPI.ini'):
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
+
+        array_Q_down.append(ar_Q_to_next_cell.reshape((1,nb_cell)))
 
         array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
 
@@ -610,6 +620,8 @@ def run(ini_file='TOPKAPI.ini'):
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
+
+        array_Q_down.append(ar_Q_to_next_cell.reshape((1,nb_cell)))
 
         array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
 
