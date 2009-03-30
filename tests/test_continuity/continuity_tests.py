@@ -116,6 +116,17 @@ def compute_soil_drainage(result_fname, delta_t, cell_id):
 
     return runoff_vol
 
+def compute_down_drainage(result_fname, delta_t, cell_id):
+    h5file = h5.openFile(result_fname)
+
+    node = h5file.getNode('/Q_down')
+    flows = node.read()[1:, cell_id]
+    runoff_vol = flows.sum() * delta_t
+
+    h5file.close()
+
+    return runoff_vol
+
 def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     # run the model using the supplied configuration
     topkapi.run(ini_fname)
@@ -153,12 +164,14 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     soil_drainage_vol = compute_soil_drainage(result_fname, delta_t, cell_id)
     print 'Soil drainage (outlet) = ', soil_drainage_vol
 
+    down_drainage_vol = compute_down_drainage(result_fname, delta_t, cell_id)
+    print 'Non-channel drainage (outlet) = ', down_drainage_vol
+
     input = precip_vol
     output = evapo_vol \
              + open_water_evap_vol \
              + channel_runoff_vol \
-             + overland_runoff_vol \
-             + soil_drainage_vol
+             + down_drainage_vol
 
     delta_storage = final_storage - initial_storage
     error = delta_storage - (input - output)
@@ -192,8 +205,8 @@ def test_4cell_continuity():
                                                        cell_id, X,
                                                        channel_indices)
 
-    assert precip_error < 0.5
-    assert stor_error < 33.0
+    assert precip_error < 2.8e-05
+    assert stor_error < 2.1e-03
 
 def test_d8_continuity():
     """Test continuity on a generic catchment.
@@ -213,8 +226,8 @@ def test_d8_continuity():
                                                        cell_id, X,
                                                        channel_indices)
 
-    assert precip_error < 2.6
-    assert stor_error < 9.0
+    assert precip_error < 3.6e-04
+    assert stor_error < 1.3e-03
     
 def test_lieb_continuity():
     """Test continuity on a sub-catchment of Liebenbergsvlei.
@@ -233,6 +246,5 @@ def test_lieb_continuity():
                                                        delta_t,
                                                        cell_id, X,
                                                        channel_indices)
-
     assert precip_error == None
-    assert stor_error < 1.42
+    assert stor_error < 2.1e-06
