@@ -2,6 +2,8 @@
 
 # Simple Bash script to automate the build and test process.
 
+rm -rf build
+
 # build extensions and pure Python modules
 python setup.py build
 
