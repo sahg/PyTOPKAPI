@@ -247,4 +247,4 @@ def test_lieb_continuity():
                                                        cell_id, X,
                                                        channel_indices)
     assert precip_error == None
-    assert stor_error < 2.1e-06
+    assert stor_error < 1.5e-05

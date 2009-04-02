@@ -101,8 +101,10 @@ def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
 
     """
     if Vs_t1_prim > Vsm:
-        Qs_out = Qout_computing(Vs_t0, Vsm, a_s, Dt)
-        Vs_out = Vsm
+	Q_max = b_s*Vsm**alpha_s
+        
+        Qs_out=Q_max
+        Vs_out=Vsm
     else:
         Qs_out = Qout_computing(Vs_t0, Vs_t1_prim, a_s, Dt)
         Vs_out = Vs_t1_prim
