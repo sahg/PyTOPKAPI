@@ -67,11 +67,11 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     #Adjust the outlet slope if equal to zero
     if ar_tan_beta[ar_label_sort[-1]]==0:
         ar_tan_beta[ar_label_sort[-1]]=1./X
-                   
+
     for cell1 in ar_label_sort:
         print cell1
         cell=np.where(ar_cell_label==cell1)[0][0]
-        
+
         li_label_path=[cell]
         li_slope_path=[ar_tan_beta[cell]]
 
@@ -106,7 +106,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
                 if ar_slope_path[i]==0. and ar_slope_path[i-1]!=0:
                     li_ind_start.append(i)
                 if ar_slope_path[i]!=0. and ar_slope_path[i-1]==0.:
-                    li_ind_end.append(i)         
+                    li_ind_end.append(i)
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
@@ -119,7 +119,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         if len(np.where(a<0)[0])!=0:
             print 'problem index'
             stop
-        
+
         #Then the slope are changed according to the defined index arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
@@ -141,7 +141,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
                 n=n+1
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
-                
+
             #Change the values
             ar_tan_beta[ar_ind_cell_zero]=slope
 
@@ -153,7 +153,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     for cell1 in ar_label_sort:
         print cell1
         cell=np.where(ar_cell_label==cell1)[0][0]
-        
+
         li_label_path=[cell]
         li_slope_path=[ar_tan_beta_channel[cell]]
 
@@ -188,7 +188,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
                 if ar_slope_path[i]==0. and ar_slope_path[i-1]!=0:
                     li_ind_start.append(i)
                 if ar_slope_path[i]!=0. and ar_slope_path[i-1]==0.:
-                    li_ind_end.append(i)         
+                    li_ind_end.append(i)
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
@@ -201,7 +201,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         if len(np.where(a<0)[0])!=0:
             print 'problem index'
             stop
-        
+
         #Then the slope are changed according to the defined index arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
@@ -223,7 +223,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
                 n=n+1
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
-                
+
             #Change the values
             ar_tan_beta_channel[ar_ind_cell_zero]=slope
 
@@ -256,72 +256,95 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
 
 def subcatch(ini_file='subcatch.ini'):
     """
-    * Objective:
-    Extract a sub catchment parameter file from a catchment parameter file
-    by defining the position of the outlet.
-    The final outlet cell is the closest channel cell from the given coordinates
+    Create a subcatchment parameter file.
 
-    * Input
-      - file_in: parameter file to be modified
-      
-    * Output
-      - file_out: parameter file for the selected subcatchment
-      - picture_out: picture of the selected subcatchment
+    Extract a subcatchment parameter file from an existing parameter
+    file by defining the location of the sub-catchment outlet. The
+    closest channel cell to the given coordinates is selected by
+    default, based on a nearest neighbour search.
+
+    A new parameter file for the subcatchment is written and a plot of
+    the full catchment showing the location of the derived
+    subcatchment is also produced.
+
+    Parameters
+    ----------
+    ini_file : string
+        The name of the ini file that specifies the input and output files,
+        coordinates of the subcatchment outlet, the number of parameters and
+        the grid dimension.
+
+    Returns
+    -------
+    Nothing
+
+    Notes
+    -----
+    This function creates a parameter file where the cell numbering doesn't
+    follow the conventional North to South and West to East ordering. The
+    cells are labelled in order from the outlet to the most distant upstream
+    cell.
+
     """
-    ### READ THE INI FILE ###
     config.read(ini_file)
-    print 'Read the file ',ini_file
-    ##~~~~~~ file_in ~~~~~~##
-    file_in=config.get('file_in','file_in')
-    ##~~~~~~ file_out ~~~~~~##
-    file_out=config.get('file_out','file_out')
-    ##~~~~~~ picture_out ~~~~~~##
-    picture_out=config.get('picture_out','picture_out')
-    ##~~~~~~ coord_outlet ~~~~~~##
-    Xoutlet=config.getfloat('coord_outlet','Xoutlet')
-    Youtlet=config.getfloat('coord_outlet','Youtlet')
-    ##~~~~~~ flags ~~~~~~##
-    nb_param=config.getfloat('flags','nb_param')
-    X=config.getfloat('flags','X')
-    
+    print 'Read the file ', ini_file
+
+    file_in = config.get('file_in', 'file_in')
+
+    file_out = config.get('file_out', 'file_out')
+
+    picture_out = config.get('picture_out', 'picture_out')
+
+    Xoutlet = config.getfloat('coord_outlet', 'Xoutlet')
+    Youtlet = config.getfloat('coord_outlet', 'Youtlet')
+
+    nb_param = config.getfloat('flags', 'nb_param')
+    X = config.getfloat('flags', 'X')
+
     #Reading of parameter file
     print 'Reading parameter file'
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
-    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
-    =pm.read_cell_parameters(file_in)
+    ar_cell_label, ar_coorx, ar_coory, ar_lambda, ar_Xc, ar_dam, ar_tan_beta, \
+    ar_tan_beta_channel, ar_L, ar_Ks, ar_theta_r, ar_theta_s, ar_n_o, ar_n_c, \
+    ar_cell_down, ar_pVs_t0, ar_Vo_t0, ar_Qc_t0, ar_kc \
+    = pm.read_cell_parameters(file_in)
 
     #Search for the cell close to the coordinates
     print 'Search for the outlet cell'
-    cell_outlet=find_cell_coordinates(ar_cell_label,Xoutlet,Youtlet,ar_coorx,ar_coory,ar_lambda)
-    
+    cell_outlet = find_cell_coordinates(ar_cell_label, Xoutlet,
+                                        Youtlet, ar_coorx, ar_coory, ar_lambda)
+
     #Search for the catchment cells
     print 'Search for the catchment cells'
-    subcatch_label=all_up_cell(cell_outlet,ar_cell_down,ar_cell_label)
+    subcatch_label = all_up_cell(cell_outlet, ar_cell_down, ar_cell_label)
 
     #Select the subcatchmnent parameters
     print 'Select the subcatchmnent parameters'
-    tab_param=np.zeros((len(subcatch_label),nb_param))
-    new_label=np.arange(len(subcatch_label))
-    tab_param[:,0]=new_label#ar_cell_label[subcatch_label]
-    tab_param[:,1]=ar_coorx[subcatch_label]
-    tab_param[:,2]=ar_coory[subcatch_label]
-    tab_param[:,3]=ar_lambda[subcatch_label]
-    tab_param[:,4]=ar_Xc[subcatch_label]
-    tab_param[:,5]=ar_dam[subcatch_label]
-    tab_param[:,6]=ar_tan_beta[subcatch_label]
-    tab_param[:,7]=ar_tan_beta_channel[subcatch_label]   
-    tab_param[:,8]=ar_L[subcatch_label]
-    tab_param[:,9]=ar_Ks[subcatch_label]
-    tab_param[:,10]=ar_theta_r[subcatch_label]
-    tab_param[:,11]=ar_theta_s[subcatch_label]
-    tab_param[:,12]=ar_n_o[subcatch_label]
-    tab_param[:,13]=ar_n_c[subcatch_label]
+    tab_param = np.zeros((len(subcatch_label),nb_param))
+    new_label = np.arange(len(subcatch_label))
+
+    tab_param[:,0] = new_label#ar_cell_label[subcatch_label]
+    tab_param[:,1] = ar_coorx[subcatch_label]
+    tab_param[:,2] = ar_coory[subcatch_label]
+    tab_param[:,3] = ar_lambda[subcatch_label]
+    tab_param[:,4] = ar_Xc[subcatch_label]
+    tab_param[:,5] = ar_dam[subcatch_label]
+    tab_param[:,6] = ar_tan_beta[subcatch_label]
+    tab_param[:,7] = ar_tan_beta_channel[subcatch_label]
+    tab_param[:,8] = ar_L[subcatch_label]
+    tab_param[:,9] = ar_Ks[subcatch_label]
+    tab_param[:,10] = ar_theta_r[subcatch_label]
+    tab_param[:,11] = ar_theta_s[subcatch_label]
+    tab_param[:,12] = ar_n_o[subcatch_label]
+    tab_param[:,13] = ar_n_c[subcatch_label]
     for i in range(len(subcatch_label)):
-        if i==0.:
-            tab_param[i,14]=-9999.
+        if i == 0:
+            tab_param[i,14] = -9999.0
         else:
-            tab_param[i,14]=new_label[np.where(ar_cell_label[subcatch_label]==ar_cell_down[subcatch_label][i])]
+            ind = np.where(ar_cell_label[subcatch_label]
+                           == ar_cell_down[subcatch_label][i])
+
+            tab_param[i,14] = new_label[ind]
+
     tab_param[:,15]=ar_pVs_t0[subcatch_label]
     tab_param[:,16]=ar_Vo_t0[subcatch_label]
     tab_param[:,17]=ar_Qc_t0[subcatch_label]
@@ -331,8 +354,11 @@ def subcatch(ini_file='subcatch.ini'):
     #'help io.write_array' for more info
     io.write_array(file_out, tab_param)
 
-    ar_image=ar_cell_label*0.;ar_image[subcatch_label]=1.;ar_image[ar_lambda==1.]=10.;ar_image[cell_outlet]=5.
-    field_map(ar_image,ar_coorx,ar_coory,X,picture_out,'Subcatchment')
+    ar_image=ar_cell_label*0.
+    ar_image[subcatch_label]=1.
+    ar_image[ar_lambda==1.]=10.
+    ar_image[cell_outlet]=5.
+    field_map(ar_image, ar_coorx, ar_coory, X, picture_out, 'Subcatchment')
 
 def new_param(ini_file='new_param.ini'):
     """
@@ -358,7 +384,7 @@ def new_param(ini_file='new_param.ini'):
     fac_Ks=config.getfloat('factor_values','fac_KS')
     fac_n_o=config.getfloat('factor_values','fac_n_o')
     fac_n_c=config.getfloat('factor_values','fac_n_c')
-    
+
     ##~~~~~~ new_initial_values ~~~~~##
     new_pVs_t0=config.getfloat('new_initial_values','new_pVs_t0')
     new_Vo_t0=config.getfloat('new_initial_values','new_Vo_t0')
@@ -366,7 +392,7 @@ def new_param(ini_file='new_param.ini'):
 
     ##~~~~~~ flags ~~~~~~##
     nb_param=config.getfloat('flags','nb_param')
-    
+
     #Reading of parameter file
     print 'Reading parameter file'
     ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
@@ -398,7 +424,7 @@ def new_param(ini_file='new_param.ini'):
     if new_Qc_t0!=ar_Qc_t0[0]:
         print 'Change pVc_t0'
         ar_Qc_t0=ar_Qc_t0*0.+new_Qc_t0
-        
+
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
     tab_param[:,0]=ar_cell_label
@@ -444,7 +470,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
 
     ##~~~~~~ flags ~~~~~~##
     nb_param=config.getfloat('flags','nb_param')
-    
+
     #Reading of parameter file
     print 'Reading parameter file'
     ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
@@ -454,7 +480,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
 
     print 'Connect external flows to the network'
     ar_lambda,ar_n_c=link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xext_flow,Yext_flow)
-        
+
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
     tab_param[:,0]=ar_cell_label
@@ -493,7 +519,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     file_in=config.get('file_in','file_in')
     file_in_global=config.get('file_in','file_in_global')
     file_h5=config.get('file_in','file_h5')
-    
+
     ##~~~~~~ file_out ~~~~~~##
     file_out=config.get('file_out','file_out')
 
@@ -550,7 +576,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     ar_Vo_t0=ndar_Vo[time_step,:]
     ar_Qc_t0=ndar_Qc[time_step,:]
 
-    
+
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
 
@@ -579,7 +605,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
 def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     """
     * Objective
-        
+
     """
 
     ### READ THE INI FILE ###
@@ -590,7 +616,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     file_in=config.get('file_in','file_in')
     file_in_global=config.get('file_in','file_in_global')
     file_h5=config.get('file_in','file_h5')
-    
+
     ##~~~~~~ file_out ~~~~~~##
     file_out=config.get('file_out','file_out')
 
@@ -644,7 +670,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     tab_rate=np.average(ndar_Vs_sat,axis=1)
     tab_rate_sort=np.sort(tab_rate)
     indice_sort=np.argsort(tab_rate)
-    
+
     #Look for the rate closest to the expected mean value
     if mean_pVs_t0<tab_rate_sort[0]:
         ind=0
@@ -661,14 +687,14 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
                 ind=i
                 loop=False
                 print 'mean_pVs_t0 expected:', mean_pVs_t0,' effective:',tab_rate_sort[i]
-    
+
     ind_end=indice_sort[ind]
     print ind,ind_end
     ar_Vs=ndar_Vs[ind_end,:]
     ar_Vsi=ar_Vs/ar_Vsm*100.
     print ar_Vsi
     ar_pVs_t0=ar_Vsi
-    
+
     #~~~~~~Write parameter file~~~~~~#
     tab_param=np.zeros((len(ar_cell_label),nb_param))
 
@@ -707,39 +733,46 @@ def find_dist_max(ar_coorx,ar_coory):
     for i in range(nb_cell):
         for j in range(nb_cell):
             max_dist=max(max_dist,distance(ar_coorx[i],ar_coory[i],ar_coorx[j],ar_coory[j]))
-    return max_dist     
+    return max_dist
 
-def distance(x1,y1,x2,y2):
+def distance(x1, y1, x2, y2):
     """
     Compute the distance between two points
+
     """
-    dist=((x1-x2)**2+(y1-y2)**2)**0.5
+    dist = ((x1-x2)**2 + (y1-y2)**2)**0.5
     return dist
 
-def find_cell_coordinates(ar_cell_label,Xtarget,Ytarget,ar_coorx,ar_coory,ar_lambda,channel=True):
+def find_cell_coordinates(ar_cell_label, Xtarget, Ytarget,
+                          ar_coorx, ar_coory, ar_lambda, channel=True):
     """
-    Find the label of the closest cell from (Xtarget, Ytarget)
+    Find the closest cell to (Xtarget, Ytarget)
+
     """
-    tab_x=np.unique(ar_coorx);X=abs(tab_x[0]-tab_x[1])
-    dist_max=3*X
-    dist_min=dist_max
-    nb_cell=len(ar_cell_label)
-    cell_outlet=-999.9
+    tab_x = np.unique(ar_coorx)
+    X = abs(tab_x[0] - tab_x[1])
+    dist_max = 3*X
+    dist_min = dist_max
+    nb_cell = len(ar_cell_label)
+    cell_outlet = -999.9
+
     for i in range(nb_cell):
-        dist=distance(Xtarget,Ytarget,ar_coorx[i],ar_coory[i])
+        dist = distance(Xtarget, Ytarget, ar_coorx[i], ar_coory[i])
         if channel:
-            if dist < dist_min and ar_lambda[i]==1.:
-                dist_min=dist
-                cell_outlet=ar_cell_label[i]
+            if dist < dist_min and ar_lambda[i] == 1.:
+                dist_min = dist
+                cell_outlet = ar_cell_label[i]
         else:
-            if dist<dist_min:
-                dist_min=dist
-                cell_outlet=ar_cell_label[i]
-                
-                
-    if cell_outlet<0:
-        print "Wrong coordinates"
-        stop
+            if dist < dist_min:
+                dist_min = dist
+                cell_outlet = ar_cell_label[i]
+
+
+    if cell_outlet < 0:
+        err = 'Invalid outlet coordinates specified: X=%f, Y=%f' \
+              % (Xtarget, Ytarget)
+        raise ValueError, err
+
     return cell_outlet
 
 def link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xext_flow,Yext_flow):
@@ -773,59 +806,109 @@ def link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_
 #####################################
 
 ##~~ Compute all the upper cells ~~##
-def direct_up_cell(ar_cell,ar_cell_down,ar_cell_label):
-    ar_out=sp.array([],int)
-    for i in range(len(ar_cell)):
-        ind=np.where(ar_cell_down==ar_cell[i])
-        if np.size(ar_out)==0:
-            ar_out=ar_cell_label[ind]
-        else:
-            if np.size(ar_cell_label[ind])>0:
-                ar_out=np.concatenate((ar_out,ar_cell_label[ind]))
-    return ar_out
-       
-def all_up_cell(cell,ar_cell_down,ar_cell_label):
-    """ all_up_cell
-        Return an array of the label of all the cells drained by a given cell (cell=label of cell)
-        Example b=all_up_cell(13,ar_cell_down,ar_cell_label)
-                b = array([13,  8, 14,  4,  9,  2,  5])
+def direct_up_cell(ar_cell, ar_cell_down, ar_cell_label):
     """
-    a=sp.ones(1,int)*cell
-    b=a
-    while np.size(a)!=0:
-        a=direct_up_cell(a,ar_cell_down,ar_cell_label)
-        b=np.concatenate((b,a))
-    return b
+    Calculate cells immediately uphill of target cells.
+
+    Parameters
+    ----------
+    ar_cell : array_like
+        Array of cell labels specifying the target cells to search from.
+    ar_cell_down : array_like
+        An array of cell labels, identifying the immediate downstream
+        neighbour of each cell in the catchment.
+    ar_cell_label : array_like
+        The cell labels of the catchment. Ordered to match the information
+        in `ar_cell_down`.
+
+    Returns
+    -------
+    ar_out : ndarray
+        An ordered array of immediate upstream cell labels.
+
+    """
+    ar_out = np.array([],int)
+
+    for i in range(len(ar_cell)):
+        ind = np.where(ar_cell_down == ar_cell[i])
+
+        if np.size(ar_out) == 0:
+            ar_out = ar_cell_label[ind]
+        else:
+            if np.size(ar_cell_label[ind]) > 0:
+                ar_out = np.concatenate((ar_out, ar_cell_label[ind]))
+
+    return ar_out
+
+def all_up_cell(cell, ar_cell_down, ar_cell_label):
+    """
+    Calculate the network of uphill cells.
+
+    Determines the labels of all cells that drain into the target
+    cell. The cell connectivity is used to trace the network of cells.
+
+    Parameters
+    ----------
+    cell : int
+        The integer label identifying the target cell.
+    ar_cell_down : array_like
+        An array of cell labels, identifying the immediate downstream
+        neighbour of each cell in the catchment.
+    ar_cell_label : array_like
+        The cell labels of the catchment. Ordered to match the information
+        in `ar_cell_down`.
+
+    Returns
+    -------
+    upcells : ndarray
+        An ordered array of upstream cell labels. The order is in increasing
+        distance from the target cell.
+
+    """
+    a = np.ones(1,int)*cell
+    upcells = a
+
+    while np.size(a)!= 0:
+        a = direct_up_cell(a, ar_cell_down, ar_cell_label)
+        b = np.concatenate((upcells, a))
+
+    return upcells
 
 ##~~ Plot a field map ~~##
-def field_map(ar_field,ar_coorx,ar_coory,X,picture_out,title,flip=0):
+def field_map(ar_field, ar_coorx, ar_coory, X, picture_out, title, flip=0):
+    """
+    Plot an overview depicting the location of the subcatchment.
+
+    """
 
     import matplotlib.numerix.ma as M
 
     max_val=max(ar_field)
-    
+
     xmin=min(ar_coorx);xmax=max(ar_coorx)
     ymin=min(ar_coory);ymax=max(ar_coory)
     step=X
     nx=(xmax-xmin)/step+1
     ny=(ymax-ymin)/step+1
-    
+
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
-    
+
     ar_map=sp.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
-    
+
     if flip==1:
-        ar_map=np.flipud(ar_map)
-        
+	ar_map=np.flipud(ar_map)
+
     ar_map2 = M.masked_where(ar_map <0, ar_map)
 
-        
+
     ut.check_file_exist(picture_out)
-    
+
     pl.clf()
-    pl.imshow(ar_map2,interpolation='Nearest',origin='lower',vmax=max_val,vmin=0)
+    pl.imshow(ar_map2, interpolation='Nearest',
+	      origin='lower', vmax=max_val,vmin=0)
+
     pl.title(title)
     pl.colorbar()
     pl.savefig(picture_out)
