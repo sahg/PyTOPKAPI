@@ -155,7 +155,7 @@ def Qout_computing(V_t0, V_t1_prim, a, Dt):
         The outflow rate from the water store during the time-step (m^3/s).
 
     """
-    Qout = a-(V_t1_prim-V_t0)/Dt
+    Qout = a - (V_t1_prim - V_t0)/Dt
     return Qout
 
 def Qout_computing2(V_t0,V_t1,b,alpha):
