@@ -15,7 +15,8 @@ from numpy import *
 ###=======================================###
 #### Solution if a=0
 def input_zero_solution(b, alpha, V0, delta_t):
-    V1=(V0**(1-alpha)+b*(alpha-1)*delta_t)**(1/(1-alpha))
+    """Analytical solution of the ODE when inflow is zero."""
+    V1 = (V0**(1-alpha) + b*(alpha-1)*delta_t)**(1/(1-alpha))
     return V1
 
 #### Solution if b=0
@@ -35,13 +36,18 @@ class RKF:
     """
     Adaptive solver
     """
-    def __init__(self, min_step=10e-10, max_step=3600, min_tol=1e-7, max_tol=1e-3, init_time_step=3600):
+    def __init__(self, min_step=10e-10, max_step=3600,
+                 min_tol=1e-7, max_tol=1e-3, init_time_step=3600):
         self.min_step = min_step
         self.max_step = max_step
         self.min_tol = min_tol    
         self.max_tol = max_tol
         self.resultbuffer = 0
         self.timebuffer = 0
+
+        self.estimates = []
+        self.steps = []
+        
         if init_time_step==0:
             self.delta_t = (max_step + min_step)/2.
         else:
@@ -51,13 +57,23 @@ class RKF:
         # define all the constants for Runge-Kutta of order 4 and 5
         #From numerical recipes        
         a2 = 1/5.; a3 = 3/10.; a4 = 3/5.; a5 = 1.; a6 = 7/8.
+
         b21 = 1/5.
+
         b31 = 3/40.; b32 = 9/40.
+
         b41 = 3/10.; b42 = -9/10.; b43 = 6/5.
+
         b51 = -11/54.; b52 = 5/2.; b53 = -70/27.; b54 = 35/27.
-        b61 = 1631/55296.; b62 = 175/512.; b63 = 575/13824.; b64 = 44275/110592.; b65 = 253/4096.
-        c1 = 37/378.; c2 = 0.; c3 = 250/621.; c4 = 125/594.; c5 = 0.; c6 = 512/1771.
-        d1 = 2825/27648.; d2 = 0.; d3 = 18575/48384.; d4 = 13525/55296.; d5 = 277/14336.; d6 = 1/4.
+
+        b61 = 1631/55296.; b62 = 175/512.
+        b63 = 575/13824.; b64 = 44275/110592.; b65 = 253/4096.
+
+        c1 = 37/378.; c2 = 0.; c3 = 250/621.
+        c4 = 125/594.; c5 = 0.; c6 = 512/1771.
+
+        d1 = 2825/27648.; d2 = 0.; d3 = 18575/48384.
+        d4 = 13525/55296.; d5 = 277/14336.; d6 = 1/4.
 
         k1 = delta_t*f(x)
         # compute the k2
@@ -123,14 +139,15 @@ class RKF:
             if error > self.max_tol:
                 if self.delta_t/2. < self.min_step:
                     self.delta_t = self.min_step
-                    self.compute_error(f, x, t, self.delta_t)                    
+                    self.compute_error(f, x, t, self.delta_t)
                     done = 1
                 else:
                     self.delta_t = self.delta_t / 2.
                     factor='already divided'
             elif error < self.min_tol:
                 if factor=='already divided':
-                    #Avoid to infintively loop by halving then multiplying by two then halving...
+                    #Avoid to infintively loop by halving then
+                    #multiplying by two then halving...
                     print 'The last time step was kept to avoid overlooping'
                     done = 1
                 elif self.delta_t*2 > max_delta_t:
@@ -168,6 +185,10 @@ class RKF:
                 self.getnewdelta_t(f, curx, curtime, (t+delta_t)-curtime)
                 curx = self.step(f, curx, curtime)
                 curtime = curtime + self.delta_t
+
+                # store intermediate results
+                self.steps.append(curtime)
+                self.estimates.append(curx)
             return curx
 
 ###=======================================###
