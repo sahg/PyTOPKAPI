@@ -898,7 +898,7 @@ def field_map(ar_field, ar_coorx, ar_coory, X, picture_out, title, flip=0):
     ar_map[ar_indy,ar_indx]=ar_field
 
     if flip==1:
-	ar_map=np.flipud(ar_map)
+        ar_map=np.flipud(ar_map)
 
     ar_map2 = M.masked_where(ar_map <0, ar_map)
 
@@ -907,7 +907,7 @@ def field_map(ar_field, ar_coorx, ar_coory, X, picture_out, title, flip=0):
 
     pl.clf()
     pl.imshow(ar_map2, interpolation='Nearest',
-	      origin='lower', vmax=max_val,vmin=0)
+              origin='lower', vmax=max_val,vmin=0)
 
     pl.title(title)
     pl.colorbar()

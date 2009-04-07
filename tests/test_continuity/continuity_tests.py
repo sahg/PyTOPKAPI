@@ -181,7 +181,7 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     else:
         precip_error = None
     stor_error = abs((error/initial_storage)*100.0)
-    
+
     print 'Continuity error = ', error
     print 'Error as % precip. = ', precip_error
     print 'Error as % initial storage = ', stor_error
@@ -228,7 +228,7 @@ def test_d8_continuity():
 
     assert precip_error < 3.6e-04
     assert stor_error < 1.3e-03
-    
+
 def test_lieb_continuity():
     """Test continuity on a sub-catchment of Liebenbergsvlei.
 
