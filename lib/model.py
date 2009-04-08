@@ -30,7 +30,7 @@ def run(ini_file='TOPKAPI.ini'):
     print 'Read the file ',ini_file
 
     ##~~~~~~ Numerical_options ~~~~~~##
-    solve_s = config.getfloat('numerical_options', 'solve_s')  
+    solve_s = config.getfloat('numerical_options', 'solve_s')
     solve_o = config.getfloat('numerical_options', 'solve_o')
     solve_c = config.getfloat('numerical_options', 'solve_c')
     only_channel_output = config.getboolean('numerical_options',
@@ -365,48 +365,9 @@ def run(ini_file='TOPKAPI.ini'):
             #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
             # Calculate the volume in the soil store at the end of the
             # current time-step.
-            if ar_a_s[cell] == 0.:
-                Vs_prim = om.input_zero_solution(ar_b_s[cell],
-                                                 alpha_s, ar_Vs0[cell], Dt)
-            elif ar_b_s[cell] == 0.:
-                Vs_prim = om.coefb_zero_solution(ar_a_s[cell], ar_Vs0[cell], Dt)
-            else:
-                if solve_s == 1:
-                    #qas
-                    Vs_prim = om.qas(ar_a_s[cell],
-                                     ar_b_s[cell], alpha_s, ar_Vs0[cell], Dt)
 
-                    if (Vs_prim-ar_Vs0[cell])/Dt > ar_a_s[cell]:
-                        #Definition of the convergence error
-                        if ar_Vs0[cell] == 0.:
-                            err_min=1e-7; err_max=1e-3
-                        else:
-                            err_min = 1e-7/100.*ar_Vs0[cell]
-                            err_max = 10e-3/100.*ar_Vs0[cell]
-                        #RKF
-                        f = om.fonction(ar_a_s[cell], ar_b_s[cell], alpha_s)
-
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                      min_tol=err_min, max_tol=err_max,
-                                      init_time_step=Dt)
-
-                        Vs_prim =cl_a.step(f, ar_Vs0[cell], 0, Dt)
-
-                if solve_s == 0:
-                    #Definition of the convergence error
-                    if ar_Vs0[cell] == 0.:
-                        err_min=1e-7; err_max=1e-3
-                    else:
-                        err_min = 1e-7/100.*ar_Vs0[cell]
-                        err_max = 10e-3/100.*ar_Vs0[cell]
-                    #RKF
-                    f = om.fonction(ar_a_s[cell], ar_b_s[cell], alpha_s)
-
-                    cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                  min_tol=err_min, max_tol=err_max,
-                                  init_time_step=Dt)
-
-                    Vs_prim = cl_a.step(f, ar_Vs0[cell], 0, Dt)
+            Vs_prim = om.solve_storage_eq(ar_a_s[cell], ar_b_s[cell],
+                                          alpha_s, ar_Vs0[cell], Dt, solve_s)
 
             #~~~~ Computation of soil outflow and overland input
             ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell],
@@ -433,49 +394,10 @@ def run(ini_file='TOPKAPI.ini'):
                 ar_a_o[cell] = 0.
 
             #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
-            if ar_a_o[cell] == 0.:
-                ar_Vo1[cell] = om.input_zero_solution(ar_b_o[cell],
-                                                      alpha_o, ar_Vo0[cell], Dt)
-            elif ar_b_o[cell] == 0.:
-                Vs_prim = om.coefb_zero_solution(ar_a_o[cell], ar_Vo0[cell], Dt)
-            else:
-                if solve_o == 1:
-                    #qas
-                    ar_Vo1[cell] = om.qas(ar_a_o[cell], ar_b_o[cell],
-                                          alpha_o, ar_Vo0[cell], Dt)
 
-                    if (ar_Vo1[cell]-ar_Vo0[cell])/Dt > ar_a_o[cell]:
-                        #Definition of the convergence error
-                        if ar_Vo0[cell] == 0.:
-                            err_min=1e-7; err_max=1e-3
-                        else:
-                            err_min = 1e-7/100.*ar_Vo0[cell]
-                            err_max = 1e-3/100.*ar_Vo0[cell]
-                        #RKF
-                        f = om.fonction(ar_a_o[cell], ar_b_o[cell], alpha_o)
-
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                      min_tol=err_min, max_tol=err_max,
-                                      init_time_step=Dt)
-
-                        ar_Vo1[cell] = cl_a.step(f, ar_Vo0[cell], 0, Dt)
-
-                if solve_o == 0:
-                    #Definition of the convergence error
-                    if ar_Vo0[cell] == 0.:
-                        err_min=1e-7; err_max=1e-3
-                    else:
-                        err_min = 1e-7/100.*ar_Vo0[cell]
-                        err_max = 1e-3/100.*ar_Vo0[cell]
-                    #RKF
-                    f = om.fonction(ar_a_o[cell], ar_b_o[cell], alpha_o)
-
-                    cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                  min_tol=err_min, max_tol=err_max,
-                                  init_time_step=Dt)
-
-                    ar_Vo1[cell] = cl_a.step(f, ar_Vo0[cell], 0, Dt)
-
+            ar_Vo1[cell] = om.solve_storage_eq(ar_a_o[cell],
+                                               ar_b_o[cell], alpha_o,
+                                               ar_Vo0[cell], Dt, solve_o)
 
             #~~~~ Computation of overland outflows
             ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell], ar_Vo1[cell],
@@ -520,50 +442,10 @@ def run(ini_file='TOPKAPI.ini'):
                     ar_a_c[cell] = ar_a_c[cell] + ar_Qexternal_flow[t]
 
                 #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
-                if ar_a_c[cell] == 0.:
-                    ar_Vc1[cell] = om.input_zero_solution(ar_b_c[cell],
-                                                          alpha_c,
-                                                          ar_Vc0[cell], Dt)
-                elif ar_b_c[cell] == 0.:
-                    ar_Vc1[cell] = om.coefb_zero_solution(ar_a_c[cell],
-                                                          ar_Vc0[cell], Dt)
-                else:
-                    if solve_c == 1:
-                        #qas
-                        ar_Vc1[cell] = om.qas(ar_a_c[cell],ar_b_c[cell],
-                                              alpha_c, ar_Vc0[cell], Dt)
 
-                        if(ar_Vc1[cell]-ar_Vc0[cell])/Dt > ar_a_c[cell]:
-                            #Definition of the convergence error
-                            if ar_Vc0[cell]==0.:
-                                err_min=1e-7; err_max=1e-3
-                            else:
-                                err_min = 1e-7/100.*ar_Vc0[cell]
-                                err_max = 1e-3/100.*ar_Vc0[cell]
-                            #RKF
-                            f = om.fonction(ar_a_c[cell], ar_b_c[cell], alpha_c)
-
-                            cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                          min_tol=err_min, max_tol=err_max,
-                                          init_time_step=Dt)
-
-                            ar_Vc1[cell] = cl_a.step(f, ar_Vc0[cell], 0, Dt)
-
-                    if solve_c == 0:
-                        #Definition of the convergence error
-                        if ar_Vc0[cell]==0.:
-                            err_min=1e-7; err_max=1e-3
-                        else:
-                            err_min = 1e-7/100.*ar_Vc0[cell]
-                            err_max = 1e-3/100.*ar_Vc0[cell]
-                        #RKF
-                        f = om.fonction(ar_a_c[cell], ar_b_c[cell], alpha_c)
-
-                        cl_a = om.RKF(min_step=10e-10, max_step=Dt,
-                                      min_tol=err_min, max_tol=err_max,
-                                      init_time_step=Dt)
-
-                        ar_Vc1[cell] = cl_a.step(f, ar_Vc0[cell], 0, Dt)
+                ar_Vc1[cell] = om.solve_storage_eq(ar_a_c[cell],
+                                                   ar_b_c[cell], alpha_c,
+                                                   ar_Vc0[cell], Dt, solve_c)
 
                 #~~~~ Computation of channel outflows
                 ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],

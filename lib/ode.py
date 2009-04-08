@@ -28,7 +28,7 @@ def coefb_zero_solution(a, V0, Dt):
 ###          RUNGE KUTTA FEHLBERG         ###
 ###=======================================###
 #```````````````````````````````````````````
-def fonction(a,b,alpha):
+def storage_eq(a,b,alpha):
     return lambda x:a-b*x**alpha
 
 ###```````````````````````````````````````````    
@@ -237,7 +237,7 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
 def adjust_2points_line(a_eq,b_eq,exposant,y0,delta_t):
     #Definition of the variables alpha0 and beta0
     #that approximate y**(exposant-1)=alpha0+beta0*y
-    f=fonction(a_eq,b_eq,exposant)
+    f=storage_eq(a_eq,b_eq,exposant)
     y1_estimat=y0+delta_t*a_eq #-->OK 1.
     beta0=(y1_estimat**(exposant-1)-y0**(exposant-1))/(y1_estimat-y0)
     alpha0=y0**(exposant-1)-beta0*y0
@@ -248,4 +248,64 @@ def solution(A,B,C,y0,delta_t):
     p2=1/2.*(-B-sqrt(B**2-4*C))
     y1=(p1-p2*((y0-p1)/(y0-p2)*exp(A*delta_t*(p1-p2))))\
         /(1-((y0-p1)/(y0-p2)*exp(A*delta_t*(p1-p2))))
-    return y1                                       
+    return y1
+
+def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
+    """
+    Solves the storage ODE --> dV/dt = a - b*V^alpha.
+
+    Calculate the volume in a generic store at the end of the defined
+    time-step, given the initial volume, inflow and ODE
+    parameters. Todini's quasi-analytical solution can be used as a
+    speed up.
+
+    Parameters
+    ----------
+    I : scalar
+        Constant inflow rate to store during the time-step.
+    b : scalar
+        The `b` parameter in the ODE.
+    alpha : scalar
+        The exponent parameter in the ODE.
+    Dt : scalar
+        The time-step over which to solve the ODE.
+    solve_method : int
+        Flag specifying whether to try using the quasi-analytical solution to
+        speed up the solution of the ODE. A value of 1 (default) means the qas
+        will be used, a value of 0 specifies use of the full RKF formulation.
+
+    Returns
+    -------
+    Vt1 : scalar
+        The estimated volume at the end of the current time-step.
+    
+    """
+    if I == 0.:
+        Vt1 = input_zero_solution(b, alpha, Vt0, Dt)
+    elif b == 0.0:
+        Vt1 = coefb_zero_solution(I, Vt0, Dt)
+    else:
+        if solve_method == 1:
+            Vt1 = qas(I, b, alpha, Vt0, Dt)
+
+            if (Vt1 - Vt0)/Dt > I:
+                solve_method = 0
+
+        if solve_method == 0:
+            #Definition of the convergence error
+            if Vt0 > 0.:
+                err_min = 1e-7/100.0*Vt0
+                err_max = 10e-3/100.0*Vt0
+            else:
+                err_min = 1e-7; err_max = 1e-3
+
+            #RKF
+            f = storage_eq(I, b, alpha)
+
+            solver = RKF(min_step = 10e-10, max_step = Dt,
+                         min_tol = err_min, max_tol = err_max,
+                         init_time_step = Dt)
+
+            Vt1 = solver.step(f, Vt0, 0, Dt)
+
+    return Vt1
