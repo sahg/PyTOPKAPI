@@ -1,3 +1,5 @@
+Python implementation of the TOPKAPI Hydrological model.
+
 To install on any operating system do:
 python setup.py install
 
