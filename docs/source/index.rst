@@ -23,4 +23,3 @@ Content
    intro.rst
    tutorial.rst
    api.rst
-
