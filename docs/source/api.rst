@@ -12,7 +12,8 @@ ODE module
 ==========
 
 .. automodule:: TOPKAPI.ode
-   :members:
+   :members: solve_storage_eq, qas, RKF
+   :undoc-members:
 
 Fluxes module
 =============
