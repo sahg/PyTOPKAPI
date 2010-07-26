@@ -14,8 +14,8 @@ Liebenbergsvlei catchment, make the TOPKAPI model a promising tool for
 hydrological modelling of catchments in South Africa and around the
 world.
 
-Content
-=======
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
