@@ -1,12 +1,14 @@
-PyTOPKAPI is a Python library implementing the TOPKAPI Hydrological
-model (Liu and Todini, 2002).  The model is a physically-based and
-fully distributed hydrological model, which has already been
-successfully applied in several countries around the world (Liu and
-Todini, 2002; Bartholomes and Todini, 2005; Liu et al., 2005; Martina
-et al., 2006; Vischel et al., 2008).
+PyTOPKAPI is a `BSD licensed
+<http://www.opensource.org/licenses/bsd-license.html>`_ Python library
+implementing the TOPKAPI Hydrological model (Liu and Todini, 2002).
+The model is a physically-based and fully distributed hydrological
+model, which has already been successfully applied in several
+countries around the world (Liu and Todini, 2002; Bartholomes and
+Todini, 2005; Liu et al., 2005; Martina et al., 2006; Vischel et al.,
+2008).
 
 The physical basis of the equations, the fine-scale representation of
-the spatial catchment features, the parsimonious parameterisation
+the spatial catchment features, the parsimonious parametrisation
 linked to field/catchment information, the good computation time
 performance, the modularity of the processes, the ease of use and
 finally the good results obtained in modelling the river discharges of
@@ -20,8 +22,8 @@ Get Started
 .. toctree::
    :maxdepth: 1
 
-   Read the Documentation <contents>
-   Find out how to Download and install <install>
+   Read the PyTOPKAPI Documentation <contents>
+   Find out how to Download and install PyTOPKAPI <install>
    Join the Mailing list <contact>
    Report Bugs <bugs>
    Help with Model Development and Documentation <developer>
