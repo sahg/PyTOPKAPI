@@ -50,7 +50,7 @@ copyright = u'2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram'
 # built documents.
 #
 # The short X.Y version.
-version = '0.2dev'
+version = '0.2'
 # The full version, including alpha/beta/rc tags.
 release = '0.2dev'
 
@@ -95,7 +95,7 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_theme = 'default'
+html_theme = 'sphinxdoc'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -120,7 +120,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
