@@ -8,7 +8,10 @@ PyTOPKAPI documentation contents
    :maxdepth: 2
 
    intro
+   install
    tutorial
+   bugs
+   developer
    api
 
 

@@ -19,9 +19,9 @@ world.
 .. note::
 
    PyTOPKAPI is under active development and the API is not yet
-   considered stable. However, the model is already useable and we
-   would welcome feedback from users as we work to stabilize the API
-   and make the model more robust and useful.
+   considered stable. However, the model is already usable and we
+   would welcome feedback from users and collaborators as we work to
+   stabilize the API and make the model more robust and useful.
 
 Get Started
 ===========
