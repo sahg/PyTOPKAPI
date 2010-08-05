@@ -1,10 +1,11 @@
-""" model_module.py
+"""
+Functions required by the TOPKAPI model for the management of input
+and output of cells.
 
-Functions required by the TOPKAPI model for the management
-of input and output of cells:
+.. note::
 
-NB:The subroutines solving the differential equation are not in this module
-   (see ODE_module for more information)
+  The subroutines solving the differential equation are not in this
+  module (see :mod:`~TOPKAPI.ode` for more information)
 
 """
 
@@ -23,9 +24,9 @@ def initial_volume_soil(ar_pVs_t0, ar_Vsm):
 def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
     """Compute the total input to a soil store.
 
-    Calculate the total rate of input to a single soil store. This comprises
-    the sum of rainfall input, subsurface contribution from upstream cells and
-    the overland contribution from upstream cells.
+    Calculate the total rate of input to a single soil store. This
+    comprises the sum of rainfall input, subsurface contribution from
+    upstream cells and the overland contribution from upstream cells.
 
     Parameters
     ----------
@@ -36,9 +37,9 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
     X : scalar
         The lateral dimension of the grid-cell (in m).
     ar_Q_to_next_cell : (N,) Numpy array
-        The total contribution from each cell to it's downstream neighbour as a
-        result of subsurface and overland fluxes calculated during the previous
-        timestep (m^3/s).
+        The total contribution from each cell to it's downstream
+        neighbour as a result of subsurface and overland fluxes
+        calculated during the previous timestep (:math:`m^3/s`).
     ar_cell_up : list of `int`
         List of integer indices into `ar_Q_to_next_cell`. The indices point to
         the cells upstream of the current cell.
