@@ -1,0 +1,36 @@
+{% extends "basic/layout.html" %}
+
+{% block rootrellink %}
+  <li><a href="{{ pathto('index') }}">Home</a>|&nbsp;</li>
+  <li><a href="{{ pathto('search') }}">Search</a>|&nbsp;</li>
+{% endblock %}
+
+
+{% block relbar1 %}
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+
+<a href="{{ pathto('index') }}"><img src="{{
+pathto("_static/logo.png", 1) }}" border="0" alt="pyTOPKAPI
+logo"/></a>
+</div>
+{{ super() }}
+{% endblock %}
+
+{# put the sidebar before the body #}
+{% block sidebar1 %}{{ sidebar() }}{% endblock %}
+{% block sidebar2 %}{% endblock %}
+
+{% block footer %}
+<p align="right">
+  <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
+   Copyright {{ copyright }}
+  <br />
+  {%- if last_updated %}
+    Last updated on {{ last_updated }}
+  {%- endif %}
+  {%- if show_sphinx %}
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
+  {%- endif %}
+</p>
+{% endblock %}

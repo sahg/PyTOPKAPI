@@ -1,29 +1,33 @@
 # -*- coding: utf-8 -*-
 #
 # TOPKAPI documentation build configuration file, created by
-# sphinx-quickstart on Wed Nov 26 12:38:50 2008.
+# sphinx-quickstart.
 #
-# This file is execfile()d with the current directory set to its containing dir.
+# This file is execfile()d with the current directory set to its
+# containing dir.
 #
-# The contents of this file are pickled, so don't put values in the namespace
-# that aren't pickleable (module imports are okay, they're removed automatically).
+# The contents of this file are pickled, so don't put values in the
+# namespace that aren't pickleable (module imports are okay, they're
+# removed automatically).
 #
-# All configuration values have a default; values that are commented out
-# serve to show the default.
+# All configuration values have a default; values that are commented
+# out serve to show the default.
 
 import sys, os
 
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-#sys.path.append(os.path.abspath('.'))
+sys.path.append(os.path.abspath('sphinxext'))
 
 # General configuration
 # ---------------------
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc',
+              'matplotlib.sphinxext.mathmpl',
+              'numpydoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -39,14 +43,14 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'TOPKAPI'
-copyright = u'2008, Theo Vischel, Scott Sinclair & Geoff Pegram'
+copyright = u'2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '0.2dev'
+version = '0.2'
 # The full version, including alpha/beta/rc tags.
 release = '0.2dev'
 
@@ -91,7 +95,7 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'topkapi.css'
+html_theme = 'sphinxdoc'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -116,7 +120,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.

@@ -1,6 +1,6 @@
-""" ODE_module.py
-
-Routines used to solve the Ordinary Differential Equations in TOPKAPI
+"""
+This module contains the routines used to solve the Ordinary
+Differential Equations in TOPKAPI.
 
 """
 
@@ -34,7 +34,8 @@ def storage_eq(a,b,alpha):
 ###```````````````````````````````````````````    
 class RKF:
     """
-    Adaptive solver
+    Adaptive Runge-Kutte Fehlberg solver
+    
     """
     def __init__(self, min_step=10e-10, max_step=3600,
                  min_tol=1e-7, max_tol=1e-3, init_time_step=3600):
@@ -196,6 +197,35 @@ class RKF:
 ###=======================================###
         
 def qas(a, b, alpha, V0, delta_t,derivative=0):
+    """
+    Quasi-analytical solution for volume in a TOPKAPI water store
+    
+    This function calculates the volume in a generic store at the end
+    of the defined time-step, given the initial volume, inflow and ODE
+    parameters.  This is done using Todini's quasi-analytical solution
+    of the storage ODE :math:`dV/dt = a - bV^{\\alpha}`.
+
+    Parameters
+    ----------
+    a : scalar
+        Constant inflow rate to store during the time-step
+        (:math:`m^3/s`).
+    b : scalar
+        The `b` parameter in the ODE.
+    alpha : scalar
+        The exponent parameter in the ODE.
+    V0 : scalar
+        The water volume at the beginning of the current time-step
+        (:math:`m^3`).
+    Dt : scalar
+        The time-step over which to solve the ODE (:math:`s`).
+
+    Returns
+    -------
+    V1 : scalar
+        The estimated volume at the end of the current time-step.
+    
+    """
     if alpha > 2:
         exposant=alpha/(alpha-1)
         y0=V0**(1-alpha)
@@ -252,23 +282,28 @@ def solution(A,B,C,y0,delta_t):
 
 def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
     """
-    Solves the storage ODE --> dV/dt = a - b*V^alpha.
-
-    Calculate the volume in a generic store at the end of the defined
-    time-step, given the initial volume, inflow and ODE
-    parameters. Todini's quasi-analytical solution can be used as a
-    speed up.
+    Compute the final volume in a TOPKAPI water store for one time-step
+    
+    This function calculates the volume in a generic store at the end
+    of the defined time-step, given the initial volume, inflow and ODE
+    parameters.  This is done by solving the storage ODE :math:`dV/dt
+    = a - bV^{\\alpha}`. Todini's quasi-analytical solution can be
+    used as a speed up.
 
     Parameters
     ----------
     I : scalar
-        Constant inflow rate to store during the time-step.
+        Constant inflow rate to store during the time-step
+        (:math:`m^3/s`).
     b : scalar
         The `b` parameter in the ODE.
     alpha : scalar
         The exponent parameter in the ODE.
+    Vt0 : scalar
+        The water volume at the beginning of the current time-step
+        (:math:`m^3`).
     Dt : scalar
-        The time-step over which to solve the ODE.
+        The time-step over which to solve the ODE (:math:`s`).
     solve_method : int
         Flag specifying whether to try using the quasi-analytical solution to
         speed up the solution of the ODE. A value of 1 (default) means the qas
