@@ -17,7 +17,6 @@ import numpy as np
 import scipy as sp
 import pylab as pl
 from numpy import ma
-import scipy.io as io
 import tables as h5
 import os
 import os.path
@@ -251,7 +250,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    io.write_array(file_cell_param_out, tab_param)
+    np.savetxt(file_cell_param_out, tab_param)
 
 
 def subcatch(ini_file='subcatch.ini'):
@@ -351,8 +350,7 @@ def subcatch(ini_file='subcatch.ini'):
     tab_param[:,18]=ar_kc[subcatch_label]
 
     #~~~~~~Write parameter file~~~~~~#
-    #'help io.write_array' for more info
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
     ar_image=ar_cell_label*0.
     ar_image[subcatch_label]=1.
@@ -447,7 +445,7 @@ def new_param(ini_file='new_param.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
 
 def connect_external_flow(ini_file='connect_external_flow.ini'):
@@ -503,7 +501,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
 
 def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
@@ -600,7 +598,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
 def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     """
@@ -718,7 +716,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
 ########################################################################################
 ######## Surbroutines
