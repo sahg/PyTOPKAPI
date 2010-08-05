@@ -30,7 +30,6 @@ import sys
 import numpy as np
 import pylab as pl
 from numpy import ma
-import scipy.io as io
 import tables as h5
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
@@ -178,8 +177,7 @@ def run(ini_file='create_file.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-    #'help io.write_array' for more info
-    io.write_array(file_out, tab_param)
+    np.savetxt(file_out, tab_param)
 
 ##############################################    
 ###  SUBROUTINE USED IN "creat_param_file" ###
@@ -591,7 +589,7 @@ def from_bingrid_to_label(file_bin_grid,write_file=False):
 
     if write_file:
         f = file('c:/Theo/liebenbergsvlei/topkapi_model/parameters/label.dat', 'w')
-        io.write_array(f, tab)
+        np.savetxt(f, tab)
         f.close()
 
     return tab
