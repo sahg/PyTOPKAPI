@@ -868,7 +868,7 @@ def all_up_cell(cell, ar_cell_down, ar_cell_label):
 
     while np.size(a)!= 0:
         a = direct_up_cell(a, ar_cell_down, ar_cell_label)
-        b = np.concatenate((upcells, a))
+        upcells = np.concatenate((upcells, a))
 
     return upcells
 
