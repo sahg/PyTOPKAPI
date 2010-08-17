@@ -47,17 +47,16 @@ git_revision = '%s'
     return FULL_VERSION, GIT_REVISION
 
 if __name__ == '__main__':
-    full_version, git_rev = generate_version_py('lib/__dev_version.py')
+    full_version, git_rev = generate_version_py('pytopkapi/__dev_version.py')
 
-    setup(name='TOPKAPI',
+    setup(name='PyTOPKAPI',
           version=full_version,
           description='SAHG TOPKAPI model implementation',
           license='BSD',
           author='Theo Vischel & Scott Sinclair',
           author_email='theo.vischel@hmg.inpg.fr; sinclaird@ukzn.ac.za',
-          packages=['TOPKAPI',
-                    'TOPKAPI.parameter_utils',
-                    'TOPKAPI.results_analysis'],
-          package_dir={'TOPKAPI':'lib'}
+          packages=['pytopkapi',
+                    'pytopkapi.parameter_utils',
+                    'pytopkapi.results_analysis'],
           )
 
