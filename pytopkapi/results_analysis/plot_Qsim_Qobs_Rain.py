@@ -9,9 +9,7 @@ from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
 #Personnal module importation
-from TOPKAPI import utils as ut
-#reload(ut)
-
+import pytopkapi.utils as ut
 
 def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     

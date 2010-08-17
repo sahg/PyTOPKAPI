@@ -5,8 +5,8 @@ import numpy as np
 import pylab as pl
 import matplotlib.numerix.ma as M
 
-import TOPKAPI.pretreatment as pm
-import TOPKAPI.utils as ut
+import pytopkapi.pretreatment as pm
+import pytopkapi.utils as ut
 
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
