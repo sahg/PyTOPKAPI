@@ -52,6 +52,7 @@ if __name__ == '__main__':
     setup(name='TOPKAPI',
           version=full_version,
           description='SAHG TOPKAPI model implementation',
+          license='BSD',
           author='Theo Vischel & Scott Sinclair',
           author_email='theo.vischel@hmg.inpg.fr; sinclaird@ukzn.ac.za',
           packages=['TOPKAPI',
