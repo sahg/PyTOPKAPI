@@ -5,8 +5,12 @@ on a regular basis...
 
 """
 
-__author__ = 'Theo Vischel'
-__version__ = '0.2dev'
+try:
+    from __dev_version import version as __version__
+    from __dev_version import git_revision as __git_revision__
+except ImportError:
+    from __version import version as __version__
+    from __version import git_revision as __git_revision__
 
 import model
 
