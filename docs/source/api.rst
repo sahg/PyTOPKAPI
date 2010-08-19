@@ -5,43 +5,43 @@ PyTOPKAPI API Documentation
 Main module
 ===========
 
-.. automodule:: TOPKAPI.model
+.. automodule:: pytopkapi.model
    :members:
 
 ODE module
 ==========
 
-.. automodule:: TOPKAPI.ode
+.. automodule:: pytopkapi.ode
    :members: solve_storage_eq, qas, RKF
    :undoc-members:
 
 Fluxes module
 =============
-.. automodule:: TOPKAPI.fluxes
+.. automodule:: pytopkapi.fluxes
    :members:
 
 Evaporation module
 ==================
-.. automodule:: TOPKAPI.evap
+.. automodule:: pytopkapi.evap
    :members:
 
 Pretreatment module
 ===================
-.. automodule:: TOPKAPI.pretreatment
+.. automodule:: pytopkapi.pretreatment
    :members:
 
 Utils module
 ============
-.. automodule:: TOPKAPI.utils
+.. automodule:: pytopkapi.utils
    :members:
 
 Interpolation module
 ====================
-.. automodule:: TOPKAPI.interpolation
+.. automodule:: pytopkapi.interpolation
    :members:
 
 Arcfltgrid module
 =================
-.. automodule:: TOPKAPI.arcfltgrid
+.. automodule:: pytopkapi.arcfltgrid
    :members:
 
