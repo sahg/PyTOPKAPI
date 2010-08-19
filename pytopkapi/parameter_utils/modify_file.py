@@ -25,9 +25,9 @@ config = SafeConfigParser()
 
 #External modules
 #Utilities
-import TOPKAPI.utils as ut
+import pytopkapi.utils as ut
 #pretreatment: used for subroutines to read the parameter files
-import TOPKAPI.pretreatment as pm
+import pytopkapi.pretreatment as pm
 ####################################
 ### MODIFYING THE PARAMETER FILE ###
 ####################################

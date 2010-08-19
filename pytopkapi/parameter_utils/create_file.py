@@ -34,11 +34,11 @@ import tables as h5
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
-#External modules from TOPKAPI
+#External modules from PyTOPKAPI
 #Utilities
-from TOPKAPI import utils as ut
+from pytopkapi import utils as ut
 #pretreatment: used for subroutines to read the column type files.
-from TOPKAPI import pretreatment as pm
+from pytopkapi import pretreatment as pm
 
 
 def run(ini_file='create_file.ini'):
