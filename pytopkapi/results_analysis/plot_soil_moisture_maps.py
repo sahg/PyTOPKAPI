@@ -3,7 +3,7 @@ Draw the maps of soil moisture from the outputs of the TOPKAPI simulations
 """
 import numpy as np
 import pylab as pl
-import matplotlib.numerix.ma as M
+import numpy.ma as M
 
 import pytopkapi.pretreatment as pm
 import pytopkapi.utils as ut
