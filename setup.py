@@ -13,13 +13,20 @@ MICRO               = 0
 ISRELEASED          = False
 VERSION             = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 
+dev_version_py = 'pytopkapi/__dev_version.py'
+
 def generate_version_py(filename):
     try:
         if os.path.exists(".git"):
+            # should be a Git clone, use revision info from Git
             s = subprocess.Popen(["git", "rev-parse", "HEAD"],
                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out = s.communicate()[0]
             GIT_REVISION = out.strip()
+        elif os.path.exists(dev_version_py):
+            # should be a source distribution, use existing dev
+            # version file
+            from pytopkapi.__dev_version import git_revision as GIT_REVISION
         else:
             GIT_REVISION = "Unknwn"
     except:
@@ -46,7 +53,7 @@ git_revision = '%s'
     return FULL_VERSION, GIT_REVISION
 
 if __name__ == '__main__':
-    full_version, git_rev = generate_version_py('pytopkapi/__dev_version.py')
+    full_version, git_rev = generate_version_py(dev_version_py)
 
     setup(name='PyTOPKAPI',
           version=full_version,
