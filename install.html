@@ -54,6 +54,15 @@ logo"/></a>
 
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">PyTOPKAPI installation instructions</a><ul>
+<li><a class="reference external" href="#download">Download</a></li>
+<li><a class="reference external" href="#id1">Install</a></li>
+</ul>
+</li>
+</ul>
+
             <h4>Previous topic</h4>
             <p class="topless"><a href="api.html"
                                   title="previous chapter">PyTOPKAPI API Documentation</a></p>
@@ -88,7 +97,28 @@ logo"/></a>
             
   <div class="section" id="pytopkapi-installation-instructions">
 <span id="install"></span><h1>PyTOPKAPI installation instructions<a class="headerlink" href="#pytopkapi-installation-instructions" title="Permalink to this headline">¶</a></h1>
-<p>Install docs here..</p>
+<div class="section" id="download">
+<h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
+<p>Source releases and 32-bit Windows installers of the PyTOPKAPI code
+can be downloaded from <a class="reference external" href="http://github.com/sahg/PyTOPKAPI/downloads">http://github.com/sahg/PyTOPKAPI/downloads</a></p>
+</div>
+<div class="section" id="id1">
+<h2>Install<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The PyTOPKAPI package currently consists of pure Python code and does
+not require any extension modules to be built. However the model
+depends on a number of 3rd party Python packages, these are: NumPy
+(<a class="reference external" href="http://www.numpy.org">http://www.numpy.org</a>), SciPy (<a class="reference external" href="http://www.scipy.org">http://www.scipy.org</a>) and PyTables
+(<a class="reference external" href="http://www.pytables.org">http://www.pytables.org</a>).</p>
+<p>Once the pre-requisite Python packages have been successfully
+installed, PyTOPKAPI can be installed at the command line for any
+operating system:</p>
+<div class="highlight-python"><pre>$ python setup.py install</pre>
+</div>
+<p>The installation can be tested in the Python interpreter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytopkapi</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
