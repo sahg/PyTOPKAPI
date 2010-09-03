@@ -7,14 +7,19 @@ countries around the world (Liu and Todini, 2002; Bartholomes and
 Todini, 2005; Liu et al., 2005; Martina et al., 2006; Vischel et al.,
 2008).
 
-The physical basis of the equations, the fine-scale representation of
-the spatial catchment features, the parsimonious parametrisation
-linked to field/catchment information, the good computation time
-performance, the modularity of the processes, the ease of use and
-finally the good results obtained in modelling the river discharges of
-Liebenbergsvlei catchment, make the TOPKAPI model a promising tool for
-hydrological modelling of catchments in South Africa and around the
-world.
+The main strengths of the TOPKAPI model are:
+
+* The physical basis of the equations,
+* the fine-scale representation of the spatial catchment features,
+* the parsimonious parametrisation linked to field/catchment information,
+* the good computation time performance,
+* the modularity of the processes,
+* the ease of use.
+
+These and the good results obtained in modelling the river discharges
+of Liebenbergsvlei catchment, make the TOPKAPI model a promising tool
+for hydrological modelling of catchments in South Africa and around
+the world.
 
 .. note::
 
