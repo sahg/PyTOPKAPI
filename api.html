@@ -1,0 +1,1280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PyTOPKAPI API Documentation &mdash; TOPKAPI v0.2dev documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.2dev',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
+    <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
+    <link rel="next" title="PyTOPKAPI installation instructions" href="install.html" />
+    <link rel="prev" title="Developer Resources" href="developer.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+
+<a href="index.html"><img src="_static/logo.png" border="0" alt="pyTOPKAPI
+logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="developer.html" title="Developer Resources"
+             accesskey="P">previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" accesskey="U">PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">PyTOPKAPI API Documentation</a><ul>
+<li><a class="reference external" href="#module-pytopkapi.model">Main module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.ode">ODE module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.fluxes">Fluxes module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.evap">Evaporation module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.pretreatment">Pretreatment module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.utils">Utils module</a></li>
+<li><a class="reference external" href="#interpolation-module">Interpolation module</a></li>
+<li><a class="reference external" href="#module-pytopkapi.arcfltgrid">Arcfltgrid module</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="developer.html"
+                                  title="previous chapter">Developer Resources</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="install.html"
+                                  title="next chapter">PyTOPKAPI installation instructions</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/api.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pytopkapi-api-documentation">
+<h1>PyTOPKAPI API Documentation<a class="headerlink" href="#pytopkapi-api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pytopkapi.model">
+<h2>Main module<a class="headerlink" href="#module-pytopkapi.model" title="Permalink to this headline">¶</a></h2>
+<p>model.py
+Main program of the TOPKAPI model.</p>
+<dl class="function">
+<dt id="pytopkapi.model.run">
+<tt class="descclassname">pytopkapi.model.</tt><tt class="descname">run</tt><big>(</big><em>ini_file='TOPKAPI.ini'</em><big>)</big><a class="headerlink" href="#pytopkapi.model.run" title="Permalink to this definition">¶</a></dt>
+<dd>Run the model defined by ini_file.</dd></dl>
+
+</div>
+<div class="section" id="module-pytopkapi.ode">
+<h2>ODE module<a class="headerlink" href="#module-pytopkapi.ode" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the routines used to solve the Ordinary
+Differential Equations in TOPKAPI.</p>
+<dl class="function">
+<dt id="pytopkapi.ode.solve_storage_eq">
+<tt class="descclassname">pytopkapi.ode.</tt><tt class="descname">solve_storage_eq</tt><big>(</big><em>I</em>, <em>b</em>, <em>alpha</em>, <em>Vt0</em>, <em>Dt</em>, <em>solve_method=1</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.solve_storage_eq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the final volume in a TOPKAPI water store for one time-step</p>
+<p>This function calculates the volume in a generic store at the end
+of the defined time-step, given the initial volume, inflow and ODE
+parameters.  This is done by solving the storage ODE <img src="_images/mathmpl/math-960e13b4e8.png" style="position: relative; bottom: -8px"/>. Todini&#8217;s quasi-analytical solution can be
+used as a speed up.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>I</strong> : scalar</p>
+<blockquote>
+<p>Constant inflow rate to store during the time-step
+(<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+</blockquote>
+<p><strong>b</strong> : scalar</p>
+<blockquote>
+<p>The <cite>b</cite> parameter in the ODE.</p>
+</blockquote>
+<p><strong>alpha</strong> : scalar</p>
+<blockquote>
+<p>The exponent parameter in the ODE.</p>
+</blockquote>
+<p><strong>Vt0</strong> : scalar</p>
+<blockquote>
+<p>The water volume at the beginning of the current time-step
+(<img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The time-step over which to solve the ODE (<img src="_images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
+</blockquote>
+<p><strong>solve_method</strong> : int</p>
+<blockquote>
+<p>Flag specifying whether to try using the quasi-analytical solution to
+speed up the solution of the ODE. A value of 1 (default) means the qas
+will be used, a value of 0 specifies use of the full RKF formulation.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Vt1</strong> : scalar</p>
+<blockquote class="last">
+<p>The estimated volume at the end of the current time-step.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.ode.qas">
+<tt class="descclassname">pytopkapi.ode.</tt><tt class="descname">qas</tt><big>(</big><em>a</em>, <em>b</em>, <em>alpha</em>, <em>V0</em>, <em>delta_t</em>, <em>derivative=0</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.qas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quasi-analytical solution for volume in a TOPKAPI water store</p>
+<p>This function calculates the volume in a generic store at the end
+of the defined time-step, given the initial volume, inflow and ODE
+parameters.  This is done using Todini&#8217;s quasi-analytical solution
+of the storage ODE <img src="_images/mathmpl/math-aeab3bcb40.png" style="position: relative; bottom: -8px"/>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>a</strong> : scalar</p>
+<blockquote>
+<p>Constant inflow rate to store during the time-step
+(<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+</blockquote>
+<p><strong>b</strong> : scalar</p>
+<blockquote>
+<p>The <cite>b</cite> parameter in the ODE.</p>
+</blockquote>
+<p><strong>alpha</strong> : scalar</p>
+<blockquote>
+<p>The exponent parameter in the ODE.</p>
+</blockquote>
+<p><strong>V0</strong> : scalar</p>
+<blockquote>
+<p>The water volume at the beginning of the current time-step
+(<img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The time-step over which to solve the ODE (<img src="_images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>V1</strong> : scalar</p>
+<blockquote class="last">
+<p>The estimated volume at the end of the current time-step.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="pytopkapi.ode.RKF">
+<em class="property">class </em><tt class="descclassname">pytopkapi.ode.</tt><tt class="descname">RKF</tt><big>(</big><em>min_step=1.0000000000000001e-09</em>, <em>max_step=3600</em>, <em>min_tol=9.9999999999999995e-08</em>, <em>max_tol=0.001</em>, <em>init_time_step=3600</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.RKF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adaptive Runge-Kutte Fehlberg solver</p>
+<p class="rubric">Methods</p>
+<dl class="method">
+<dt id="pytopkapi.ode.RKF.compute_error">
+<tt class="descname">compute_error</tt><big>(</big><em>f</em>, <em>x</em>, <em>t</em>, <em>delta_t</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.RKF.compute_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pytopkapi.ode.RKF.getnewdelta_t">
+<tt class="descname">getnewdelta_t</tt><big>(</big><em>f</em>, <em>x</em>, <em>t</em>, <em>max_delta_t=0</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.RKF.getnewdelta_t" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pytopkapi.ode.RKF.step">
+<tt class="descname">step</tt><big>(</big><em>f</em>, <em>x</em>, <em>t</em>, <em>delta_t=0</em><big>)</big><a class="headerlink" href="#pytopkapi.ode.RKF.step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pytopkapi.fluxes">
+<h2>Fluxes module<a class="headerlink" href="#module-pytopkapi.fluxes" title="Permalink to this headline">¶</a></h2>
+<p>Functions required by the TOPKAPI model for the management of input
+and output of cells.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The subroutines solving the differential equation are not in this
+module (see <tt class="xref docutils literal"><span class="pre">ode</span></tt> for more information)</p>
+</div>
+<dl class="function">
+<dt id="pytopkapi.fluxes.Qout_computing">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">Qout_computing</tt><big>(</big><em>V_t0</em>, <em>V_t1_prim</em>, <em>a</em>, <em>Dt</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.Qout_computing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the outflow <cite>Qout</cite> from a generic water store.</p>
+<p>Calculate the mean outflow rate during the current time-step from a generic
+water store. The outflow is calculated as the difference between the inflow
+and rate of change in storage during the time-step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>V_t0</strong> : scalar</p>
+<blockquote>
+<p>Volume of water at the start of the current time-step (m^3).</p>
+</blockquote>
+<p><strong>V_t1_prim</strong> : scalar</p>
+<blockquote>
+<p>Volume of water at the end of the current time-step (m^3).</p>
+</blockquote>
+<p><strong>a</strong> : scalar</p>
+<blockquote>
+<p>The inflow rate to the water store during the time-step (m^3/s).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The length of the current time-step in seconds.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Qout</strong> : scalar</p>
+<blockquote class="last">
+<p>The outflow rate from the water store during the time-step (m^3/s).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.Qout_computing2">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">Qout_computing2</tt><big>(</big><em>V_t0</em>, <em>V_t1</em>, <em>b</em>, <em>alpha</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.Qout_computing2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Qout_computing
+Compute the output flows Qout from the computed water volumes:</p>
+<p>Return: Qout</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.flow_partitioning">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">flow_partitioning</tt><big>(</big><em>Lambda</em>, <em>Qs_out</em>, <em>Qo_out</em>, <em>W</em>, <em>X</em>, <em>Xc</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.flow_partitioning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partition the outflows from soil and overland stores.</p>
+<p>Calculates the correct partitioning of outflows from the soil and overland
+stores into contributions going to the downstream cell and/or the channel
+store of the current cell (if this exists).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Lambda</strong> : int</p>
+<blockquote>
+<p>Switch indicating whether the current cell contains a channel. A value
+of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+</blockquote>
+<p><strong>Qs_out</strong> : scalar</p>
+<blockquote>
+<p>Outflow from the soil store during the current time-step (m^3/s).</p>
+</blockquote>
+<p><strong>Qo_out</strong> : scalar</p>
+<blockquote>
+<p>Outflow from the overland store during the current time-step (m^3/s).</p>
+</blockquote>
+<p><strong>W</strong> : scalar</p>
+<blockquote>
+<p>Width of the channel (m).</p>
+</blockquote>
+<p><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (in m).</p>
+</blockquote>
+<p><strong>Xc</strong> : scalar</p>
+<blockquote>
+<p>The length of the channel cell, this can be different from <cite>X</cite> if the
+channel runs along the cell diagonal (m).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Q_to_next_cell</strong> : scalar</p>
+<blockquote>
+<p>Combined outflow from soil and overland to the downstream cell (m^3/s).</p>
+</blockquote>
+<p><strong>Q_to_channel</strong> : scalar</p>
+<blockquote>
+<p>Combined outflow from soil and overland to the channel store (m^3/s).</p>
+</blockquote>
+<p><strong>Q_to_channel_sub</strong> : scalar</p>
+<blockquote class="last">
+<p>Outflow from soil store to the channel store (m^3/s).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.initial_volume_channel">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">initial_volume_channel</tt><big>(</big><em>ar_Q</em>, <em>ar_W</em>, <em>X</em>, <em>ar_n_c</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.initial_volume_channel" title="Permalink to this definition">¶</a></dt>
+<dd>The initial volume ar_Vc_t0 is computed for all the channel cells, from a known initial flow.</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.initial_volume_soil">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">initial_volume_soil</tt><big>(</big><em>ar_pVs_t0</em>, <em>ar_Vsm</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.initial_volume_soil" title="Permalink to this definition">¶</a></dt>
+<dd>initialize_volume_soil
+Compute the intial content of water (volume of water) from the
+initial saturated values given in the parameter file.</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.input_channel">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">input_channel</tt><big>(</big><em>ar_Qc_out</em>, <em>Q_to_channel</em>, <em>ar_cell_up</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.input_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the total inflow to the channel of a channel cell.</p>
+<p>Calculate the total inflow to the channel as the sum of inflows from
+upstream cells and inflows from the soil and overland stores in the current
+cell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_Qc_out</strong> : (N,) Numpy array</p>
+<blockquote>
+<p>Array of channel outflows from each cell in the catchment for the
+current time-step (m^3/s).</p>
+</blockquote>
+<p><strong>Q_to_channel</strong> : scalar</p>
+<blockquote>
+<p>Combined outflow from soil and overland to the channel store (m^3/s).</p>
+</blockquote>
+<p><strong>ar_cell_up</strong> : list of <cite>int</cite></p>
+<blockquote>
+<p>List of integer indices into <cite>ar_Qc_out</cite>. The indices point to the
+cells upstream of the current cell.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a_c</strong> : scalar</p>
+<blockquote>
+<p>The total inflow to the channel store during the current
+time-step (m^3/s).</p>
+</blockquote>
+<p><strong>Qc_cell_up</strong> : scalar</p>
+<blockquote class="last">
+<p>The contribution to the total inflow to the channel store from upstream
+cells during the current time-step (m^3/s).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.input_soil">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">input_soil</tt><big>(</big><em>P</em>, <em>Dt</em>, <em>X</em>, <em>ar_Q_to_next_cell</em>, <em>ar_cell_up</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.input_soil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the total input to a soil store.</p>
+<p>Calculate the total rate of input to a single soil store. This
+comprises the sum of rainfall input, subsurface contribution from
+upstream cells and the overland contribution from upstream cells.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>P</strong> : scalar</p>
+<blockquote>
+<p>Precipitation input to the cell during the current time-step (mm).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The length of the current time-step in seconds.</p>
+</blockquote>
+<p><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (in m).</p>
+</blockquote>
+<p><strong>ar_Q_to_next_cell</strong> : (N,) Numpy array</p>
+<blockquote>
+<p>The total contribution from each cell to it&#8217;s downstream
+neighbour as a result of subsurface and overland fluxes
+calculated during the previous timestep (<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+</blockquote>
+<p><strong>ar_cell_up</strong> : list of <cite>int</cite></p>
+<blockquote>
+<p>List of integer indices into <cite>ar_Q_to_next_cell</cite>. The indices point to
+the cells upstream of the current cell.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a_s</strong> : scalar</p>
+<blockquote class="last">
+<p>The input flux to the soil store during the current time-step in m^3/s.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.manning_depth">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">manning_depth</tt><big>(</big><em>Q</em>, <em>W</em>, <em>X</em>, <em>n</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.manning_depth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Compute with the manning equation (high width hypothesis) the water depth h corresponding to</dt>
+<dd>the flow Q for the channel characteristics: width W, manning n.</dd>
+</dl>
+<p>The volume is then returned V=hWX</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.fluxes.output_soil">
+<tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">output_soil</tt><big>(</big><em>Vs_t0</em>, <em>Vs_t1_prim</em>, <em>Vsm</em>, <em>a_s</em>, <em>b_s</em>, <em>alpha_s</em>, <em>Dt</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.output_soil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the outflow from and volume in a soil store.</p>
+<p>Calculate the outflow rate and final volume in a soil store after
+transferring volume greater than the saturated soil moisture content to the
+overland store of the same model cell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vs_t0</strong> : scalar</p>
+<blockquote>
+<p>Volume of water in the soil store at the beginning of the current time-
+step (m^3).</p>
+</blockquote>
+<p><strong>Vs_t1_prim</strong> : scalar</p>
+<blockquote>
+<p>Volume of water in the soil store at the end of the current time-step
+as a result of combined input to and drainage from the non-linear
+reservoir (m^3).</p>
+</blockquote>
+<p><strong>Vsm</strong> : scalar</p>
+<blockquote>
+<p>Volume of soil moisture for the store under saturated conditions (m^3).</p>
+</blockquote>
+<p><strong>a_s</strong> : scalar</p>
+<blockquote>
+<p>The input flux to the soil store during the current time-step (m^3/s).</p>
+</blockquote>
+<p><strong>b_s</strong> : scalar</p>
+<blockquote>
+<dl class="docutils">
+<dt>The constant term of the non-linear differential equation</dt>
+<dd><p class="first last">dV_s/dt = a_s - b_s*V_s**alpha_s</p>
+</dd>
+</dl>
+</blockquote>
+<p><strong>alpha_s</strong> : scalar</p>
+<blockquote>
+<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The length of the current time-step in seconds.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Qs_out</strong> : scalar</p>
+<blockquote>
+<p>Rate of flow out of the soil store during the time-step (m^3/s).</p>
+</blockquote>
+<p><strong>Vs_out</strong> : scalar</p>
+<blockquote class="last">
+<p>Volume remaining in the soil store at the end of the time-step (m^3).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pytopkapi.evap">
+<h2>Evaporation module<a class="headerlink" href="#module-pytopkapi.evap" title="Permalink to this headline">¶</a></h2>
+<p>evap_module.py</p>
+<p>Routines used to compute the evapotranspiration losses in TOPKAPI</p>
+<dl class="function">
+<dt id="pytopkapi.evap.evapor_channel">
+<tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapor_channel</tt><big>(</big><em>Vc0</em>, <em>ETo</em>, <em>W</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapor_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the evaporation from a channel store.</p>
+<p>Calculate the evaporation loss from a channel store. The function attempts
+to remove the demand from the open water potential evaporation from the 
+channel store, if there isn&#8217;t sufficient water in the store then the total 
+volume in the channel is removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vc0</strong> : scalar</p>
+<blockquote>
+<p>Volume in the channel store before evaporation removal (m^3).</p>
+</blockquote>
+<p><strong>ETo</strong> : scalar</p>
+<blockquote>
+<p>The potential evaporation from an open water surface (mm).</p>
+</blockquote>
+<p><strong>W</strong> : scalar</p>
+<blockquote>
+<p>Width of the channel (m).</p>
+</blockquote>
+<p><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The length of the channel cell, this can be different from the cell
+dimension if the channel runs along the cell diagonal (m).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ET_channel</strong> : scalar</p>
+<blockquote>
+<p>The actual depth of water removed from the channel store (mm).</p>
+</blockquote>
+<p><strong>Vc1</strong> : scalar</p>
+<blockquote class="last">
+<p>Volume in the channel store after evaporation removal (m^3).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.evap.evapot_soil_Liu_and_Todini">
+<tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapot_soil_Liu_and_Todini</tt><big>(</big><em>Vs0</em>, <em>Vsm</em>, <em>kc</em>, <em>ETr</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapot_soil_Liu_and_Todini" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>The evapotranspiration taken up from the soil:</dt>
+<dd><ul class="first last simple">
+<li>at the rate ks*ETc ks being the soil saturation rate</li>
+<li>without overland runoff infiltration</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.evap.evapot_soil_Liu_and_Todini_ETc">
+<tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapot_soil_Liu_and_Todini_ETc</tt><big>(</big><em>Vs0</em>, <em>Vsm</em>, <em>kc</em>, <em>ETr</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapot_soil_Liu_and_Todini_ETc" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>The evapotranspiration taken up from the soil:</dt>
+<dd><ul class="first last simple">
+<li>at the reference crop rate ETc (potential evapotranspiration rate)</li>
+<li>without overland runoff infiltration</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.evap.evapot_soil_overland">
+<tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapot_soil_overland</tt><big>(</big><em>Vo0</em>, <em>Vs0</em>, <em>Vsm</em>, <em>kc</em>, <em>ETr</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapot_soil_overland" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the evapotranspiration from a model cell.</p>
+<p>The evapotranspiration loss is first taken from the overland store, if the
+storage in the overland store cannot satify the ET demand then the water is
+extracted from the soil store. In cases where the ET demand is greater than
+the available water, both the soil and overland store are totally drained.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vo0</strong> : scalar</p>
+<blockquote>
+<p>Volume in the overland store before ET removal (m^3).</p>
+</blockquote>
+<p><strong>Vs0</strong> : scalar</p>
+<blockquote>
+<p>Volume in the soil store before ET removal (m^3).</p>
+</blockquote>
+<p><strong>Vsm</strong> : scalar</p>
+<blockquote>
+<p>Volume of soil moisture for the store under saturated conditions (m^3).</p>
+</blockquote>
+<p><strong>kc</strong> : scalar</p>
+<blockquote>
+<p>Dimensionless crop co-efficient for the model cell.</p>
+</blockquote>
+<p><strong>ETr</strong> : scalar</p>
+<blockquote>
+<p>Reference crop ET for the cell during the current time-step (mm).</p>
+</blockquote>
+<p><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (in m).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ETa</strong> : scalar</p>
+<blockquote>
+<p>The actual ET removed from the soil store, calculated as kc*ks*ETr with
+ks the relative saturation of the soil store before ET is removed (mm).</p>
+</blockquote>
+<p><strong>Vs1</strong> : scalar</p>
+<blockquote>
+<p>Volume in the soil store after ET removal (m^3).</p>
+</blockquote>
+<p><strong>Vo1</strong> : scalar</p>
+<blockquote class="last">
+<p>Volume in the overland store after ET removal (m^3).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.evap.intercept_rain_ET">
+<tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">intercept_rain_ET</tt><big>(</big><em>P</em>, <em>ETr</em>, <em>kc</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.intercept_rain_ET" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>The evapotranspiration is taken from the precipitation:</dt>
+<dd><ul class="first last simple">
+<li>at the reference crop rate ETc</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pytopkapi.pretreatment">
+<h2>Pretreatment module<a class="headerlink" href="#module-pytopkapi.pretreatment" title="Permalink to this headline">¶</a></h2>
+<p>pretreatment_module.py</p>
+<p>Functions required to compute the intrinsic TOPKAPI parameters from the
+physical parameters</p>
+<dl class="function">
+<dt id="pytopkapi.pretreatment.compute_cell_param">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">compute_cell_param</tt><big>(</big><em>X</em>, <em>ar_Xc</em>, <em>Dt</em>, <em>alpha_s</em>, <em>alpha_o</em>, <em>alpha_c</em>, <em>nb_cell</em>, <em>A_thres</em>, <em>W_max</em>, <em>W_min</em>, <em>ar_lambda</em>, <em>ar_tan_beta</em>, <em>ar_tan_beta_channel</em>, <em>ar_L</em>, <em>ar_Ks</em>, <em>ar_theta_r</em>, <em>ar_theta_s</em>, <em>ar_n_o</em>, <em>ar_n_c</em>, <em>ar_A_drained</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.compute_cell_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute model parameters from physical parameters.</p>
+<p>This function uses the physically based parameters and constraints for each
+model cell to compute, the saturated soil moisture volume, channel width
+and constant terms for the differential equations of the soil, overland and
+channel stores.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (m).</p>
+</blockquote>
+<p><strong>ar_Xc</strong> : (N,) float array</p>
+<blockquote>
+<p>The length of the channel in a cell, this can be different from the
+lateral dimension of the grid cell if the channel runs along the
+cell diagonal (m).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The length of the current time-step in seconds.</p>
+</blockquote>
+<p><strong>alpha_s</strong> : scalar</p>
+<blockquote>
+<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+</blockquote>
+<p><strong>alpha_o</strong> : scalar</p>
+<blockquote>
+<p>Power co-efficient for Mannings Equation applied to the overland store
+the value is typically 5/3.</p>
+</blockquote>
+<p><strong>alpha_c</strong> : scalar</p>
+<blockquote>
+<p>Power co-efficient for Mannings Equation applied to the channel store
+the value is typically 5/3.</p>
+</blockquote>
+<p><strong>nb_cell</strong> : scalar</p>
+<blockquote>
+<p>The number of cells in the catchment.</p>
+</blockquote>
+<p><strong>A_thres</strong> : scalar</p>
+<blockquote>
+<p>The minimum area of upstream contributing cells required before a cell
+is considered to initiate a river channel (m^2).</p>
+</blockquote>
+<p><strong>W_min</strong> : scalar</p>
+<blockquote>
+<p>The minimum width of a channel (m).</p>
+</blockquote>
+<p><strong>W_max</strong> : scalar</p>
+<blockquote>
+<p>The maximum width of a channel (m).</p>
+</blockquote>
+<p><strong>ar_lambda</strong> : (N,) int array</p>
+<blockquote>
+<p>Switch indicating whether the current cell contains a channel. A value
+of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+</blockquote>
+<p><strong>ar_tan_beta</strong> : (N,) float array</p>
+<blockquote>
+<p>The tangent of the surface slope for each cell. The surface slope
+affects processes in the overland and soil stores.</p>
+</blockquote>
+<p><strong>ar_tan_beta_channel</strong> : (N,) float array</p>
+<blockquote>
+<p>The tangent of the channel slope for each cell. This is conceptually
+different from the surface slope and affects the channel store.</p>
+</blockquote>
+<p><strong>ar_L</strong> : (N,) float array</p>
+<blockquote>
+<p>The depth of the soil store in each cell (m).</p>
+</blockquote>
+<p><strong>ar_Ks</strong> : (N,) float array</p>
+<blockquote>
+<p>The saturated hydraulic conductivity of each cell (mm/s).</p>
+</blockquote>
+<p><strong>ar_theta_r</strong> : (N,) float array</p>
+<blockquote>
+<p>The residual soil moisture content for each cell.</p>
+</blockquote>
+<p><strong>ar_theta_s</strong> : (N,) float array</p>
+<blockquote>
+<p>The saturated soil moisture content for each cell.</p>
+</blockquote>
+<p><strong>ar_n_o</strong> : (N,) float array</p>
+<blockquote>
+<p>Manning&#8217;s roughness coefficient for overland flows in each cell.</p>
+</blockquote>
+<p><strong>ar_n_c</strong> : (N,) float array</p>
+<blockquote>
+<p>Manning&#8217;s roughness coefficient for channel flows in each cell.</p>
+</blockquote>
+<p><strong>ar_A_drained</strong> : (N,) float array</p>
+<blockquote>
+<p>The total drained area associated with each cell (m^2).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_Vsm</strong> : (N,) float array</p>
+<blockquote>
+<p>The saturated moisture volume of the soil store for each cell (m^3/s).</p>
+</blockquote>
+<p><strong>ar_b_s</strong> : (N,) float array</p>
+<blockquote>
+<dl class="docutils">
+<dt>The constant term of the non differential equation for each soil store.</dt>
+<dd><p class="first last">&#8211;&gt; dV_s/dt = a_s-b_s*V_s**alpha_s</p>
+</dd>
+</dl>
+</blockquote>
+<p><strong>ar_b_o</strong> : (N,) float array</p>
+<blockquote>
+<p>The constant term of the non differential equation for each overland
+store.</p>
+<blockquote>
+<p>&#8211;&gt; dV_o/dt = a_o-b_o*V_o**alpha_o</p>
+</blockquote>
+</blockquote>
+<p><strong>ar_W</strong> : (N,) float array</p>
+<blockquote>
+<p>The channel width for each cell (m).</p>
+</blockquote>
+<p><strong>ar_b_c</strong> : (N,) float array</p>
+<blockquote class="last">
+<p>The constant term of the non differential equation for each channel
+store.</p>
+<blockquote>
+<p>&#8211;&gt; dV_c/dt = a_c-b_c*V_c**alpha_c</p>
+</blockquote>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.direct_up_cell">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">direct_up_cell</tt><big>(</big><em>ar_cell_label</em>, <em>ar_cell_down</em>, <em>ar_label_sort</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.direct_up_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the upstream cells for each cell.</p>
+<p>This function calculates the immediate upstream cells contributing flow to
+each cell in the catchment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
+<blockquote>
+<p>Numbers labelling each cell.</p>
+</blockquote>
+<p><strong>ar_cell_down</strong> : (N,) int array</p>
+<blockquote>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
+of the current cell.</p>
+</blockquote>
+<p><strong>ar_label_sort</strong> : (N,) int array</p>
+<blockquote>
+<p>Sorted array of cell labels.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>li_cell_up</strong> : List of (M,) int arrays</p>
+<blockquote class="last">
+<p>A list of arrays containing the upstream cell labels for each cell in
+a catchment.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.drained_area">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">drained_area</tt><big>(</big><em>ar_label_sort</em>, <em>li_cell_up</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.drained_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the drained area for each cell.</p>
+<p>This function calculates the total area drained for each cell in the
+catchment, as the sum of it&#8217;s area and the upstream area.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_label_sort</strong> : (N,) int array</p>
+<blockquote>
+<p>Sorted array of cell labels.</p>
+</blockquote>
+<p><strong>li_cell_up</strong> : List of (M,) int arrays</p>
+<blockquote>
+<p>A list of arrays containing the upstream cell labels for each cell in
+a catchment.</p>
+</blockquote>
+<p><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (m).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_A_drained</strong> : (N,) float array</p>
+<blockquote class="last">
+<p>The total drained area associated with each cell (m^2).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.read_cell_parameters">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_cell_parameters</tt><big>(</big><em>file_name</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_cell_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the spatially variable cell parameters from file.</p>
+<p>Read the file containing the physical parameters of each cell. This
+information governs the distributed behaviour of the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string</p>
+<blockquote>
+<p>Full name of the parameter file (incl. path).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
+<blockquote>
+<p>Numbers labelling each cell.</p>
+</blockquote>
+<p><strong>ar_coorx</strong> : (N,) float array</p>
+<blockquote>
+<p>The x co-ordinate of the centre of each cell (m). This is the Longitude
+expressed in metres using a Transverse Mercator projection, but any
+appropriate projection can be used.</p>
+</blockquote>
+<p><strong>ar_coory</strong> : (N,) float array</p>
+<blockquote>
+<p>The y co-ordinate of the centre of each cell (m). This is the Latitude
+expressed in metres using a Transverse Mercator projection, but any
+appropriate projection can be used.</p>
+</blockquote>
+<p><strong>ar_lambda</strong> : (N,) int array</p>
+<blockquote>
+<p>Switch indicating whether the current cell contains a channel. A value
+of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+</blockquote>
+<p><strong>ar_Xc</strong> : (N,) float array</p>
+<blockquote>
+<p>The length of the channel in a cell, this can be different from the
+lateral dimension of the grid cell if the channel runs along the
+cell diagonal (m).</p>
+</blockquote>
+<p><strong>ar_dam</strong> : (N,) int array</p>
+<blockquote>
+<p>Switch indicating whether the current cell contains a dam. A value
+of <cite>1</cite> indicates a dam cell, <cite>0</cite> indicates no dam. The switch currently
+has no influence in the model.</p>
+</blockquote>
+<p><strong>ar_tan_beta</strong> : (N,) float array</p>
+<blockquote>
+<p>The tangent of the surface slope for each cell. The surface slope
+affects processes in the overland and soil stores.</p>
+</blockquote>
+<p><strong>ar_tan_beta_channel</strong> : (N,) float array</p>
+<blockquote>
+<p>The tangent of the channel slope for each cell. This is conceptually
+different from the surface slope and affects the channel store.</p>
+</blockquote>
+<p><strong>ar_L</strong> : (N,) float array</p>
+<blockquote>
+<p>The depth of the soil store in each cell (m).</p>
+</blockquote>
+<p><strong>ar_Ks</strong> : (N,) float array</p>
+<blockquote>
+<p>The saturated hydraulic conductivity of each cell (mm/s).</p>
+</blockquote>
+<p><strong>ar_theta_r</strong> : (N,) float array</p>
+<blockquote>
+<p>The residual soil moisture content for each cell.</p>
+</blockquote>
+<p><strong>ar_theta_s</strong> : (N,) float array</p>
+<blockquote>
+<p>The saturated soil moisture content for each cell.</p>
+</blockquote>
+<p><strong>ar_n_o</strong> : (N,) float array</p>
+<blockquote>
+<p>Manning&#8217;s roughness coefficient for overland flows in each cell.</p>
+</blockquote>
+<p><strong>ar_n_c</strong> : (N,) float array</p>
+<blockquote>
+<p>Manning&#8217;s roughness coefficient for channel flows in each cell.</p>
+</blockquote>
+<p><strong>ar_cell_down</strong> : (N,) int array</p>
+<blockquote>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
+of the current cell.</p>
+</blockquote>
+<p><strong>ar_pVs_t0</strong> : (N,) float array</p>
+<blockquote>
+<p>The initial saturation of each soil store (%).</p>
+</blockquote>
+<p><strong>ar_Vo_t0</strong> : (N,) float array</p>
+<blockquote>
+<p>The initial volume of water in each overland store (m^3).</p>
+</blockquote>
+<p><strong>ar_Qc_t0</strong> : (N,) float array</p>
+<blockquote>
+<p>The initial channel discharge for each cell, if applicable (m^3/s).</p>
+</blockquote>
+<p><strong>ar_kc</strong> : (N,) float array</p>
+<blockquote class="last">
+<p>The crop co-efficient for each cell.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.read_column_input">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_column_input</tt><big>(</big><em>file_name</em>, <em>nb_cell</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_column_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>read_column_input
+Read the file containing data in column format:
+Cell1  Cell2  Cell3 ...
+1.3    4.3     5.2  ...
+2.3    5.6     4.2  ...</p>
+<p>Return a matrix mat_out(nrow, ncol)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.read_global_parameters">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_global_parameters</tt><big>(</big><em>file_name</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_global_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read global model parameters from file.</p>
+<p>Read the file that specifies the parameters of the model, which are
+globally applied to all cells in the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string</p>
+<blockquote>
+<p>Full name of the parameter file (incl. path).</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : scalar</p>
+<blockquote>
+<p>The lateral dimension of the grid-cell (m).</p>
+</blockquote>
+<p><strong>Dt</strong> : scalar</p>
+<blockquote>
+<p>The length of the current time-step in seconds.</p>
+</blockquote>
+<p><strong>alpha_s</strong> : scalar</p>
+<blockquote>
+<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+</blockquote>
+<p><strong>alpha_o</strong> : scalar</p>
+<blockquote>
+<p>Power co-efficient for Mannings Equation applied to the overland store
+the value is typically 5/3.</p>
+</blockquote>
+<p><strong>alpha_c</strong> : scalar</p>
+<blockquote>
+<p>Power co-efficient for Mannings Equation applied to the channel store
+the value is typically 5/3.</p>
+</blockquote>
+<p><strong>A_thres</strong> : scalar</p>
+<blockquote>
+<p>The minimum area of upstream contributing cells required before a cell
+is considered to initiate a river channel (m^2).</p>
+</blockquote>
+<p><strong>W_min</strong> : scalar</p>
+<blockquote>
+<p>The minimum width of a channel (m).</p>
+</blockquote>
+<p><strong>W_max</strong> : scalar</p>
+<blockquote class="last">
+<p>The maximum width of a channel (m).</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.pretreatment.sort_cell">
+<tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">sort_cell</tt><big>(</big><em>ar_cell_label</em>, <em>ar_cell_down</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.sort_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine a suitable computation order for the cells.</p>
+<p>Sort the cells into a valid computation order based on the distance to the
+outlet of the catchment. This is necessary as each cell depends on the
+contribution from upstream cells.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
+<blockquote>
+<p>Numbers labelling each cell.</p>
+</blockquote>
+<p><strong>ar_cell_down</strong> : (N,) int array</p>
+<blockquote>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
+of the current cell.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_label_sort</strong> : (N,) int array</p>
+<blockquote class="last">
+<p>Sorted array of cell labels.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pytopkapi.utils">
+<h2>Utils module<a class="headerlink" href="#module-pytopkapi.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pytopkapi.utils.CRange">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">CRange</tt><big>(</big><em>ar_x</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.CRange" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the range of an array</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.distance">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">distance</tt><big>(</big><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.distance" title="Permalink to this definition">¶</a></dt>
+<dd>Compute the distance between two points</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.f_axe">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">f_axe</tt><big>(</big><em>p</em>, <em>xc</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.f_axe" title="Permalink to this definition">¶</a></dt>
+<dd>Returns the value in the array xc
+associated to a relative value inside [0,1]</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.find_cell_coordinates">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">find_cell_coordinates</tt><big>(</big><em>ar_cell_label</em>, <em>Xoutlet</em>, <em>Youtlet</em>, <em>ar_coorx</em>, <em>ar_coory</em>, <em>ar_lambda</em>, <em>channel=True</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.find_cell_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the label of the cell closest to (Xoutlet, Youtlet).</p>
+<p>Find the label of the model cell containing the specified location. The
+co-ordinates of the location must be given in the same co-ordinate system
+as that specifying the model catchment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
+<blockquote>
+<p>Numbers labelling each cell.</p>
+</blockquote>
+<p><strong>Xoutlet</strong> : float</p>
+<blockquote>
+<p>The x co-ordinate of a point. This is the Longitude expressed in
+metres using the same projection as <cite>ar_coorx</cite>.</p>
+</blockquote>
+<p><strong>Youtlet</strong> : float</p>
+<blockquote>
+<p>The y co-ordinate of a point. This is the Longitude expressed in
+metres using the same projection as <cite>ar_coory</cite>.</p>
+</blockquote>
+<p><strong>ar_coorx</strong> : (N,) float array</p>
+<blockquote>
+<p>The x co-ordinate of the centre of each cell (m). This is the Longitude
+expressed in metres using a Transverse Mercator projection, but any
+appropriate projection can be used.</p>
+</blockquote>
+<p><strong>ar_coory</strong> : (N,) float array</p>
+<blockquote>
+<p>The y co-ordinate of the centre of each cell (m). This is the Latitude
+expressed in metres using a Transverse Mercator projection, but any
+appropriate projection can be used.</p>
+</blockquote>
+<p><strong>ar_lambda</strong> : (N,) int array</p>
+<blockquote>
+<p>Switch indicating whether the current cell contains a channel. A value
+of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+</blockquote>
+<p><strong>channel</strong> : boolean (default=True)</p>
+<blockquote>
+<p>Allows cells with or without channels to be chosen.</p>
+</blockquote>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>cell_outlet</strong> : int</p>
+<blockquote class="last">
+<p>The label for the cell closest to the defined location.</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.find_dist_max">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">find_dist_max</tt><big>(</big><em>ar_coorx</em>, <em>ar_coory</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.find_dist_max" title="Permalink to this definition">¶</a></dt>
+<dd>Compute the maximum distance between several points defined by their coordinates ar_coorx and ar_coory</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.mov_avg">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">mov_avg</tt><big>(</big><em>ar_float</em>, <em>period</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.mov_avg" title="Permalink to this definition">¶</a></dt>
+<dd>period is a multiple of 2</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.utils.string">
+<tt class="descclassname">pytopkapi.utils.</tt><tt class="descname">string</tt><big>(</big><em>integer</em>, <em>len_str_out</em><big>)</big><a class="headerlink" href="#pytopkapi.utils.string" title="Permalink to this definition">¶</a></dt>
+<dd>From a given integer, return an string of length len_str_out completed by zero
+Example:
+ut.string(1,3)&#8211;&gt;&#8216;001&#8217;</dd></dl>
+
+</div>
+<div class="section" id="interpolation-module">
+<h2>Interpolation module<a class="headerlink" href="#interpolation-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pytopkapi.arcfltgrid">
+<h2>Arcfltgrid module<a class="headerlink" href="#module-pytopkapi.arcfltgrid" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for reading and plotting ArcGIS binary files.</p>
+<p>This module contains some simple functions to make it easier
+to read and plot the data contained in the binary grid files
+produced by ArcGIS.</p>
+<dl class="function">
+<dt id="pytopkapi.arcfltgrid.plot">
+<tt class="descclassname">pytopkapi.arcfltgrid.</tt><tt class="descname">plot</tt><big>(</big><em>bin_name</em>, <em>fig_name</em>, <em>title='Raster Plot'</em><big>)</big><a class="headerlink" href="#pytopkapi.arcfltgrid.plot" title="Permalink to this definition">¶</a></dt>
+<dd>Create a plot of the data in an ArcGIS binary file.</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.arcfltgrid.read">
+<tt class="descclassname">pytopkapi.arcfltgrid.</tt><tt class="descname">read</tt><big>(</big><em>bingrid_name</em><big>)</big><a class="headerlink" href="#pytopkapi.arcfltgrid.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the data field and headers from an ArcGIS binary grid</p>
+<p>This function reads the header and data from the ArcGIS binary
+data files produced by the &#8220;Raster to Float&#8221; tool in ArcGIS 9.1</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.arcfltgrid.read_bin">
+<tt class="descclassname">pytopkapi.arcfltgrid.</tt><tt class="descname">read_bin</tt><big>(</big><em>fname</em><big>)</big><a class="headerlink" href="#pytopkapi.arcfltgrid.read_bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read data from a ArcGIS binary file into an array.</p>
+<p>Read the data from a binary file created by ArcGIS into
+a Numpy array. The file is expected to be in binary format
+with floating point precision. e.g. &#8220;.flt&#8221; extension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pytopkapi.arcfltgrid.read_headers">
+<tt class="descclassname">pytopkapi.arcfltgrid.</tt><tt class="descname">read_headers</tt><big>(</big><em>bingrid_name</em><big>)</big><a class="headerlink" href="#pytopkapi.arcfltgrid.read_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read the ascii headers of the ArcGIS binary grid file</p>
+<p>The headers have the following format:</p>
+<p>ncols         62
+nrows         121
+xllcorner     -288595.47161281
+yllcorner     -3158065.5722693
+cellsize      1000
+NODATA_value  -9999
+byteorder     LSBFIRST</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="developer.html" title="Developer Resources"
+             >previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" >PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+<p align="right">
+  <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
+   Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
+  <br />
+    Last updated on Sep 02, 2010
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
+</p>
+
+  </body>
+</html>

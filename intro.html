@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; TOPKAPI v0.2dev documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.2dev',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
+    <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
+    <link rel="next" title="PyTOPKAPI installation instructions" href="install.html" />
+    <link rel="prev" title="PyTOPKAPI documentation contents" href="contents.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+
+<a href="index.html"><img src="_static/logo.png" border="0" alt="pyTOPKAPI
+logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="PyTOPKAPI documentation contents"
+             accesskey="P">previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" accesskey="U">PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Introduction</a><ul>
+<li><a class="reference external" href="#nota-bene">Nota Bene</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="contents.html"
+                                  title="previous chapter">PyTOPKAPI documentation contents</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="install.html"
+                                  title="next chapter">PyTOPKAPI installation instructions</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/intro.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This manual is aiming at giving to the future users of TOPKAPI the
+keys to handle the TOPKAPI package. It is not a description of the
+theoretical aspects of the TOPKAPI model, nor a detailed description
+of the modelling methodology, although some methodological aspects are
+addressed in the manual. For an all-comprehensive description of the
+theory and methodology associated with the TOPKAPI model, readers will
+refer to the following references: Liu and Todini (2002); Pegram et
+al. (2007); Vischel et al. (2007a) and Vischel et al. (2007b,
+submitted to Water SA).</p>
+<p>There are three main steps in the use of the TOPKAPI model. The first
+step is the creation of the parameter files of the models according
+mainly to the catchment data, as well as the creation of the forcing
+variables (rain and reference crop evapotranspiration fields). The
+second step is to simply run the model with the created inputs. The
+third step is the analysis of the simulations by plotting graphics.</p>
+<div class="section" id="nota-bene">
+<h2>Nota Bene<a class="headerlink" href="#nota-bene" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The extraction of catchment data (mainly by using GIS) as well as
+the creation of forcing fields is left to the initiative of the
+users who are assumed to make use of their own expertise, software
+and numerical tools to do it.</li>
+<li>Numerically speaking, efforts have been made by the developers in
+coding and organising properly the TOPKAPI model itself, so that is
+can be easily run once the parameter files are created.</li>
+<li>Scientifically speaking, it is clear that the most crucial step is
+the creation of the parameter files, and particularly the way they
+are used to link the data available on the catchment, to the
+effective physical parameters required by TOPKAPI. This step
+requires knowledge of hydrology and must be conducted under the
+expertise of the user. However, in order to facilitate the process
+of using TOPKAPI, a module called parameter_utils was included in
+the TOPKAPI package. This module is only a suggestion from the
+developers to help future users in the creation of the parameter
+files starting from the catchment data. However, since this module
+was created for the specific case study on the Liebenbergsvlei
+catchment (4625 km2, South Africa) using the personal choices of the
+developers, it is to be used with care and requires from the user to
+carefully read and sometimes modify the Python codes if different
+applications or scientific choices would have to be made.</li>
+<li>The analysis of the results of the TOPKAPI model is reduced to a
+simple analysis of the simulations, so that the user can rapidly
+evaluate the quality of the run.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="contents.html" title="PyTOPKAPI documentation contents"
+             >previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" >PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+<p align="right">
+  <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
+   Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
+  <br />
+    Last updated on Sep 02, 2010
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
+</p>
+
+  </body>
+</html>

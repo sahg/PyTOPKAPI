@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial &mdash; TOPKAPI v0.2dev documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.2dev',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
+    <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
+    <link rel="next" title="Bug Reports" href="bugs.html" />
+    <link rel="prev" title="PyTOPKAPI installation instructions" href="install.html" /> 
+  </head>
+  <body>
+
+<div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
+
+<a href="index.html"><img src="_static/logo.png" border="0" alt="pyTOPKAPI
+logo"/></a>
+</div>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="bugs.html" title="Bug Reports"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             accesskey="P">previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" accesskey="U">PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Tutorial</a><ul>
+<li><a class="reference external" href="#description-of-the-example">Description of the example</a></li>
+<li><a class="reference external" href="#running-the-model">Running the model</a><ul>
+<li><a class="reference external" href="#input-data">Input data</a></li>
+<li><a class="reference external" href="#id1">Tutorial</a><ul>
+<li><a class="reference external" href="#open-a-python-shell">Open a Python shell</a></li>
+<li><a class="reference external" href="#run-the-model">Run the model</a></li>
+<li><a class="reference external" href="#analysing-the-simulations">Analysing the simulations</a></li>
+<li><a class="reference external" href="#plot-of-the-soil-moisture-maps">Plot of the soil moisture maps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="install.html"
+                                  title="previous chapter">PyTOPKAPI installation instructions</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="bugs.html"
+                                  title="next chapter">Bug Reports</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/tutorial.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<p>A tutorial introduction to using the PyTOPKAPI model is provided by
+way of an example simulation, set-up for the Liebenbergsvlei catchment
+in central South Africa.</p>
+<div class="section" id="description-of-the-example">
+<h2>Description of the example<a class="headerlink" href="#description-of-the-example" title="Permalink to this headline">¶</a></h2>
+<p>The example consists of a simulation of 42 days (lasting from
+15/03/2000 to 26/04/2000) over a sub-catchment (3563 km2, defined by
+the flow station 2 in Figure 1 – station labelled C8H020) of the
+Liebenbergsvlei catchment. The simulations will be achieved at a
+6-hour time-step at a spatial resolution of 1 km.</p>
+<div class="figure align-center">
+<img alt="Sub-catchment layout" src="_images/sub-catchment-layout.png" />
+<p class="caption"><strong>Figure 1:</strong> The Liebenbergsvlei catchment (delimited by the flow
+station 1) and the simulated sub-catchment in pink (delimited by
+the flow station 2).</p>
+</div>
+</div>
+<div class="section" id="running-the-model">
+<h2>Running the model<a class="headerlink" href="#running-the-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="input-data">
+<h3>Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h3>
+<p>In the directory TOPKAPI_Example/ is a directory called run_the_model/
+that contains one file (TOPKAPI.ini) and two sub-directories
+(forcing_variables/ and parameter_files/).</p>
+<p>In the directory forcing_variables/ are 3 files:</p>
+<p><em>rainfield.h5 and ET.h5</em>: these two files are respectively the rain
+fields and the evapotranspiration fields. The files are compressed
+binary files in a HDF5 format. The file structure can be easily seen
+(Figure 2) with the interface software HDF_Explorer provided in the
+directory Software_package. The file rainfields.h5 and ET.h5 are both
+composed of 1 group called sample_event. For the file rainfields.h5
+the group contains one table called rainfall. For the file ET.h5 the
+group contains two tables called ETr and ETo, being respectively the
+reference crop evapotranspiration and the free surface reference
+evapotranspiration. In the tables rainfall, ETr and ETo the columns
+are the cells and the lines are the time steps.</p>
+<p><em>external_lesotho_flows.dat</em>: this file contains the external flows
+coming from Lesotho via the inter-basin transfer tunnel whose outlet
+is located at the Southern part of the catchment (see Figure 1). It is
+a simple 6 columns format in an ASCII format file containing the date
+(year, month, day, hour, minute) and the discharge at the outlet of
+the tunnel in m3/s (Figure 3).</p>
+<div class="figure align-center">
+<img alt="Forcing variables" src="_images/forcing-vars-HDFExplorer.png" />
+<p class="caption"><strong>Figure 2:</strong> Forcing variable file rainfields.h5 and ET.h5
+visualized with the software HDF_Explorer.</p>
+</div>
+<div class="figure align-center">
+<img alt="External flows ASCII" src="_images/ext-flows.png" />
+<p class="caption"><strong>Figure 3:</strong> File external_lesotho_flows.dat : a simple column
+ASCII format containing the external flows coming in the catchment
+from the Lesotho by a tunnel.</p>
+</div>
+<p>The directory parameter_files/ contains the two parameter files
+required by the TOPKAPI model:</p>
+<p><em>global_param.dat</em>: it is an ASCII file containing all the parameters
+that are constant in the model. In the first line are the names of the
+variables. The values of the variables are reported in the second line
+(Figure 4).</p>
+<div class="figure align-center">
+<img alt="Global parameter file" src="_images/global-params.png" />
+<p class="caption"><strong>Figure 4:</strong> File global_param.dat: an ASCII file containing all
+the parameters that are constant for a given catchment.</p>
+</div>
+<p>From left to right in the file the reported parameters are:</p>
+<p><img src="_images/mathmpl/math-2e2dc6b383.png" style="position: relative; bottom: -3px"/> is the lateral dimension of the grid-cell (in <img src="_images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>).</p>
+<p><img src="_images/mathmpl/math-ed0e38201a.png" style="position: relative; bottom: -3px"/> is the time step of the model (in s)</p>
+<p><img src="_images/mathmpl/math-b46d478083.png" style="position: relative; bottom: -8px"/> is a dimensionless pore-size distribution parameter
+(Brooks and Corey, 1964)</p>
+<p><img src="_images/mathmpl/math-1f803fd483.png" style="position: relative; bottom: -8px"/> and <img src="_images/mathmpl/math-df8cea4b1c.png" style="position: relative; bottom: -8px"/> are the well known power
+coefficient equal to 5/3 originating from Manning’s equation.</p>
+<p><img src="_images/mathmpl/math-15dff6441c.png" style="position: relative; bottom: -8px"/> is the area over which a cell is considered to
+initiate a river channel (in <img src="_images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
+<p><img src="_images/mathmpl/math-25ee2f8805.png" style="position: relative; bottom: -8px"/> is the minimum width of channel (in m)</p>
+<p><img src="_images/mathmpl/math-db500d88f6.png" style="position: relative; bottom: -8px"/> is the maximum width of channel (in m)</p>
+<p><em>cell_param.dat</em>: it is an ASCII file containing all the parameters that
+are spatially variable in the model. It is composed of 17 columns
+corresponding to 17 parameters (see Figure 5). Each line is a
+catchment cell, thus for our example (catchment area of 3563 km2 at a
+resolution of 1km2) the file is composed of 3563 lines.</p>
+<div class="figure align-center">
+<img alt="Cell parameter file" src="_images/cell-params.png" />
+<p class="caption"><strong>Figure 5:</strong> File cell_param.dat: an ASCII file containing all the
+parameters that are spatially variable in the model.</p>
+</div>
+<p>From left to right in the file the parameters are (note that the
+parameters are not labelled inside the file, but we identify them here
+by their column labels in the Excel list in Figure 5):</p>
+<ol class="upperalpha simple">
+<li>cell_label an integer labelling the cell</li>
+<li>coorx the longitude of the centre of the cell (in UTM)</li>
+<li>coory the latitude of the centre of the cell (in UTM)</li>
+<li><img src="_images/mathmpl/math-3642ca147d.png" style="position: relative; bottom: -3px"/> equal to 1 if the cell is a channel cell, 0
+otherwise.</li>
+<li><img src="_images/mathmpl/math-d0b25d34b3.png" style="position: relative; bottom: -8px"/> is the length of the channel cell (in m)</li>
+<li>Dam 1 if the cell is a dam cell, 0 otherwise. (This option is not
+yet available in the model, but space is open for further
+developments)</li>
+<li><img src="_images/mathmpl/math-957e5f0096.png" style="position: relative; bottom: -8px"/> the tangent of the ground slope angle
+<img src="_images/mathmpl/math-59ed813421.png" style="position: relative; bottom: -7px"/></li>
+<li><img src="_images/mathmpl/math-30877764d0.png" style="position: relative; bottom: -8px"/> the tangent of the channel slope angle
+<img src="_images/mathmpl/math-f6b39ab842.png" style="position: relative; bottom: -8px"/></li>
+<li><img src="_images/mathmpl/math-ca81ba2587.png" style="position: relative; bottom: -3px"/> the soil depth (in <img src="_images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</li>
+<li><img src="_images/mathmpl/math-96480717f2.png" style="position: relative; bottom: -8px"/> the saturated hydraulic conductivity (in <img src="_images/mathmpl/math-2626b18fd3.png" style="position: relative; bottom: -8px"/>)</li>
+<li><img src="_images/mathmpl/math-129a8495f8.png" style="position: relative; bottom: -8px"/> the residual soil moisture content</li>
+<li><img src="_images/mathmpl/math-e5ce1f1a76.png" style="position: relative; bottom: -8px"/> the saturated soil moisture content</li>
+<li><img src="_images/mathmpl/math-fd40310fa9.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for overland flows</li>
+<li><img src="_images/mathmpl/math-c1d6811dab.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for the channel
+flows</li>
+<li><em>cell_down</em> the label of the cell down.</li>
+<li><img src="_images/mathmpl/math-62209a8d32.png" style="position: relative; bottom: -8px"/> the initial saturation of the soil reservoir (in
+%)</li>
+<li><img src="_images/mathmpl/math-90e21ca112.png" style="position: relative; bottom: -8px"/> the initial water content of the overland
+reservoir (in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</li>
+<li><img src="_images/mathmpl/math-e8d80f6336.png" style="position: relative; bottom: -8px"/> the initial discharge in the channel (in
+<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</li>
+<li><img src="_images/mathmpl/math-80e1604ffa.png" style="position: relative; bottom: -8px"/> the crop coefficient</li>
+</ol>
+<p>TOPKAPI.ini (in the directory run_the_model) is the input file (text
+file) required to run the model.  It contains 6 main labels
+(<cite>[input_files]</cite>, <cite>[output_files]</cite>, <cite>[groups]</cite>, <cite>[external_flow]</cite>,
+<cite>[numerical_options]</cite> and <cite>[calib_params]</cite>, see Figure 6).</p>
+<p>In <cite>[input_files]</cite> are reported all the parameter and forcing files
+required by the model (labelled as file_global_param, file_cell_param,
+file_rain, file_ET).</p>
+<p>In <cite>[output_files]</cite> is reported file_out an HDF format file in which
+will be written the simulation results.</p>
+<p>In <cite>[groups]</cite> is reported the name of the group considered in the
+forcing HDF files.</p>
+<p>In <cite>[external_flow]</cite> are reported: a Boolean parameter called
+external_flow, which is True when external flows are coming into the
+catchment, False otherwise; the coordinates Xexternal_flow and
+Yexternal_flow of the point where the flows come in;
+file_Qexternal_flow the file containing the discharge series of
+external flows.</p>
+<p>In <cite>[numerical_options]</cite> are reported three variable solve_s, solve_o,
+solve_c, which take the value 1 to solve the ODE of respectively the
+soil, overland and channel reservoir by using a combination between
+the Quasi Analytical Solution and the Runge Kutta Fehlberg methods,
+the value 0 is set when only the Runge Kutta Felhberg method is to be
+used.</p>
+<p>In <cite>[calib_params]</cite> are reported the four multiplying factors fac_L,
+fac_Ks, fac_n_o and fac_n_c that are applied on the a priori estimated
+parameters L, Ks, n_o and n_c. The factors proposed in the example
+come from the calibration procedure realized on the Liebenbergsvlei
+catchment.</p>
+<div class="figure align-center">
+<img alt="Main configuration file" src="_images/topkapi-ini.png" />
+<p class="caption"><strong>Figure 6:</strong> TOPKAPI.ini is the input file (text file) required to
+run the model.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h3>Tutorial<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Open the directory TOPKAPI_Example/. It contains three sub-directories
+that correspond to the three steps of the process presented in the
+introduction (create_the_parameter_files, run_the_model and
+analyse_the_results).  In addition there is a small file called
+run_example.py which is a Python command file, designed to run the
+tutorial in one action.  The following discussion takes the reader
+step-by-step through the process to provide a better idea of the
+structure of the processes.</p>
+<div class="section" id="open-a-python-shell">
+<h4>Open a Python shell<a class="headerlink" href="#open-a-python-shell" title="Permalink to this headline">¶</a></h4>
+<p>Open a command shell for Python.
+If you installed IPython on Windows then click on Start-All programs-IPython.</p>
+</div>
+<div class="section" id="run-the-model">
+<h4>Run the model<a class="headerlink" href="#run-the-model" title="Permalink to this headline">¶</a></h4>
+<p>Type the following commands in the Python Shell (the shell commands
+are hereafter highlighted in grey):</p>
+<div class="highlight-python"><pre># import the package pytopkapi
+import pytopkapi
+# navigate to the TOPKAPI_Example directory
+cd C:\ … \TOPKAPI_Example
+# Run the model using the supplied configuration
+pytopkapi.model.run('run_the_model/TOPKAPI.ini')</pre>
+</div>
+<p>The simulation starts and will last around 3 to 5 minutes depending on
+your machine. Some comments are written and the number of time steps
+(to 169 of 6 hours each) scrolls followed by ‘<strong>*</strong> THE END <strong>*</strong>’.
+Leave the iPython window open - we will use it shortly.</p>
+<p>At the end of the simulation, a folder <cite>results</cite> should have been
+created in the run_the_model folder, containing an HDF5 file called
+Example_simulation_results.h5; to open it you will have to associate
+the file (if it’s the first <a href="#id2"><span class="problematic" id="id3">*</span></a>.h5 file you’ve opened) with
+HDF_Explorer. This file is composed of three groups: Channel, Overland
+and Soil. The group Channel contains the table Qc_out that is the
+channel flow of each cell (in m3/s) [to view a file’s content, double
+click on the little green square under the yellow label in the left
+panel of the window - see Figure 7.]  The group Overland contains the
+table V_o that is the volume of the overland reservoir (in m3). The
+group Soil contains the table V_s that is the volume of the soil
+reservoir (in m3). For the three tables Qc_out, V_o and V_s, the 3563
+columns are the cells and the 170 rows are the time steps.</p>
+<div class="figure align-center">
+<img alt="Simulation results" src="_images/sim-results.png" />
+<p class="caption"><strong>Figure 7:</strong> File Example_simulation_results.h5 in which are
+written the simulation results.</p>
+</div>
+</div>
+<div class="section" id="analysing-the-simulations">
+<h4>Analysing the simulations<a class="headerlink" href="#analysing-the-simulations" title="Permalink to this headline">¶</a></h4>
+<p>The analysis of the simulations consist of two simple modules that
+allow the user to (i) plot the rainfall-runoff graphic (simulated and
+observed discharge and rainfall on the same graph), module called
+plot_Qsim_Qobs_Rain and (ii) plot maps of soil moisture over the
+catchment, module called plot_soil_moisture_maps.</p>
+<p>a.Plot of the rainfall runoff graphic</p>
+<p>The directory TOPKAPI_Example/ contains a directory called
+analyse_the_results/.  In analyse_the_results/ the results are three
+files amongst them plot_Qsim_Qobs_Rain.ini and
+C8H020_6h_Obs_Example.dat.</p>
+<p>C8H020_6h_Obs_Example.dat is an ASCII file in a column format
+containing the date and the value of discharge (in <img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>) at
+the flow station at the outlet of the simulated catchment (station
+labelled 2 in Figure 1).</p>
+<p>plot_Qsim_Qobs_Rain.ini is the input file to the module
+plot_Qsim_Qobs_Rain. As reported on Figure 8, it contains three items
+[files], [groups] and [flags]. In [files] are reported all the input
+files required by the program as well as the output file which must be
+ended by a typical picture format (<a href="#id4"><span class="problematic" id="id5">*</span></a>.png, <a href="#id6"><span class="problematic" id="id7">*</span></a>.jpg, …). In [groups] is
+reported the name of the group to look in the result of simulation
+file. With [flags] are associated three Boolean that correspond to
+different options in the graphic: Qobs must be True to plot the
+observed discharges, Pobs must be True to plot the observed rainfall
+and nash must be True to write on the graph the Nash efficiency
+comparing observed and simulated discharges.</p>
+<div class="figure align-center">
+<img alt="Simulation results" src="_images/plot-ini.png" />
+<p class="caption"><strong>Figure 8:</strong> File plot_Qsim_Qobs_Rain.ini, input file to the
+module plot_Qsim_Qobs_Rain.</p>
+</div>
+<p>In the Python shell, import the module plot_Qsim_Qobs_Rain</p>
+<div class="highlight-python"><pre>ln [4]: from TOPKAPI.results_analysis import plot_Qsim_Qobs_Rain
+# Create a plot of the simulated and observed discharge records
+ln [5]: plot_Qsim_Qobs_Rain.run('analyse_the_results/plot_Qsim_Qobs_Rain.ini')</pre>
+</div>
+<p>This should create an image file called
+Example_simulation_Qsim_Qobs_P_color.png (Figure 9) in the directory
+TOPKAPI_Example/analyse_the_results/graphics.</p>
+<div class="figure align-center">
+<img alt="Simulation results" src="_images/flow-rain.png" />
+<p class="caption"><strong>Figure 9:</strong> The image file
+Example_simulation_Qsim_Qobs_P_color.png.</p>
+</div>
+</div>
+<div class="section" id="plot-of-the-soil-moisture-maps">
+<h4>Plot of the soil moisture maps<a class="headerlink" href="#plot-of-the-soil-moisture-maps" title="Permalink to this headline">¶</a></h4>
+<p>In the directory TOPKAPI_Example/analyse_the_results., the last of
+three files is plot_soil_moisture_maps.ini. As reported on Figure 10,
+it contains three items <cite>[files]</cite>, <cite>[paths]</cite> <cite>[calib_params]</cite> and
+<cite>[flags]</cite>.</p>
+<p><cite>[files]</cite> contains all the input files required by the program meaning
+the two parameter files of the TOPKAPI model (cell and global), and
+the result of simulation file.</p>
+<p>In <cite>[paths]</cite> is reported the path in which the maps will be saved.</p>
+<p>In <cite>[calib_params]</cite> are reported the four multiplying factors fac_L,
+fac_Ks, fac_n_o and fac_n_c that were applied in the TOPKAPI
+simulation (see Section 2.1).</p>
+<p>In <cite>[flags]</cite> are reported several variables required by the program:
+the maps will be plotted from the time step t1 to the time step t2,
+the first time step at the beginning of the simulation being 0. Four
+choices (1,2,3 or 4) are available for the variable called variable
+which determines which variable is to be plotted among (1) the soil
+moisture content i.e. the volume of the soil reservoir in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>,
+(2) the water content of the overland i.e. the volume of the overland
+reservoir in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>, (3) the saturation binary index which is 1
+for the saturated cells, 0 otherwise, (4) the soil water index
+i.e. the saturation rate of the cell in %.</p>
+<div class="figure align-center">
+<img alt="SSI ini file" src="_images/soil-moisture-ini.png" />
+<p class="caption"><strong>Figure 10:</strong> File plot_Qsim_Qobs_Rain.ini, input file to the
+module plot_Qsim_Qobs_Rain.</p>
+</div>
+<dl class="docutils">
+<dt>In the Python shell, import the module plot_soil_moisture_maps::</dt>
+<dd>ln [6]: from TOPKAPI.results_analysis import plot_soil_moisture_maps
+#Create a plot of soil moisture maps
+ln [7]: plot_soil_moisture_maps.run(&#8216;analyse_the_results/plot_soil_moisture_maps.ini&#8217;)</dd>
+</dl>
+<p>This should create 20 pictures called field_SWI_0001.png,…,
+field_SWI_0020.png in the directory
+TOPKAPI_Example/analyse_the_results/maps. One of them is plotted on
+Figure 11.</p>
+<div class="figure align-center">
+<img alt="Simulated SSI map" src="_images/field_SWI_0006.png" />
+<p class="caption"><strong>Figure 11:</strong> One of the 20 soil moisture maps (here the Soil
+Water Index is plotted) as a result of the program
+plot_soil_moisture_maps.</p>
+</div>
+<p><strong>Nota Bene</strong></p>
+<p>Alternatively the entire process (from running the model to analysing
+the results) can be produced by running the script contained in the
+file run_example.py located in TOPKAPI_Example/.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytopkapi</span>
+
+<span class="c"># run a model simulation using the configuration in TOPKAPI.ini</span>
+<span class="n">pytopkapi</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;run_the_model/TOPKAPI.ini&#39;</span><span class="p">)</span>
+
+<span class="c"># plot the simulation results (rainfall-runoff graphics) using the</span>
+<span class="c"># config in plot_Qsim_Qobs_Rain.ini</span>
+<span class="kn">from</span> <span class="nn">pytopkapi.results_analysis</span> <span class="kn">import</span> <span class="n">plot_Qsim_Qobs_Rain</span>
+
+<span class="n">plot_Qsim_Qobs_Rain</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;analyse_the_results/plot_Qsim_Qobs_Rain.ini&#39;</span><span class="p">)</span>
+
+
+<span class="c"># plot the simulation results (soil moisture maps) using the config in</span>
+<span class="c"># plot_soil_moisture_maps.ini</span>
+<span class="kn">from</span> <span class="nn">pytopkapi.results_analysis</span> <span class="kn">import</span> <span class="n">plot_soil_moisture_maps</span>
+
+<span class="n">plot_soil_moisture_maps</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s">&#39;analyse_the_results/plot_soil_moisture_maps.ini&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bugs.html" title="Bug Reports"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="PyTOPKAPI installation instructions"
+             >previous</a> |</li>
+  <li><a href="index.html">Home</a>|&nbsp;</li>
+  <li><a href="search.html">Search</a>|&nbsp;</li>
+
+          <li><a href="contents.html" >PyTOPKAPI documentation contents</a> &raquo;</li> 
+      </ul>
+    </div>
+<p align="right">
+  <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
+   Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
+  <br />
+    Last updated on Sep 02, 2010
+   | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
+</p>
+
+  </body>
+</html>
