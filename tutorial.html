@@ -6,8 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Tutorial &mdash; TOPKAPI v0.2dev documentation</title>
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
@@ -17,8 +17,8 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
     <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
     <link rel="next" title="Bug Reports" href="bugs.html" />
@@ -28,7 +28,7 @@
 
 <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
 
-<a href="index.html"><img src="_static/logo.png" border="0" alt="pyTOPKAPI
+<a href="index.html"><img src="static/logo.png" border="0" alt="pyTOPKAPI
 logo"/></a>
 </div>
 
@@ -83,7 +83,7 @@ logo"/></a>
                                   title="next chapter">Bug Reports</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/tutorial.txt"
+              <li><a href="sources/tutorial.txt"
                      rel="nofollow">Show Source</a></li>
             </ul>
           <div id="searchbox" style="display: none">
@@ -120,7 +120,7 @@ the flow station 2 in Figure 1 – station labelled C8H020) of the
 Liebenbergsvlei catchment. The simulations will be achieved at a
 6-hour time-step at a spatial resolution of 1 km.</p>
 <div class="figure align-center">
-<img alt="Sub-catchment layout" src="_images/sub-catchment-layout.png" />
+<img alt="Sub-catchment layout" src="images/sub-catchment-layout.png" />
 <p class="caption"><strong>Figure 1:</strong> The Liebenbergsvlei catchment (delimited by the flow
 station 1) and the simulated sub-catchment in pink (delimited by
 the flow station 2).</p>
@@ -152,12 +152,12 @@ a simple 6 columns format in an ASCII format file containing the date
 (year, month, day, hour, minute) and the discharge at the outlet of
 the tunnel in m3/s (Figure 3).</p>
 <div class="figure align-center">
-<img alt="Forcing variables" src="_images/forcing-vars-HDFExplorer.png" />
+<img alt="Forcing variables" src="images/forcing-vars-HDFExplorer.png" />
 <p class="caption"><strong>Figure 2:</strong> Forcing variable file rainfields.h5 and ET.h5
 visualized with the software HDF_Explorer.</p>
 </div>
 <div class="figure align-center">
-<img alt="External flows ASCII" src="_images/ext-flows.png" />
+<img alt="External flows ASCII" src="images/ext-flows.png" />
 <p class="caption"><strong>Figure 3:</strong> File external_lesotho_flows.dat : a simple column
 ASCII format containing the external flows coming in the catchment
 from the Lesotho by a tunnel.</p>
@@ -169,28 +169,28 @@ that are constant in the model. In the first line are the names of the
 variables. The values of the variables are reported in the second line
 (Figure 4).</p>
 <div class="figure align-center">
-<img alt="Global parameter file" src="_images/global-params.png" />
+<img alt="Global parameter file" src="images/global-params.png" />
 <p class="caption"><strong>Figure 4:</strong> File global_param.dat: an ASCII file containing all
 the parameters that are constant for a given catchment.</p>
 </div>
 <p>From left to right in the file the reported parameters are:</p>
-<p><img src="_images/mathmpl/math-2e2dc6b383.png" style="position: relative; bottom: -3px"/> is the lateral dimension of the grid-cell (in <img src="_images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>).</p>
-<p><img src="_images/mathmpl/math-ed0e38201a.png" style="position: relative; bottom: -3px"/> is the time step of the model (in s)</p>
-<p><img src="_images/mathmpl/math-b46d478083.png" style="position: relative; bottom: -8px"/> is a dimensionless pore-size distribution parameter
+<p><img src="images/mathmpl/math-2e2dc6b383.png" style="position: relative; bottom: -3px"/> is the lateral dimension of the grid-cell (in <img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>).</p>
+<p><img src="images/mathmpl/math-ed0e38201a.png" style="position: relative; bottom: -3px"/> is the time step of the model (in s)</p>
+<p><img src="images/mathmpl/math-b46d478083.png" style="position: relative; bottom: -8px"/> is a dimensionless pore-size distribution parameter
 (Brooks and Corey, 1964)</p>
-<p><img src="_images/mathmpl/math-1f803fd483.png" style="position: relative; bottom: -8px"/> and <img src="_images/mathmpl/math-df8cea4b1c.png" style="position: relative; bottom: -8px"/> are the well known power
+<p><img src="images/mathmpl/math-1f803fd483.png" style="position: relative; bottom: -8px"/> and <img src="images/mathmpl/math-df8cea4b1c.png" style="position: relative; bottom: -8px"/> are the well known power
 coefficient equal to 5/3 originating from Manning’s equation.</p>
-<p><img src="_images/mathmpl/math-15dff6441c.png" style="position: relative; bottom: -8px"/> is the area over which a cell is considered to
-initiate a river channel (in <img src="_images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
-<p><img src="_images/mathmpl/math-25ee2f8805.png" style="position: relative; bottom: -8px"/> is the minimum width of channel (in m)</p>
-<p><img src="_images/mathmpl/math-db500d88f6.png" style="position: relative; bottom: -8px"/> is the maximum width of channel (in m)</p>
+<p><img src="images/mathmpl/math-15dff6441c.png" style="position: relative; bottom: -8px"/> is the area over which a cell is considered to
+initiate a river channel (in <img src="images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
+<p><img src="images/mathmpl/math-25ee2f8805.png" style="position: relative; bottom: -8px"/> is the minimum width of channel (in m)</p>
+<p><img src="images/mathmpl/math-db500d88f6.png" style="position: relative; bottom: -8px"/> is the maximum width of channel (in m)</p>
 <p><em>cell_param.dat</em>: it is an ASCII file containing all the parameters that
 are spatially variable in the model. It is composed of 17 columns
 corresponding to 17 parameters (see Figure 5). Each line is a
 catchment cell, thus for our example (catchment area of 3563 km2 at a
 resolution of 1km2) the file is composed of 3563 lines.</p>
 <div class="figure align-center">
-<img alt="Cell parameter file" src="_images/cell-params.png" />
+<img alt="Cell parameter file" src="images/cell-params.png" />
 <p class="caption"><strong>Figure 5:</strong> File cell_param.dat: an ASCII file containing all the
 parameters that are spatially variable in the model.</p>
 </div>
@@ -201,31 +201,31 @@ by their column labels in the Excel list in Figure 5):</p>
 <li>cell_label an integer labelling the cell</li>
 <li>coorx the longitude of the centre of the cell (in UTM)</li>
 <li>coory the latitude of the centre of the cell (in UTM)</li>
-<li><img src="_images/mathmpl/math-3642ca147d.png" style="position: relative; bottom: -3px"/> equal to 1 if the cell is a channel cell, 0
+<li><img src="images/mathmpl/math-3642ca147d.png" style="position: relative; bottom: -3px"/> equal to 1 if the cell is a channel cell, 0
 otherwise.</li>
-<li><img src="_images/mathmpl/math-d0b25d34b3.png" style="position: relative; bottom: -8px"/> is the length of the channel cell (in m)</li>
+<li><img src="images/mathmpl/math-d0b25d34b3.png" style="position: relative; bottom: -8px"/> is the length of the channel cell (in m)</li>
 <li>Dam 1 if the cell is a dam cell, 0 otherwise. (This option is not
 yet available in the model, but space is open for further
 developments)</li>
-<li><img src="_images/mathmpl/math-957e5f0096.png" style="position: relative; bottom: -8px"/> the tangent of the ground slope angle
-<img src="_images/mathmpl/math-59ed813421.png" style="position: relative; bottom: -7px"/></li>
-<li><img src="_images/mathmpl/math-30877764d0.png" style="position: relative; bottom: -8px"/> the tangent of the channel slope angle
-<img src="_images/mathmpl/math-f6b39ab842.png" style="position: relative; bottom: -8px"/></li>
-<li><img src="_images/mathmpl/math-ca81ba2587.png" style="position: relative; bottom: -3px"/> the soil depth (in <img src="_images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</li>
-<li><img src="_images/mathmpl/math-96480717f2.png" style="position: relative; bottom: -8px"/> the saturated hydraulic conductivity (in <img src="_images/mathmpl/math-2626b18fd3.png" style="position: relative; bottom: -8px"/>)</li>
-<li><img src="_images/mathmpl/math-129a8495f8.png" style="position: relative; bottom: -8px"/> the residual soil moisture content</li>
-<li><img src="_images/mathmpl/math-e5ce1f1a76.png" style="position: relative; bottom: -8px"/> the saturated soil moisture content</li>
-<li><img src="_images/mathmpl/math-fd40310fa9.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for overland flows</li>
-<li><img src="_images/mathmpl/math-c1d6811dab.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for the channel
+<li><img src="images/mathmpl/math-957e5f0096.png" style="position: relative; bottom: -8px"/> the tangent of the ground slope angle
+<img src="images/mathmpl/math-59ed813421.png" style="position: relative; bottom: -7px"/></li>
+<li><img src="images/mathmpl/math-30877764d0.png" style="position: relative; bottom: -8px"/> the tangent of the channel slope angle
+<img src="images/mathmpl/math-f6b39ab842.png" style="position: relative; bottom: -8px"/></li>
+<li><img src="images/mathmpl/math-ca81ba2587.png" style="position: relative; bottom: -3px"/> the soil depth (in <img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</li>
+<li><img src="images/mathmpl/math-96480717f2.png" style="position: relative; bottom: -8px"/> the saturated hydraulic conductivity (in <img src="images/mathmpl/math-2626b18fd3.png" style="position: relative; bottom: -8px"/>)</li>
+<li><img src="images/mathmpl/math-129a8495f8.png" style="position: relative; bottom: -8px"/> the residual soil moisture content</li>
+<li><img src="images/mathmpl/math-e5ce1f1a76.png" style="position: relative; bottom: -8px"/> the saturated soil moisture content</li>
+<li><img src="images/mathmpl/math-fd40310fa9.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for overland flows</li>
+<li><img src="images/mathmpl/math-c1d6811dab.png" style="position: relative; bottom: -8px"/> the Manning’s roughness coefficient for the channel
 flows</li>
 <li><em>cell_down</em> the label of the cell down.</li>
-<li><img src="_images/mathmpl/math-62209a8d32.png" style="position: relative; bottom: -8px"/> the initial saturation of the soil reservoir (in
+<li><img src="images/mathmpl/math-62209a8d32.png" style="position: relative; bottom: -8px"/> the initial saturation of the soil reservoir (in
 %)</li>
-<li><img src="_images/mathmpl/math-90e21ca112.png" style="position: relative; bottom: -8px"/> the initial water content of the overland
-reservoir (in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</li>
-<li><img src="_images/mathmpl/math-e8d80f6336.png" style="position: relative; bottom: -8px"/> the initial discharge in the channel (in
-<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</li>
-<li><img src="_images/mathmpl/math-80e1604ffa.png" style="position: relative; bottom: -8px"/> the crop coefficient</li>
+<li><img src="images/mathmpl/math-90e21ca112.png" style="position: relative; bottom: -8px"/> the initial water content of the overland
+reservoir (in <img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</li>
+<li><img src="images/mathmpl/math-e8d80f6336.png" style="position: relative; bottom: -8px"/> the initial discharge in the channel (in
+<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</li>
+<li><img src="images/mathmpl/math-80e1604ffa.png" style="position: relative; bottom: -8px"/> the crop coefficient</li>
 </ol>
 <p>TOPKAPI.ini (in the directory run_the_model) is the input file (text
 file) required to run the model.  It contains 6 main labels
@@ -256,7 +256,7 @@ parameters L, Ks, n_o and n_c. The factors proposed in the example
 come from the calibration procedure realized on the Liebenbergsvlei
 catchment.</p>
 <div class="figure align-center">
-<img alt="Main configuration file" src="_images/topkapi-ini.png" />
+<img alt="Main configuration file" src="images/topkapi-ini.png" />
 <p class="caption"><strong>Figure 6:</strong> TOPKAPI.ini is the input file (text file) required to
 run the model.</p>
 </div>
@@ -305,7 +305,7 @@ group Soil contains the table V_s that is the volume of the soil
 reservoir (in m3). For the three tables Qc_out, V_o and V_s, the 3563
 columns are the cells and the 170 rows are the time steps.</p>
 <div class="figure align-center">
-<img alt="Simulation results" src="_images/sim-results.png" />
+<img alt="Simulation results" src="images/sim-results.png" />
 <p class="caption"><strong>Figure 7:</strong> File Example_simulation_results.h5 in which are
 written the simulation results.</p>
 </div>
@@ -323,7 +323,7 @@ analyse_the_results/.  In analyse_the_results/ the results are three
 files amongst them plot_Qsim_Qobs_Rain.ini and
 C8H020_6h_Obs_Example.dat.</p>
 <p>C8H020_6h_Obs_Example.dat is an ASCII file in a column format
-containing the date and the value of discharge (in <img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>) at
+containing the date and the value of discharge (in <img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>) at
 the flow station at the outlet of the simulated catchment (station
 labelled 2 in Figure 1).</p>
 <p>plot_Qsim_Qobs_Rain.ini is the input file to the module
@@ -338,7 +338,7 @@ observed discharges, Pobs must be True to plot the observed rainfall
 and nash must be True to write on the graph the Nash efficiency
 comparing observed and simulated discharges.</p>
 <div class="figure align-center">
-<img alt="Simulation results" src="_images/plot-ini.png" />
+<img alt="Simulation results" src="images/plot-ini.png" />
 <p class="caption"><strong>Figure 8:</strong> File plot_Qsim_Qobs_Rain.ini, input file to the
 module plot_Qsim_Qobs_Rain.</p>
 </div>
@@ -351,7 +351,7 @@ ln [5]: plot_Qsim_Qobs_Rain.run('analyse_the_results/plot_Qsim_Qobs_Rain.ini')</
 Example_simulation_Qsim_Qobs_P_color.png (Figure 9) in the directory
 TOPKAPI_Example/analyse_the_results/graphics.</p>
 <div class="figure align-center">
-<img alt="Simulation results" src="_images/flow-rain.png" />
+<img alt="Simulation results" src="images/flow-rain.png" />
 <p class="caption"><strong>Figure 9:</strong> The image file
 Example_simulation_Qsim_Qobs_P_color.png.</p>
 </div>
@@ -374,13 +374,13 @@ the maps will be plotted from the time step t1 to the time step t2,
 the first time step at the beginning of the simulation being 0. Four
 choices (1,2,3 or 4) are available for the variable called variable
 which determines which variable is to be plotted among (1) the soil
-moisture content i.e. the volume of the soil reservoir in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>,
+moisture content i.e. the volume of the soil reservoir in <img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>,
 (2) the water content of the overland i.e. the volume of the overland
-reservoir in <img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>, (3) the saturation binary index which is 1
+reservoir in <img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>, (3) the saturation binary index which is 1
 for the saturated cells, 0 otherwise, (4) the soil water index
 i.e. the saturation rate of the cell in %.</p>
 <div class="figure align-center">
-<img alt="SSI ini file" src="_images/soil-moisture-ini.png" />
+<img alt="SSI ini file" src="images/soil-moisture-ini.png" />
 <p class="caption"><strong>Figure 10:</strong> File plot_Qsim_Qobs_Rain.ini, input file to the
 module plot_Qsim_Qobs_Rain.</p>
 </div>
@@ -395,7 +395,7 @@ field_SWI_0020.png in the directory
 TOPKAPI_Example/analyse_the_results/maps. One of them is plotted on
 Figure 11.</p>
 <div class="figure align-center">
-<img alt="Simulated SSI map" src="_images/field_SWI_0006.png" />
+<img alt="Simulated SSI map" src="images/field_SWI_0006.png" />
 <p class="caption"><strong>Figure 11:</strong> One of the 20 soil moisture maps (here the Soil
 Water Index is plotted) as a result of the program
 plot_soil_moisture_maps.</p>
@@ -459,7 +459,7 @@ file run_example.py located in TOPKAPI_Example/.</p>
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 02, 2010
+    Last updated on Sep 03, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 

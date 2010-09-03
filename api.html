@@ -6,8 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>PyTOPKAPI API Documentation &mdash; TOPKAPI v0.2dev documentation</title>
-    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
@@ -17,8 +17,8 @@
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
     <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
     <link rel="next" title="PyTOPKAPI installation instructions" href="install.html" />
@@ -28,7 +28,7 @@
 
 <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
 
-<a href="index.html"><img src="_static/logo.png" border="0" alt="pyTOPKAPI
+<a href="index.html"><img src="static/logo.png" border="0" alt="pyTOPKAPI
 logo"/></a>
 </div>
 
@@ -79,7 +79,7 @@ logo"/></a>
                                   title="next chapter">PyTOPKAPI installation instructions</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="_sources/api.txt"
+              <li><a href="sources/api.txt"
                      rel="nofollow">Show Source</a></li>
             </ul>
           <div id="searchbox" style="display: none">
@@ -125,7 +125,7 @@ Differential Equations in TOPKAPI.</p>
 <dd><p>Compute the final volume in a TOPKAPI water store for one time-step</p>
 <p>This function calculates the volume in a generic store at the end
 of the defined time-step, given the initial volume, inflow and ODE
-parameters.  This is done by solving the storage ODE <img src="_images/mathmpl/math-960e13b4e8.png" style="position: relative; bottom: -8px"/>. Todini&#8217;s quasi-analytical solution can be
+parameters.  This is done by solving the storage ODE <img src="images/mathmpl/math-960e13b4e8.png" style="position: relative; bottom: -8px"/>. Todini&#8217;s quasi-analytical solution can be
 used as a speed up.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -134,7 +134,7 @@ used as a speed up.</p>
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>I</strong> : scalar</p>
 <blockquote>
 <p>Constant inflow rate to store during the time-step
-(<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
 </blockquote>
 <p><strong>b</strong> : scalar</p>
 <blockquote>
@@ -147,11 +147,11 @@ used as a speed up.</p>
 <p><strong>Vt0</strong> : scalar</p>
 <blockquote>
 <p>The water volume at the beginning of the current time-step
-(<img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The time-step over which to solve the ODE (<img src="_images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
+<p>The time-step over which to solve the ODE (<img src="images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
 </blockquote>
 <p><strong>solve_method</strong> : int</p>
 <blockquote>
@@ -178,7 +178,7 @@ will be used, a value of 0 specifies use of the full RKF formulation.</p>
 <p>This function calculates the volume in a generic store at the end
 of the defined time-step, given the initial volume, inflow and ODE
 parameters.  This is done using Todini&#8217;s quasi-analytical solution
-of the storage ODE <img src="_images/mathmpl/math-aeab3bcb40.png" style="position: relative; bottom: -8px"/>.</p>
+of the storage ODE <img src="images/mathmpl/math-aeab3bcb40.png" style="position: relative; bottom: -8px"/>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -186,7 +186,7 @@ of the storage ODE <img src="_images/mathmpl/math-aeab3bcb40.png" style="positio
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>a</strong> : scalar</p>
 <blockquote>
 <p>Constant inflow rate to store during the time-step
-(<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
 </blockquote>
 <p><strong>b</strong> : scalar</p>
 <blockquote>
@@ -199,11 +199,11 @@ of the storage ODE <img src="_images/mathmpl/math-aeab3bcb40.png" style="positio
 <p><strong>V0</strong> : scalar</p>
 <blockquote>
 <p>The water volume at the beginning of the current time-step
-(<img src="_images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>).</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The time-step over which to solve the ODE (<img src="_images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
+<p>The time-step over which to solve the ODE (<img src="images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>).</p>
 </blockquote>
 </td>
 </tr>
@@ -435,7 +435,7 @@ upstream cells and the overland contribution from upstream cells.</p>
 <blockquote>
 <p>The total contribution from each cell to it&#8217;s downstream
 neighbour as a result of subsurface and overland fluxes
-calculated during the previous timestep (<img src="_images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+calculated during the previous timestep (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
 </blockquote>
 <p><strong>ar_cell_up</strong> : list of <cite>int</cite></p>
 <blockquote>
@@ -1272,7 +1272,7 @@ byteorder     LSBFIRST</p>
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 02, 2010
+    Last updated on Sep 03, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 
