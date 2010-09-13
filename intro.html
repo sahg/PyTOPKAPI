@@ -59,7 +59,7 @@ logo"/></a>
             <h3><a href="index.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">Introduction</a><ul>
-<li><a class="reference external" href="#nota-bene">Nota Bene</a></li>
+<li><a class="reference external" href="#references">References</a></li>
 </ul>
 </li>
 </ul>
@@ -98,50 +98,65 @@ logo"/></a>
             
   <div class="section" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>This manual is aiming at giving to the future users of TOPKAPI the
-keys to handle the TOPKAPI package. It is not a description of the
+<p>This documentation aims at providing sufficient information to allow
+users of the PyTOPKAPI package to set-up and run the model for their
+own purposes. It is not intended to be a definitive description of the
 theoretical aspects of the TOPKAPI model, nor a detailed description
 of the modelling methodology, although some methodological aspects are
-addressed in the manual. For an all-comprehensive description of the
-theory and methodology associated with the TOPKAPI model, readers will
-refer to the following references: Liu and Todini (2002); Pegram et
-al. (2007); Vischel et al. (2007a) and Vischel et al. (2007b,
-submitted to Water SA).</p>
-<p>There are three main steps in the use of the TOPKAPI model. The first
-step is the creation of the parameter files of the models according
-mainly to the catchment data, as well as the creation of the forcing
-variables (rain and reference crop evapotranspiration fields). The
-second step is to simply run the model with the created inputs. The
-third step is the analysis of the simulations by plotting graphics.</p>
-<div class="section" id="nota-bene">
-<h2>Nota Bene<a class="headerlink" href="#nota-bene" title="Permalink to this headline">¶</a></h2>
+addressed. For a comprehensive description of the theory and
+methodology associated with the TOPKAPI model, readers should refer to
+the following references: Liu and Todini (2002), Pegram et al. (2006),
+Vischel et al. (2008a) and Vischel et al. (2008b).</p>
+<p>There are three basic steps in the use of the PyTOPKAPI package. The
+first step is the creation of one or more model parameter files
+derived from the available catchment data, as well as the associated
+forcing variables (rainfall and evapotranspiration fields). The second
+step is to simply run the model using the designated parameter file
+and forcing variables. The third step is the analysis of the resulting
+simulations. The PyTOPKAPI package provides tools to assist with each
+of these tasks, but the user does need to exercise experience and
+judgement:</p>
 <ul class="simple">
-<li>The extraction of catchment data (mainly by using GIS) as well as
-the creation of forcing fields is left to the initiative of the
-users who are assumed to make use of their own expertise, software
-and numerical tools to do it.</li>
+<li>The extraction of catchment data (mainly using GIS) as well as the
+creation of forcing fields is left to the initiative of the users
+who are assumed to make use of their own expertise, software and
+numerical tools.</li>
 <li>Numerically speaking, efforts have been made by the developers in
-coding and organising properly the TOPKAPI model itself, so that is
-can be easily run once the parameter files are created.</li>
+coding and organising the PyTOPKAPI package, so that it can be
+easily run once the parameter files have been created.</li>
 <li>Scientifically speaking, it is clear that the most crucial step is
 the creation of the parameter files, and particularly the way they
 are used to link the data available on the catchment, to the
-effective physical parameters required by TOPKAPI. This step
-requires knowledge of hydrology and must be conducted under the
+effective physical parameters required by the TOPKAPI model. This
+step requires knowledge of hydrology and must be conducted under the
 expertise of the user. However, in order to facilitate the process
-of using TOPKAPI, a module called parameter_utils was included in
-the TOPKAPI package. This module is only a suggestion from the
+of using the PyTOPKAPI package, a module called <cite>parameter_utils</cite> is
+included in PyTOPKAPI. This module is only a suggestion from the
 developers to help future users in the creation of the parameter
 files starting from the catchment data. However, since this module
-was created for the specific case study on the Liebenbergsvlei
-catchment (4625 km2, South Africa) using the personal choices of the
-developers, it is to be used with care and requires from the user to
-carefully read and sometimes modify the Python codes if different
-applications or scientific choices would have to be made.</li>
-<li>The analysis of the results of the TOPKAPI model is reduced to a
+was created based on the developers needs, it should be used with
+care and requires the user to carefully read and sometimes modify
+the Python codes if different applications or scientific choices are
+made.</li>
+<li>The analysis of the results of the PyTOPKAPI package is reduced to a
 simple analysis of the simulations, so that the user can rapidly
 evaluate the quality of the run.</li>
 </ul>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p><strong>Liu Z. and Todini E., 2002</strong>, Towards a comprehensive physically-based
+rainfall-runoff model, Hydrol. Earth Syst. Sci., 6(5), 859 – 881.</p>
+<p><strong>Pegram G., Sinclair S., Parak M., Sakulski D. and Nxumalo N.,
+2006</strong>, National Flood Nowcasting System: Towards an integrated
+mitigation strategy, WRC Report No. 1429/1/06, Water Research
+Commission, Pretoria, South Africa.</p>
+<p><strong>Vischel T., Pegram G.G.S., Sinclair S., Wagner W. and Bartsch A.,
+2008a</strong>, Comparison of soil moisture fields estimated by catchment
+modelling and remote sensing: a case study in South Africa,
+Hydrol. Earth Syst. Sci., 12, 751-767.</p>
+<p><strong>Vischel T., Pegram G.G.S., Sinclair S.  and Parak M., 2008b</strong>,
+Implementation of the TOPKAPI model in South Africa: Initial results
+from the Liebenbergsvlei catchment, Water SA, 34(3), 1-12.</p>
 </div>
 </div>
 
@@ -176,7 +191,7 @@ evaluate the quality of the run.</li>
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 03, 2010
+    Last updated on Sep 13, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 

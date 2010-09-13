@@ -14,7 +14,7 @@ The main strengths of the TOPKAPI model are:
 * the parsimonious parametrisation linked to field/catchment information,
 * the good computation time performance,
 * the modularity of the processes,
-* the ease of use. 
+* the ease of use.
 
 These and the good results obtained in modelling the river discharges
 of Liebenbergsvlei catchment, make the TOPKAPI model a promising tool
@@ -23,10 +23,11 @@ the world.
 
 .. note::
 
-   PyTOPKAPI is under active development and the API is not yet
-   considered stable. However, the model is already usable and we
-   would welcome feedback from users and collaborators as we work to
-   stabilize the API and make the model more robust and useful.
+   PyTOPKAPI is under active development and the public interface
+   (API) is not yet considered stable. However, the model is already
+   usable and we would welcome feedback from users and collaborators
+   as we work to stabilize the API and make the model more robust and
+   useful.
 
 Get Started
 ===========
