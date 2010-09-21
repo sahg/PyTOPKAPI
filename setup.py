@@ -8,9 +8,9 @@ if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 from distutils.core import setup
 
 MAJOR               = 0
-MINOR               = 2
+MINOR               = 3
 MICRO               = 0
-ISRELEASED          = True
+ISRELEASED          = False
 VERSION             = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 
 dev_version_py = 'pytopkapi/__dev_version.py'
