@@ -1,5 +1,8 @@
-""" model.py
-Main program of the TOPKAPI model.
+"""Core logic of PyTOPKAPI.
+
+The `run` function in this module contains the logic to run a TOPKAPI
+simulation based on the parameters specified in an INI file.
+
 """
 
 #General module importation
@@ -18,7 +21,7 @@ import ode as om
 import evap as em
 
 def run(ini_file='TOPKAPI.ini'):
-    """Run the model defined by ini_file.
+    """Run the model with the set-up defined by `ini_file`.
 
     """
 

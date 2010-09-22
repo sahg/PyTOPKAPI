@@ -1,6 +1,7 @@
-""" evap_module.py
+"""Evaporation and evapotranspiration routines.
 
-Routines used to compute the evapotranspiration losses in TOPKAPI
+A selection of routines that can be used to compute the
+evapotranspiration losses in PyTOPKAPI.
 
 """
 
@@ -18,7 +19,7 @@ def evapot_soil_Liu_and_Todini_ETc(Vs0,Vsm,kc,ETr,X):
     ETa=ETc
     #From mm to m
     ETa=ETa*1e-3
-    #Compute the new soil volume 
+    #Compute the new soil volume
     Vs1=max(0.,Vs0-ETa*(X**2))
     #From m to mm
     ETa=ETa*1e3
@@ -39,7 +40,7 @@ def evapot_soil_Liu_and_Todini(Vs0,Vsm,kc,ETr,X):
     ETa=ks*ETc
     #From mm to m
     ETa=ETa*1e-3
-    #Compute the new soil volume 
+    #Compute the new soil volume
     Vs1=max(0.,Vs0-ETa*(X**2))
     #From m to mm
     ETa=ETa*1e3
@@ -47,37 +48,41 @@ def evapot_soil_Liu_and_Todini(Vs0,Vsm,kc,ETr,X):
 
 def evapot_soil_overland(Vo0, Vs0, Vsm, kc, ETr, X):
     """Compute the evapotranspiration from a model cell.
-    
-    The evapotranspiration loss is first taken from the overland store, if the
-    storage in the overland store cannot satify the ET demand then the water is
-    extracted from the soil store. In cases where the ET demand is greater than
-    the available water, both the soil and overland store are totally drained.
-      
+
+    The evapotranspiration loss is first taken from the overland
+    store, if the storage in the overland store cannot satisfy the ET
+    demand then the water is extracted from the soil store. In cases
+    where the ET demand is greater than the available water, both the
+    soil and overland store are totally drained.
+
     Parameters
     ----------
     Vo0 : scalar
-        Volume in the overland store before ET removal (m^3).
+        Volume in the overland store before ET removal (:math:`m^3`)
     Vs0 : scalar
-        Volume in the soil store before ET removal (m^3).
+        Volume in the soil store before ET removal (:math:`m^3`)
     Vsm : scalar
-        Volume of soil moisture for the store under saturated conditions (m^3).
+        Volume of soil moisture for the store under saturated
+        conditions (:math:`m^3`)
     kc : scalar
-        Dimensionless crop co-efficient for the model cell.
+        Dimensionless crop co-efficient for the model cell
     ETr : scalar
-        Reference crop ET for the cell during the current time-step (mm).
+        Reference crop ET for the cell during the current time-step
+        (:math:`mm`)
     X : scalar
-        The lateral dimension of the grid-cell (in m).
-    
+        The lateral dimension of the grid-cell (:math:`m`)
+
     Returns
     -------
     ETa : scalar
-        The actual ET removed from the soil store, calculated as kc*ks*ETr with
-        ks the relative saturation of the soil store before ET is removed (mm).
+        The actual ET removed from the soil store, calculated as
+        :math:`K_c K_s ET_r` with :math:`K_s` the relative saturation
+        of the soil store before ET is removed (:math:`mm`)
     Vs1 : scalar
-        Volume in the soil store after ET removal (m^3).
+        Volume in the soil store after ET removal (:math:`m^3`)
     Vo1 : scalar
-        Volume in the overland store after ET removal (m^3).
-    
+        Volume in the overland store after ET removal (:math:`m^3`)
+
     """
     #ETr is in mm
     #From Reference crop evapotranspiration
@@ -100,35 +105,41 @@ def evapot_soil_overland(Vo0, Vs0, Vsm, kc, ETr, X):
         Vs1 = max(0., Vs0-ETa*(X**2))
     #From m to mm
     ETa = ETa*1e3
-    
+
     return ETa, Vs1, Vo1
 
 def evapor_channel(Vc0, ETo, W, X):
     """Compute the evaporation from a channel store.
-    
-    Calculate the evaporation loss from a channel store. The function attempts
-    to remove the demand from the open water potential evaporation from the 
-    channel store, if there isn't sufficient water in the store then the total 
-    volume in the channel is removed.
-      
+
+    Calculate the evaporation loss from a channel store. The function
+    attempts to remove the demand from the open water potential
+    evaporation from the channel store, if there isn't sufficient
+    water in the store then the total volume in the channel is
+    removed.
+
     Parameters
     ----------
     Vc0 : scalar
-        Volume in the channel store before evaporation removal (m^3).
+        Volume in the channel store before evaporation removal
+        (:math:`m^3`)
     ETo : scalar
-        The potential evaporation from an open water surface (mm).
+        The potential evaporation from an open water surface
+        (:math:`mm`)
     W : scalar
-        Width of the channel (m).
+        Width of the channel (:math:`m`)
     X : scalar
-        The length of the channel cell, this can be different from the cell
-        dimension if the channel runs along the cell diagonal (m).
-    
+        The length of the channel cell, this can be different from the
+        cell dimension if the channel runs along the cell diagonal
+        (:math:`m`)
+
     Returns
     -------
     ET_channel : scalar
-        The actual depth of water removed from the channel store (mm).
+        The actual depth of water removed from the channel store
+        (:math:`mm`)
     Vc1 : scalar
-        Volume in the channel store after evaporation removal (m^3).
+        Volume in the channel store after evaporation removal
+        (:math:`m^3`)
 
     """
     ETo = ETo*1e-3
@@ -139,7 +150,7 @@ def evapor_channel(Vc0, ETo, W, X):
         Vc1 = 0
         Vevap_c = Vc0
     ET_channel = Vevap_c*1e3/(W*X)
-    
+
     return ET_channel, Vc1
 
 def intercept_rain_ET(P,ETr,kc):
