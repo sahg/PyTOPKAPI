@@ -35,11 +35,6 @@ Utils module
 .. automodule:: pytopkapi.utils
    :members:
 
-Interpolation module
-====================
-.. automodule:: pytopkapi.interpolation
-   :members:
-
 Arcfltgrid module
 =================
 .. automodule:: pytopkapi.arcfltgrid

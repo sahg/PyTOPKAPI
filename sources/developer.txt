@@ -4,4 +4,10 @@
 Developer Resources
 ===================
 
-How to help out
+This section contains information that is useful for contributing to
+the PyTOPKAPI development effort.
+
+.. toctree::
+   :maxdepth: 2
+
+   gitwash/index

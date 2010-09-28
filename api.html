@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PyTOPKAPI API Documentation &mdash; TOPKAPI v0.2dev documentation</title>
+    <title>PyTOPKAPI API Documentation &mdash; TOPKAPI v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.2dev',
+        VERSION:     '0.2.0',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,10 +19,9 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
-    <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
-    <link rel="next" title="PyTOPKAPI installation instructions" href="install.html" />
-    <link rel="prev" title="Developer Resources" href="developer.html" /> 
+    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="index.html" />
+    <link rel="next" title="Bug Reports" href="bugs.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" /> 
   </head>
   <body>
 
@@ -42,21 +41,20 @@ logo"/></a>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="install.html" title="PyTOPKAPI installation instructions"
+          <a href="bugs.html" title="Bug Reports"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="developer.html" title="Developer Resources"
+          <a href="tutorial.html" title="Tutorial"
              accesskey="P">previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
-
-          <li><a href="contents.html" accesskey="U">PyTOPKAPI documentation contents</a> &raquo;</li> 
+ 
       </ul>
     </div>
 
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="index.html">Table Of Contents</a></h3>
+            <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">PyTOPKAPI API Documentation</a><ul>
 <li><a class="reference external" href="#module-pytopkapi.model">Main module</a></li>
@@ -65,18 +63,17 @@ logo"/></a>
 <li><a class="reference external" href="#module-pytopkapi.evap">Evaporation module</a></li>
 <li><a class="reference external" href="#module-pytopkapi.pretreatment">Pretreatment module</a></li>
 <li><a class="reference external" href="#module-pytopkapi.utils">Utils module</a></li>
-<li><a class="reference external" href="#interpolation-module">Interpolation module</a></li>
 <li><a class="reference external" href="#module-pytopkapi.arcfltgrid">Arcfltgrid module</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="developer.html"
-                                  title="previous chapter">Developer Resources</a></p>
+            <p class="topless"><a href="tutorial.html"
+                                  title="previous chapter">Tutorial</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="install.html"
-                                  title="next chapter">PyTOPKAPI installation instructions</a></p>
+            <p class="topless"><a href="bugs.html"
+                                  title="next chapter">Bug Reports</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/api.txt"
@@ -107,12 +104,13 @@ logo"/></a>
 <h1>PyTOPKAPI API Documentation<a class="headerlink" href="#pytopkapi-api-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-pytopkapi.model">
 <h2>Main module<a class="headerlink" href="#module-pytopkapi.model" title="Permalink to this headline">¶</a></h2>
-<p>model.py
-Main program of the TOPKAPI model.</p>
+<p>Core logic of PyTOPKAPI.</p>
+<p>The <cite>run</cite> function in this module contains the logic to run a TOPKAPI
+simulation based on the parameters specified in an INI file.</p>
 <dl class="function">
 <dt id="pytopkapi.model.run">
 <tt class="descclassname">pytopkapi.model.</tt><tt class="descname">run</tt><big>(</big><em>ini_file='TOPKAPI.ini'</em><big>)</big><a class="headerlink" href="#pytopkapi.model.run" title="Permalink to this definition">¶</a></dt>
-<dd>Run the model defined by ini_file.</dd></dl>
+<dd>Run the model with the set-up defined by <cite>ini_file</cite>.</dd></dl>
 
 </div>
 <div class="section" id="module-pytopkapi.ode">
@@ -253,34 +251,39 @@ module (see <tt class="xref docutils literal"><span class="pre">ode</span></tt> 
 <dt id="pytopkapi.fluxes.Qout_computing">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">Qout_computing</tt><big>(</big><em>V_t0</em>, <em>V_t1_prim</em>, <em>a</em>, <em>Dt</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.Qout_computing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the outflow <cite>Qout</cite> from a generic water store.</p>
-<p>Calculate the mean outflow rate during the current time-step from a generic
-water store. The outflow is calculated as the difference between the inflow
-and rate of change in storage during the time-step.</p>
+<p>Calculate the mean outflow rate during the current time-step from
+a generic water store. The outflow is calculated as the difference
+between the inflow and rate of change in storage during the
+time-step.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>V_t0</strong> : scalar</p>
 <blockquote>
-<p>Volume of water at the start of the current time-step (m^3).</p>
+<p>Volume of water at the start of the current time-step
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>V_t1_prim</strong> : scalar</p>
 <blockquote>
-<p>Volume of water at the end of the current time-step (m^3).</p>
+<p>Volume of water at the end of the current time-step
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>a</strong> : scalar</p>
 <blockquote>
-<p>The inflow rate to the water store during the time-step (m^3/s).</p>
+<p>The inflow rate to the water store during the time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The length of the current time-step in seconds.</p>
+<p>The length of the current time-step (<img src="images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Qout</strong> : scalar</p>
 <blockquote class="last">
-<p>The outflow rate from the water store during the time-step (m^3/s).</p>
+<p>The outflow rate from the water store during the time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -291,61 +294,77 @@ and rate of change in storage during the time-step.</p>
 <dl class="function">
 <dt id="pytopkapi.fluxes.Qout_computing2">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">Qout_computing2</tt><big>(</big><em>V_t0</em>, <em>V_t1</em>, <em>b</em>, <em>alpha</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.Qout_computing2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Qout_computing
-Compute the output flows Qout from the computed water volumes:</p>
-<p>Return: Qout</p>
+<dd><p>Compute the output flows Qout from the computed water volumes:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Qout</strong> : scalar</p>
+<blockquote class="last">
+<p>The outflow rate from the water store during the time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
+</blockquote>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="pytopkapi.fluxes.flow_partitioning">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">flow_partitioning</tt><big>(</big><em>Lambda</em>, <em>Qs_out</em>, <em>Qo_out</em>, <em>W</em>, <em>X</em>, <em>Xc</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.flow_partitioning" title="Permalink to this definition">¶</a></dt>
 <dd><p>Partition the outflows from soil and overland stores.</p>
-<p>Calculates the correct partitioning of outflows from the soil and overland
-stores into contributions going to the downstream cell and/or the channel
-store of the current cell (if this exists).</p>
+<p>Calculates the correct partitioning of outflows from the soil and
+overland stores into contributions going to the downstream cell
+and/or the channel store of the current cell (if this exists).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Lambda</strong> : int</p>
 <blockquote>
-<p>Switch indicating whether the current cell contains a channel. A value
-of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+<p>Switch indicating whether the current cell contains a
+channel. A value of <cite>1</cite> indicates a channel cell, <cite>0</cite>
+indicates no channel</p>
 </blockquote>
 <p><strong>Qs_out</strong> : scalar</p>
 <blockquote>
-<p>Outflow from the soil store during the current time-step (m^3/s).</p>
+<p>Outflow from the soil store during the current time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Qo_out</strong> : scalar</p>
 <blockquote>
-<p>Outflow from the overland store during the current time-step (m^3/s).</p>
+<p>Outflow from the overland store during the current time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>W</strong> : scalar</p>
 <blockquote>
-<p>Width of the channel (m).</p>
+<p>Width of the channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (in m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Xc</strong> : scalar</p>
 <blockquote>
-<p>The length of the channel cell, this can be different from <cite>X</cite> if the
-channel runs along the cell diagonal (m).</p>
+<p>The length of the channel cell, this can be different from <cite>X</cite>
+if the channel runs along the cell diagonal (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Q_to_next_cell</strong> : scalar</p>
 <blockquote>
-<p>Combined outflow from soil and overland to the downstream cell (m^3/s).</p>
+<p>Combined outflow from soil and overland to the downstream cell
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Q_to_channel</strong> : scalar</p>
 <blockquote>
-<p>Combined outflow from soil and overland to the channel store (m^3/s).</p>
+<p>Combined outflow from soil and overland to the channel store
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Q_to_channel_sub</strong> : scalar</p>
 <blockquote class="last">
-<p>Outflow from soil store to the channel store (m^3/s).</p>
+<p>Outflow from soil store to the channel store (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -356,7 +375,10 @@ channel runs along the cell diagonal (m).</p>
 <dl class="function">
 <dt id="pytopkapi.fluxes.initial_volume_channel">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">initial_volume_channel</tt><big>(</big><em>ar_Q</em>, <em>ar_W</em>, <em>X</em>, <em>ar_n_c</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.initial_volume_channel" title="Permalink to this definition">¶</a></dt>
-<dd>The initial volume ar_Vc_t0 is computed for all the channel cells, from a known initial flow.</dd></dl>
+<dd><p>Compute initial channel volume.</p>
+<p>The initial volume ar_Vc_t0 is computed for all the channel cells,
+from a known initial flow.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="pytopkapi.fluxes.initial_volume_soil">
@@ -369,38 +391,39 @@ initial saturated values given in the parameter file.</dd></dl>
 <dt id="pytopkapi.fluxes.input_channel">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">input_channel</tt><big>(</big><em>ar_Qc_out</em>, <em>Q_to_channel</em>, <em>ar_cell_up</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.input_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the total inflow to the channel of a channel cell.</p>
-<p>Calculate the total inflow to the channel as the sum of inflows from
-upstream cells and inflows from the soil and overland stores in the current
-cell.</p>
+<p>Calculate the total inflow to the channel as the sum of inflows
+from upstream cells and inflows from the soil and overland stores
+in the current cell.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_Qc_out</strong> : (N,) Numpy array</p>
 <blockquote>
-<p>Array of channel outflows from each cell in the catchment for the
-current time-step (m^3/s).</p>
+<p>Array of channel outflows from each cell in the catchment for
+the current time-step (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Q_to_channel</strong> : scalar</p>
 <blockquote>
-<p>Combined outflow from soil and overland to the channel store (m^3/s).</p>
+<p>Combined outflow from soil and overland to the channel store
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_cell_up</strong> : list of <cite>int</cite></p>
 <blockquote>
-<p>List of integer indices into <cite>ar_Qc_out</cite>. The indices point to the
-cells upstream of the current cell.</p>
+<p>List of integer indices into <cite>ar_Qc_out</cite>. The indices point to
+the cells upstream of the current cell.</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a_c</strong> : scalar</p>
 <blockquote>
 <p>The total inflow to the channel store during the current
-time-step (m^3/s).</p>
+time-step (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Qc_cell_up</strong> : scalar</p>
 <blockquote class="last">
-<p>The contribution to the total inflow to the channel store from upstream
-cells during the current time-step (m^3/s).</p>
+<p>The contribution to the total inflow to the channel store from
+upstream cells during the current time-step (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -421,32 +444,34 @@ upstream cells and the overland contribution from upstream cells.</p>
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>P</strong> : scalar</p>
 <blockquote>
-<p>Precipitation input to the cell during the current time-step (mm).</p>
+<p>Precipitation input to the cell during the current time-step
+(<img src="images/mathmpl/math-428fbb354a.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The length of the current time-step in seconds.</p>
+<p>The length of the current time-step in seconds</p>
 </blockquote>
 <p><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (in m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_Q_to_next_cell</strong> : (N,) Numpy array</p>
 <blockquote>
 <p>The total contribution from each cell to it&#8217;s downstream
 neighbour as a result of subsurface and overland fluxes
-calculated during the previous timestep (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>).</p>
+calculated during the previous timestep (<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_cell_up</strong> : list of <cite>int</cite></p>
 <blockquote>
-<p>List of integer indices into <cite>ar_Q_to_next_cell</cite>. The indices point to
-the cells upstream of the current cell.</p>
+<p>List of integer indices into <cite>ar_Q_to_next_cell</cite>. The indices
+point to the cells upstream of the current cell</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>a_s</strong> : scalar</p>
 <blockquote class="last">
-<p>The input flux to the soil store during the current time-step in m^3/s.</p>
+<p>The input flux to the soil store during the current time-step
+in <img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/></p>
 </blockquote>
 </td>
 </tr>
@@ -457,11 +482,11 @@ the cells upstream of the current cell.</p>
 <dl class="function">
 <dt id="pytopkapi.fluxes.manning_depth">
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">manning_depth</tt><big>(</big><em>Q</em>, <em>W</em>, <em>X</em>, <em>n</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.manning_depth" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Compute with the manning equation (high width hypothesis) the water depth h corresponding to</dt>
-<dd>the flow Q for the channel characteristics: width W, manning n.</dd>
-</dl>
-<p>The volume is then returned V=hWX</p>
+<dd><p>Compute Manning depth for flow <cite>Q</cite>.</p>
+<p>Compute with the manning equation (high width hypothesis) the
+water depth h corresponding to the flow Q for the channel
+characteristics: width W, manning n. The volume is then returned
+V=hWX</p>
 </dd></dl>
 
 <dl class="function">
@@ -469,56 +494,58 @@ the cells upstream of the current cell.</p>
 <tt class="descclassname">pytopkapi.fluxes.</tt><tt class="descname">output_soil</tt><big>(</big><em>Vs_t0</em>, <em>Vs_t1_prim</em>, <em>Vsm</em>, <em>a_s</em>, <em>b_s</em>, <em>alpha_s</em>, <em>Dt</em><big>)</big><a class="headerlink" href="#pytopkapi.fluxes.output_soil" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the outflow from and volume in a soil store.</p>
 <p>Calculate the outflow rate and final volume in a soil store after
-transferring volume greater than the saturated soil moisture content to the
-overland store of the same model cell.</p>
+transferring volume greater than the saturated soil moisture
+content to the overland store of the same model cell.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vs_t0</strong> : scalar</p>
 <blockquote>
-<p>Volume of water in the soil store at the beginning of the current time-
-step (m^3).</p>
+<p>Volume of water in the soil store at the beginning of the
+current time- step (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vs_t1_prim</strong> : scalar</p>
 <blockquote>
-<p>Volume of water in the soil store at the end of the current time-step
-as a result of combined input to and drainage from the non-linear
-reservoir (m^3).</p>
+<p>Volume of water in the soil store at the end of the current
+time-step as a result of combined input to and drainage from
+the non-linear reservoir (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vsm</strong> : scalar</p>
 <blockquote>
-<p>Volume of soil moisture for the store under saturated conditions (m^3).</p>
+<p>Volume of soil moisture for the store under saturated
+conditions (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>a_s</strong> : scalar</p>
 <blockquote>
-<p>The input flux to the soil store during the current time-step (m^3/s).</p>
+<p>The input flux to the soil store during the current time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>b_s</strong> : scalar</p>
 <blockquote>
-<dl class="docutils">
-<dt>The constant term of the non-linear differential equation</dt>
-<dd><p class="first last">dV_s/dt = a_s - b_s*V_s**alpha_s</p>
-</dd>
-</dl>
+<p>The constant term of the non-linear differential equation
+<img src="images/mathmpl/math-2fe1c1f5d0.png" style="position: relative; bottom: -8px"/></p>
 </blockquote>
 <p><strong>alpha_s</strong> : scalar</p>
 <blockquote>
-<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+<p>The dimensionless pore-size distribution parameter for the
+soil store</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The length of the current time-step in seconds.</p>
+<p>The length of the current time-step (<img src="images/mathmpl/math-ae2c30f034.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>Qs_out</strong> : scalar</p>
 <blockquote>
-<p>Rate of flow out of the soil store during the time-step (m^3/s).</p>
+<p>Rate of flow out of the soil store during the time-step
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>Vs_out</strong> : scalar</p>
 <blockquote class="last">
-<p>Volume remaining in the soil store at the end of the time-step (m^3).</p>
+<p>Volume remaining in the soil store at the end of the time-step
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -529,46 +556,53 @@ reservoir (m^3).</p>
 </div>
 <div class="section" id="module-pytopkapi.evap">
 <h2>Evaporation module<a class="headerlink" href="#module-pytopkapi.evap" title="Permalink to this headline">¶</a></h2>
-<p>evap_module.py</p>
-<p>Routines used to compute the evapotranspiration losses in TOPKAPI</p>
+<p>Evaporation and evapotranspiration routines.</p>
+<p>A selection of routines that can be used to compute the
+evapotranspiration losses in PyTOPKAPI.</p>
 <dl class="function">
 <dt id="pytopkapi.evap.evapor_channel">
 <tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapor_channel</tt><big>(</big><em>Vc0</em>, <em>ETo</em>, <em>W</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapor_channel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the evaporation from a channel store.</p>
-<p>Calculate the evaporation loss from a channel store. The function attempts
-to remove the demand from the open water potential evaporation from the 
-channel store, if there isn&#8217;t sufficient water in the store then the total 
-volume in the channel is removed.</p>
+<p>Calculate the evaporation loss from a channel store. The function
+attempts to remove the demand from the open water potential
+evaporation from the channel store, if there isn&#8217;t sufficient
+water in the store then the total volume in the channel is
+removed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vc0</strong> : scalar</p>
 <blockquote>
-<p>Volume in the channel store before evaporation removal (m^3).</p>
+<p>Volume in the channel store before evaporation removal
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ETo</strong> : scalar</p>
 <blockquote>
-<p>The potential evaporation from an open water surface (mm).</p>
+<p>The potential evaporation from an open water surface
+(<img src="images/mathmpl/math-428fbb354a.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>W</strong> : scalar</p>
 <blockquote>
-<p>Width of the channel (m).</p>
+<p>Width of the channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The length of the channel cell, this can be different from the cell
-dimension if the channel runs along the cell diagonal (m).</p>
+<p>The length of the channel cell, this can be different from the
+cell dimension if the channel runs along the cell diagonal
+(<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ET_channel</strong> : scalar</p>
 <blockquote>
-<p>The actual depth of water removed from the channel store (mm).</p>
+<p>The actual depth of water removed from the channel store
+(<img src="images/mathmpl/math-428fbb354a.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vc1</strong> : scalar</p>
 <blockquote class="last">
-<p>Volume in the channel store after evaporation removal (m^3).</p>
+<p>Volume in the channel store after evaporation removal
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -606,52 +640,56 @@ dimension if the channel runs along the cell diagonal (m).</p>
 <dt id="pytopkapi.evap.evapot_soil_overland">
 <tt class="descclassname">pytopkapi.evap.</tt><tt class="descname">evapot_soil_overland</tt><big>(</big><em>Vo0</em>, <em>Vs0</em>, <em>Vsm</em>, <em>kc</em>, <em>ETr</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.evap.evapot_soil_overland" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the evapotranspiration from a model cell.</p>
-<p>The evapotranspiration loss is first taken from the overland store, if the
-storage in the overland store cannot satify the ET demand then the water is
-extracted from the soil store. In cases where the ET demand is greater than
-the available water, both the soil and overland store are totally drained.</p>
+<p>The evapotranspiration loss is first taken from the overland
+store, if the storage in the overland store cannot satisfy the ET
+demand then the water is extracted from the soil store. In cases
+where the ET demand is greater than the available water, both the
+soil and overland store are totally drained.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>Vo0</strong> : scalar</p>
 <blockquote>
-<p>Volume in the overland store before ET removal (m^3).</p>
+<p>Volume in the overland store before ET removal (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vs0</strong> : scalar</p>
 <blockquote>
-<p>Volume in the soil store before ET removal (m^3).</p>
+<p>Volume in the soil store before ET removal (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vsm</strong> : scalar</p>
 <blockquote>
-<p>Volume of soil moisture for the store under saturated conditions (m^3).</p>
+<p>Volume of soil moisture for the store under saturated
+conditions (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>kc</strong> : scalar</p>
 <blockquote>
-<p>Dimensionless crop co-efficient for the model cell.</p>
+<p>Dimensionless crop co-efficient for the model cell</p>
 </blockquote>
 <p><strong>ETr</strong> : scalar</p>
 <blockquote>
-<p>Reference crop ET for the cell during the current time-step (mm).</p>
+<p>Reference crop ET for the cell during the current time-step
+(<img src="images/mathmpl/math-428fbb354a.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (in m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ETa</strong> : scalar</p>
 <blockquote>
-<p>The actual ET removed from the soil store, calculated as kc*ks*ETr with
-ks the relative saturation of the soil store before ET is removed (mm).</p>
+<p>The actual ET removed from the soil store, calculated as
+<img src="images/mathmpl/math-ebce11af2c.png" style="position: relative; bottom: -8px"/> with <img src="images/mathmpl/math-96480717f2.png" style="position: relative; bottom: -8px"/> the relative saturation
+of the soil store before ET is removed (<img src="images/mathmpl/math-428fbb354a.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vs1</strong> : scalar</p>
 <blockquote>
-<p>Volume in the soil store after ET removal (m^3).</p>
+<p>Volume in the soil store after ET removal (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Vo1</strong> : scalar</p>
 <blockquote class="last">
-<p>Volume in the overland store after ET removal (m^3).</p>
+<p>Volume in the overland store after ET removal (<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -674,142 +712,139 @@ ks the relative saturation of the soil store before ET is removed (mm).</p>
 </div>
 <div class="section" id="module-pytopkapi.pretreatment">
 <h2>Pretreatment module<a class="headerlink" href="#module-pytopkapi.pretreatment" title="Permalink to this headline">¶</a></h2>
-<p>pretreatment_module.py</p>
 <p>Functions required to compute the intrinsic TOPKAPI parameters from the
 physical parameters</p>
 <dl class="function">
 <dt id="pytopkapi.pretreatment.compute_cell_param">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">compute_cell_param</tt><big>(</big><em>X</em>, <em>ar_Xc</em>, <em>Dt</em>, <em>alpha_s</em>, <em>alpha_o</em>, <em>alpha_c</em>, <em>nb_cell</em>, <em>A_thres</em>, <em>W_max</em>, <em>W_min</em>, <em>ar_lambda</em>, <em>ar_tan_beta</em>, <em>ar_tan_beta_channel</em>, <em>ar_L</em>, <em>ar_Ks</em>, <em>ar_theta_r</em>, <em>ar_theta_s</em>, <em>ar_n_o</em>, <em>ar_n_c</em>, <em>ar_A_drained</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.compute_cell_param" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute model parameters from physical parameters.</p>
-<p>This function uses the physically based parameters and constraints for each
-model cell to compute, the saturated soil moisture volume, channel width
-and constant terms for the differential equations of the soil, overland and
-channel stores.</p>
+<p>This function uses the physically based parameters and constraints
+for each model cell to compute, the saturated soil moisture
+volume, channel width and constant terms for the differential
+equations of the soil, overland and channel stores.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_Xc</strong> : (N,) float array</p>
 <blockquote>
-<p>The length of the channel in a cell, this can be different from the
-lateral dimension of the grid cell if the channel runs along the
-cell diagonal (m).</p>
+<p>The length of the channel in a cell, this can be different
+from the lateral dimension of the grid cell if the channel
+runs along the cell diagonal (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The length of the current time-step in seconds.</p>
+<p>The length of the current time-step in seconds</p>
 </blockquote>
 <p><strong>alpha_s</strong> : scalar</p>
 <blockquote>
-<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+<p>The dimensionless pore-size distribution parameter for the
+soil store</p>
 </blockquote>
 <p><strong>alpha_o</strong> : scalar</p>
 <blockquote>
-<p>Power co-efficient for Mannings Equation applied to the overland store
-the value is typically 5/3.</p>
+<p>Power co-efficient for Mannings Equation applied to the
+overland store the value is typically 5/3</p>
 </blockquote>
 <p><strong>alpha_c</strong> : scalar</p>
 <blockquote>
-<p>Power co-efficient for Mannings Equation applied to the channel store
-the value is typically 5/3.</p>
+<p>Power co-efficient for Mannings Equation applied to the
+channel store the value is typically 5/3</p>
 </blockquote>
 <p><strong>nb_cell</strong> : scalar</p>
 <blockquote>
-<p>The number of cells in the catchment.</p>
+<p>The number of cells in the catchment</p>
 </blockquote>
 <p><strong>A_thres</strong> : scalar</p>
 <blockquote>
-<p>The minimum area of upstream contributing cells required before a cell
-is considered to initiate a river channel (m^2).</p>
+<p>The minimum area of upstream contributing cells required
+before a cell is considered to initiate a river channel
+(<img src="images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>W_min</strong> : scalar</p>
 <blockquote>
-<p>The minimum width of a channel (m).</p>
+<p>The minimum width of a channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>W_max</strong> : scalar</p>
 <blockquote>
-<p>The maximum width of a channel (m).</p>
+<p>The maximum width of a channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_lambda</strong> : (N,) int array</p>
 <blockquote>
-<p>Switch indicating whether the current cell contains a channel. A value
-of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+<p>Switch indicating whether the current cell contains a
+channel. A value of <cite>1</cite> indicates a channel cell, <cite>0</cite>
+indicates no channel</p>
 </blockquote>
 <p><strong>ar_tan_beta</strong> : (N,) float array</p>
 <blockquote>
-<p>The tangent of the surface slope for each cell. The surface slope
-affects processes in the overland and soil stores.</p>
+<p>The tangent of the surface slope for each cell. The surface
+slope affects processes in the overland and soil stores</p>
 </blockquote>
 <p><strong>ar_tan_beta_channel</strong> : (N,) float array</p>
 <blockquote>
-<p>The tangent of the channel slope for each cell. This is conceptually
-different from the surface slope and affects the channel store.</p>
+<p>The tangent of the channel slope for each cell. This is
+conceptually different from the surface slope and affects the
+channel store</p>
 </blockquote>
 <p><strong>ar_L</strong> : (N,) float array</p>
 <blockquote>
-<p>The depth of the soil store in each cell (m).</p>
+<p>The depth of the soil store in each cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_Ks</strong> : (N,) float array</p>
 <blockquote>
-<p>The saturated hydraulic conductivity of each cell (mm/s).</p>
+<p>The saturated hydraulic conductivity of each cell
+(<img src="images/mathmpl/math-2626b18fd3.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_theta_r</strong> : (N,) float array</p>
 <blockquote>
-<p>The residual soil moisture content for each cell.</p>
+<p>The residual soil moisture content for each cell</p>
 </blockquote>
 <p><strong>ar_theta_s</strong> : (N,) float array</p>
 <blockquote>
-<p>The saturated soil moisture content for each cell.</p>
+<p>The saturated soil moisture content for each cell</p>
 </blockquote>
 <p><strong>ar_n_o</strong> : (N,) float array</p>
 <blockquote>
-<p>Manning&#8217;s roughness coefficient for overland flows in each cell.</p>
+<p>Manning&#8217;s roughness coefficient for overland flows in each
+cell</p>
 </blockquote>
 <p><strong>ar_n_c</strong> : (N,) float array</p>
 <blockquote>
-<p>Manning&#8217;s roughness coefficient for channel flows in each cell.</p>
+<p>Manning&#8217;s roughness coefficient for channel flows in each cell</p>
 </blockquote>
 <p><strong>ar_A_drained</strong> : (N,) float array</p>
 <blockquote>
-<p>The total drained area associated with each cell (m^2).</p>
+<p>The total drained area associated with each cell (<img src="images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_Vsm</strong> : (N,) float array</p>
 <blockquote>
-<p>The saturated moisture volume of the soil store for each cell (m^3/s).</p>
+<p>The saturated moisture volume of the soil store for each cell
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_b_s</strong> : (N,) float array</p>
 <blockquote>
-<dl class="docutils">
-<dt>The constant term of the non differential equation for each soil store.</dt>
-<dd><p class="first last">&#8211;&gt; dV_s/dt = a_s-b_s*V_s**alpha_s</p>
-</dd>
-</dl>
+<p>The constant term of the non differential equation for each
+soil store &#8211;&gt; <img src="images/mathmpl/math-9ebc1c0d02.png" style="position: relative; bottom: -8px"/></p>
 </blockquote>
 <p><strong>ar_b_o</strong> : (N,) float array</p>
 <blockquote>
-<p>The constant term of the non differential equation for each overland
-store.</p>
-<blockquote>
-<p>&#8211;&gt; dV_o/dt = a_o-b_o*V_o**alpha_o</p>
-</blockquote>
+<p>The constant term of the non differential equation for each
+overland store &#8211;&gt; <img src="images/mathmpl/math-bc42849c86.png" style="position: relative; bottom: -8px"/></p>
 </blockquote>
 <p><strong>ar_W</strong> : (N,) float array</p>
 <blockquote>
-<p>The channel width for each cell (m).</p>
+<p>The channel width for each cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_b_c</strong> : (N,) float array</p>
 <blockquote class="last">
-<p>The constant term of the non differential equation for each channel
-store.</p>
-<blockquote>
-<p>&#8211;&gt; dV_c/dt = a_c-b_c*V_c**alpha_c</p>
-</blockquote>
+<p>The constant term of the non differential equation for each
+channel store &#8211;&gt; <img src="images/mathmpl/math-26f614b0d2.png" style="position: relative; bottom: -8px"/></p>
 </blockquote>
 </td>
 </tr>
@@ -821,31 +856,31 @@ store.</p>
 <dt id="pytopkapi.pretreatment.direct_up_cell">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">direct_up_cell</tt><big>(</big><em>ar_cell_label</em>, <em>ar_cell_down</em>, <em>ar_label_sort</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.direct_up_cell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the upstream cells for each cell.</p>
-<p>This function calculates the immediate upstream cells contributing flow to
-each cell in the catchment.</p>
+<p>This function calculates the immediate upstream cells contributing
+flow to each cell in the catchment.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
 <blockquote>
-<p>Numbers labelling each cell.</p>
+<p>Numbers labelling each cell</p>
 </blockquote>
 <p><strong>ar_cell_down</strong> : (N,) int array</p>
 <blockquote>
-<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
-of the current cell.</p>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell
+downstream of the current cell</p>
 </blockquote>
 <p><strong>ar_label_sort</strong> : (N,) int array</p>
 <blockquote>
-<p>Sorted array of cell labels.</p>
+<p>Sorted array of cell labels</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>li_cell_up</strong> : List of (M,) int arrays</p>
 <blockquote class="last">
-<p>A list of arrays containing the upstream cell labels for each cell in
-a catchment.</p>
+<p>A list of arrays containing the upstream cell labels for each
+cell in a catchment</p>
 </blockquote>
 </td>
 </tr>
@@ -857,30 +892,30 @@ a catchment.</p>
 <dt id="pytopkapi.pretreatment.drained_area">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">drained_area</tt><big>(</big><em>ar_label_sort</em>, <em>li_cell_up</em>, <em>X</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.drained_area" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the drained area for each cell.</p>
-<p>This function calculates the total area drained for each cell in the
-catchment, as the sum of it&#8217;s area and the upstream area.</p>
+<p>This function calculates the total area drained for each cell in
+the catchment, as the sum of it&#8217;s area and the upstream area.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_label_sort</strong> : (N,) int array</p>
 <blockquote>
-<p>Sorted array of cell labels.</p>
+<p>Sorted array of cell labels</p>
 </blockquote>
 <p><strong>li_cell_up</strong> : List of (M,) int arrays</p>
 <blockquote>
-<p>A list of arrays containing the upstream cell labels for each cell in
-a catchment.</p>
+<p>A list of arrays containing the upstream cell labels for each
+cell in a catchment</p>
 </blockquote>
 <p><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_A_drained</strong> : (N,) float array</p>
 <blockquote class="last">
-<p>The total drained area associated with each cell (m^2).</p>
+<p>The total drained area associated with each cell (<img src="images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -892,105 +927,112 @@ a catchment.</p>
 <dt id="pytopkapi.pretreatment.read_cell_parameters">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_cell_parameters</tt><big>(</big><em>file_name</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_cell_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read the spatially variable cell parameters from file.</p>
-<p>Read the file containing the physical parameters of each cell. This
-information governs the distributed behaviour of the model.</p>
+<p>Read the file containing the physical parameters of each
+cell. This information governs the distributed behaviour of the
+model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string</p>
 <blockquote>
-<p>Full name of the parameter file (incl. path).</p>
+<p>Full name of the parameter file (incl. path)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
 <blockquote>
-<p>Numbers labelling each cell.</p>
+<p>Numbers labelling each cell</p>
 </blockquote>
 <p><strong>ar_coorx</strong> : (N,) float array</p>
 <blockquote>
-<p>The x co-ordinate of the centre of each cell (m). This is the Longitude
-expressed in metres using a Transverse Mercator projection, but any
-appropriate projection can be used.</p>
+<p>The x co-ordinate of the centre of each cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>). This
+is the Longitude expressed in metres using an appropriate map
+projection</p>
 </blockquote>
 <p><strong>ar_coory</strong> : (N,) float array</p>
 <blockquote>
-<p>The y co-ordinate of the centre of each cell (m). This is the Latitude
-expressed in metres using a Transverse Mercator projection, but any
-appropriate projection can be used.</p>
+<p>The y co-ordinate of the centre of each cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>). This
+is the Latitude expressed in metres using an appropriate map
+projection</p>
 </blockquote>
 <p><strong>ar_lambda</strong> : (N,) int array</p>
 <blockquote>
-<p>Switch indicating whether the current cell contains a channel. A value
-of <cite>1</cite> indicates a channel cell, <cite>0</cite> indicates no channel.</p>
+<p>Switch indicating whether the current cell contains a
+channel. A value of <cite>1</cite> indicates a channel cell, <cite>0</cite>
+indicates no channel</p>
 </blockquote>
 <p><strong>ar_Xc</strong> : (N,) float array</p>
 <blockquote>
-<p>The length of the channel in a cell, this can be different from the
-lateral dimension of the grid cell if the channel runs along the
-cell diagonal (m).</p>
+<p>The length of the channel in a cell, this can be different
+from the lateral dimension of the grid cell if the channel
+runs along the cell diagonal (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_dam</strong> : (N,) int array</p>
 <blockquote>
-<p>Switch indicating whether the current cell contains a dam. A value
-of <cite>1</cite> indicates a dam cell, <cite>0</cite> indicates no dam. The switch currently
-has no influence in the model.</p>
+<p>Switch indicating whether the current cell contains a dam. A
+value of <cite>1</cite> indicates a dam cell, <cite>0</cite> indicates no dam. The
+switch currently has no influence in the model</p>
 </blockquote>
 <p><strong>ar_tan_beta</strong> : (N,) float array</p>
 <blockquote>
-<p>The tangent of the surface slope for each cell. The surface slope
-affects processes in the overland and soil stores.</p>
+<p>The tangent of the surface slope for each cell. The surface
+slope affects processes in the overland and soil stores</p>
 </blockquote>
 <p><strong>ar_tan_beta_channel</strong> : (N,) float array</p>
 <blockquote>
-<p>The tangent of the channel slope for each cell. This is conceptually
-different from the surface slope and affects the channel store.</p>
+<p>The tangent of the channel slope for each cell. This is
+conceptually different from the surface slope and affects the
+channel store</p>
 </blockquote>
 <p><strong>ar_L</strong> : (N,) float array</p>
 <blockquote>
-<p>The depth of the soil store in each cell (m).</p>
+<p>The depth of the soil store in each cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_Ks</strong> : (N,) float array</p>
 <blockquote>
-<p>The saturated hydraulic conductivity of each cell (mm/s).</p>
+<p>The saturated hydraulic conductivity of each cell
+(<img src="images/mathmpl/math-2626b18fd3.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_theta_r</strong> : (N,) float array</p>
 <blockquote>
-<p>The residual soil moisture content for each cell.</p>
+<p>The residual soil moisture content for each cell</p>
 </blockquote>
 <p><strong>ar_theta_s</strong> : (N,) float array</p>
 <blockquote>
-<p>The saturated soil moisture content for each cell.</p>
+<p>The saturated soil moisture content for each cell</p>
 </blockquote>
 <p><strong>ar_n_o</strong> : (N,) float array</p>
 <blockquote>
-<p>Manning&#8217;s roughness coefficient for overland flows in each cell.</p>
+<p>Manning&#8217;s roughness coefficient for overland flows in each
+cell</p>
 </blockquote>
 <p><strong>ar_n_c</strong> : (N,) float array</p>
 <blockquote>
-<p>Manning&#8217;s roughness coefficient for channel flows in each cell.</p>
+<p>Manning&#8217;s roughness coefficient for channel flows in each cell</p>
 </blockquote>
 <p><strong>ar_cell_down</strong> : (N,) int array</p>
 <blockquote>
-<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
-of the current cell.</p>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell
+downstream of the current cell</p>
 </blockquote>
 <p><strong>ar_pVs_t0</strong> : (N,) float array</p>
 <blockquote>
-<p>The initial saturation of each soil store (%).</p>
+<p>The initial saturation of each soil store (%)</p>
 </blockquote>
 <p><strong>ar_Vo_t0</strong> : (N,) float array</p>
 <blockquote>
-<p>The initial volume of water in each overland store (m^3).</p>
+<p>The initial volume of water in each overland store
+(<img src="images/mathmpl/math-c60cb7ce56.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>ar_Qc_t0</strong> : (N,) float array</p>
 <blockquote>
-<p>The initial channel discharge for each cell, if applicable (m^3/s).</p>
+<p>The initial channel discharge for each cell, if applicable
+(<img src="images/mathmpl/math-2735be5532.png" style="position: relative; bottom: -8px"/>)</p>
 </blockquote>
 <p><strong>ar_kc</strong> : (N,) float array</p>
 <blockquote class="last">
-<p>The crop co-efficient for each cell.</p>
+<p>The crop co-efficient for each cell</p>
 </blockquote>
 </td>
 </tr>
@@ -1001,8 +1043,8 @@ of the current cell.</p>
 <dl class="function">
 <dt id="pytopkapi.pretreatment.read_column_input">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_column_input</tt><big>(</big><em>file_name</em>, <em>nb_cell</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_column_input" title="Permalink to this definition">¶</a></dt>
-<dd><p>read_column_input
-Read the file containing data in column format:
+<dd><p>read_column_input</p>
+<p>Read the file containing data in column format:
 Cell1  Cell2  Cell3 ...
 1.3    4.3     5.2  ...
 2.3    5.6     4.2  ...</p>
@@ -1013,52 +1055,54 @@ Cell1  Cell2  Cell3 ...
 <dt id="pytopkapi.pretreatment.read_global_parameters">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">read_global_parameters</tt><big>(</big><em>file_name</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.read_global_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read global model parameters from file.</p>
-<p>Read the file that specifies the parameters of the model, which are
-globally applied to all cells in the model.</p>
+<p>Read the file that specifies the parameters of the model, which
+are globally applied to all cells in the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>file_name</strong> : string</p>
 <blockquote>
-<p>Full name of the parameter file (incl. path).</p>
+<p>Full name of the parameter file (incl. path)</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>X</strong> : scalar</p>
 <blockquote>
-<p>The lateral dimension of the grid-cell (m).</p>
+<p>The lateral dimension of the grid-cell (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>Dt</strong> : scalar</p>
 <blockquote>
-<p>The length of the current time-step in seconds.</p>
+<p>The length of the current time-step in seconds</p>
 </blockquote>
 <p><strong>alpha_s</strong> : scalar</p>
 <blockquote>
-<p>The dimensionless pore-size distribution parameter for the soil store.</p>
+<p>The dimensionless pore-size distribution parameter for the
+soil store</p>
 </blockquote>
 <p><strong>alpha_o</strong> : scalar</p>
 <blockquote>
-<p>Power co-efficient for Mannings Equation applied to the overland store
-the value is typically 5/3.</p>
+<p>Power co-efficient for Mannings Equation applied to the
+overland store the value is typically 5/3</p>
 </blockquote>
 <p><strong>alpha_c</strong> : scalar</p>
 <blockquote>
-<p>Power co-efficient for Mannings Equation applied to the channel store
-the value is typically 5/3.</p>
+<p>Power co-efficient for Mannings Equation applied to the
+channel store the value is typically 5/3</p>
 </blockquote>
 <p><strong>A_thres</strong> : scalar</p>
 <blockquote>
-<p>The minimum area of upstream contributing cells required before a cell
-is considered to initiate a river channel (m^2).</p>
+<p>The minimum area of upstream contributing cells required
+before a cell is considered to initiate a river channel
+(<img src="images/mathmpl/math-73dc054f2e.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>W_min</strong> : scalar</p>
 <blockquote>
-<p>The minimum width of a channel (m).</p>
+<p>The minimum width of a channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 <p><strong>W_max</strong> : scalar</p>
 <blockquote class="last">
-<p>The maximum width of a channel (m).</p>
+<p>The maximum width of a channel (<img src="images/mathmpl/math-88d9a1501b.png" style="position: relative; bottom: -3px"/>)</p>
 </blockquote>
 </td>
 </tr>
@@ -1070,27 +1114,27 @@ is considered to initiate a river channel (m^2).</p>
 <dt id="pytopkapi.pretreatment.sort_cell">
 <tt class="descclassname">pytopkapi.pretreatment.</tt><tt class="descname">sort_cell</tt><big>(</big><em>ar_cell_label</em>, <em>ar_cell_down</em><big>)</big><a class="headerlink" href="#pytopkapi.pretreatment.sort_cell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine a suitable computation order for the cells.</p>
-<p>Sort the cells into a valid computation order based on the distance to the
-outlet of the catchment. This is necessary as each cell depends on the
-contribution from upstream cells.</p>
+<p>Sort the cells into a valid computation order based on the
+distance to the outlet of the catchment. This is necessary as each
+cell depends on the contribution from upstream cells.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ar_cell_label</strong> : (N,) int array</p>
 <blockquote>
-<p>Numbers labelling each cell.</p>
+<p>Numbers labelling each cell</p>
 </blockquote>
 <p><strong>ar_cell_down</strong> : (N,) int array</p>
 <blockquote>
-<p>The label (from <cite>ar_cell_label</cite>) associated with the cell downstream
-of the current cell.</p>
+<p>The label (from <cite>ar_cell_label</cite>) associated with the cell
+downstream of the current cell</p>
 </blockquote>
 </td>
 </tr>
 <tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>ar_label_sort</strong> : (N,) int array</p>
 <blockquote class="last">
-<p>Sorted array of cell labels.</p>
+<p>Sorted array of cell labels</p>
 </blockquote>
 </td>
 </tr>
@@ -1193,9 +1237,6 @@ Example:
 ut.string(1,3)&#8211;&gt;&#8216;001&#8217;</dd></dl>
 
 </div>
-<div class="section" id="interpolation-module">
-<h2>Interpolation module<a class="headerlink" href="#interpolation-module" title="Permalink to this headline">¶</a></h2>
-</div>
 <div class="section" id="module-pytopkapi.arcfltgrid">
 <h2>Arcfltgrid module<a class="headerlink" href="#module-pytopkapi.arcfltgrid" title="Permalink to this headline">¶</a></h2>
 <p>Utilities for reading and plotting ArcGIS binary files.</p>
@@ -1257,22 +1298,21 @@ byteorder     LSBFIRST</p>
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="install.html" title="PyTOPKAPI installation instructions"
+          <a href="bugs.html" title="Bug Reports"
              >next</a> |</li>
         <li class="right" >
-          <a href="developer.html" title="Developer Resources"
+          <a href="tutorial.html" title="Tutorial"
              >previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
-
-          <li><a href="contents.html" >PyTOPKAPI documentation contents</a> &raquo;</li> 
+ 
       </ul>
     </div>
 <p align="right">
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 10, 2010
+    Last updated on Sep 28, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 

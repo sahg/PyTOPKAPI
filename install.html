@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PyTOPKAPI installation instructions &mdash; TOPKAPI v0.2dev documentation</title>
+    <title>PyTOPKAPI installation instructions &mdash; TOPKAPI v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.2dev',
+        VERSION:     '0.2.0',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,9 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
-    <link rel="next" title="Contact" href="contact.html" />
-    <link rel="prev" title="PyTOPKAPI API Documentation" href="api.html" /> 
+    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="index.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
   </head>
   <body>
 
@@ -41,10 +41,10 @@ logo"/></a>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="contact.html" title="Contact"
+          <a href="tutorial.html" title="Tutorial"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="api.html" title="PyTOPKAPI API Documentation"
+          <a href="intro.html" title="Introduction"
              accesskey="P">previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
@@ -54,21 +54,24 @@ logo"/></a>
 
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="index.html">Table Of Contents</a></h3>
+            <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">PyTOPKAPI installation instructions</a><ul>
 <li><a class="reference external" href="#download">Download</a></li>
-<li><a class="reference external" href="#id1">Install</a></li>
+<li><a class="reference external" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference external" href="#windows-binary-installer">Windows Binary Installer</a></li>
+<li><a class="reference external" href="#source-install">Source Install</a></li>
+<li><a class="reference external" href="#next-steps">Next steps</a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="api.html"
-                                  title="previous chapter">PyTOPKAPI API Documentation</a></p>
+            <p class="topless"><a href="intro.html"
+                                  title="previous chapter">Introduction</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="contact.html"
-                                  title="next chapter">Contact</a></p>
+            <p class="topless"><a href="tutorial.html"
+                                  title="next chapter">Tutorial</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/install.txt"
@@ -99,25 +102,44 @@ logo"/></a>
 <span id="install"></span><h1>PyTOPKAPI installation instructions<a class="headerlink" href="#pytopkapi-installation-instructions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="download">
 <h2>Download<a class="headerlink" href="#download" title="Permalink to this headline">¶</a></h2>
-<p>Source releases and 32-bit Windows installers of the PyTOPKAPI code
-can be downloaded from <a class="reference external" href="http://github.com/sahg/PyTOPKAPI/downloads">http://github.com/sahg/PyTOPKAPI/downloads</a></p>
+<p>PyTOPKAPI source releases and a 32-bit Windows installer can be
+downloaded from <a class="reference external" href="http://github.com/sahg/PyTOPKAPI/downloads">http://github.com/sahg/PyTOPKAPI/downloads</a></p>
 </div>
-<div class="section" id="id1">
-<h2>Install<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Before using the PyTOPKAPI package, you will need a working Python
+installation on your computer. Python can be obtained from
+<a class="reference external" href="http://www.python.org">http://www.python.org</a> if it is not already present on your system. In
+addition, the model depends on a number of 3rd party Python packages,
+these are: <a class="reference external" href="http://www.numpy.org">NumPy</a>, <a class="reference external" href="http://www.scipy.org">SciPy</a> and <a class="reference external" href="http://www.pytables.org">PyTables</a>. All of the 3rd party packages must be
+installed and working on your system for PyTOPKAPI to work correctly.</p>
+</div>
+<div class="section" id="windows-binary-installer">
+<h2>Windows Binary Installer<a class="headerlink" href="#windows-binary-installer" title="Permalink to this headline">¶</a></h2>
+<p>Simply double-click the installer and follow the instructions.</p>
+</div>
+<div class="section" id="source-install">
+<h2>Source Install<a class="headerlink" href="#source-install" title="Permalink to this headline">¶</a></h2>
 <p>The PyTOPKAPI package currently consists of pure Python code and does
-not require any extension modules to be built. However the model
-depends on a number of 3rd party Python packages, these are: NumPy
-(<a class="reference external" href="http://www.numpy.org">http://www.numpy.org</a>), SciPy (<a class="reference external" href="http://www.scipy.org">http://www.scipy.org</a>) and PyTables
-(<a class="reference external" href="http://www.pytables.org">http://www.pytables.org</a>).</p>
-<p>Once the pre-requisite Python packages have been successfully
-installed, PyTOPKAPI can be installed at the command line for any
-operating system:</p>
+not require any extension modules to be built, so installation from
+source is straightforward on all popular operating systems.</p>
+<p>Once the prerequisite Python packages have been successfully
+installed, PyTOPKAPI can be installed by issuing the following command
+at the system command line:</p>
 <div class="highlight-python"><pre>$ python setup.py install</pre>
 </div>
-<p>The installation can be tested in the Python interpreter:</p>
+<p>If this fails, you&#8217;ll need to check that the <cite>python</cite> executable is on
+your system path.</p>
+</div>
+<div class="section" id="next-steps">
+<h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>Once installed a basic test of the installation can be made in the
+Python interpreter:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pytopkapi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">pytopkapi</span><span class="o">.</span><span class="n">__version__</span>
 </pre></div>
 </div>
+<p>New users should then follow the basic <a class="reference external" href="tutorial.html#tutorial"><em>tutorial</em></a>.</p>
 </div>
 </div>
 
@@ -137,10 +159,10 @@ operating system:</p>
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="contact.html" title="Contact"
+          <a href="tutorial.html" title="Tutorial"
              >next</a> |</li>
         <li class="right" >
-          <a href="api.html" title="PyTOPKAPI API Documentation"
+          <a href="intro.html" title="Introduction"
              >previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
@@ -151,7 +173,7 @@ operating system:</p>
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 10, 2010
+    Last updated on Sep 28, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 

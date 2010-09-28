@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Tutorial &mdash; TOPKAPI v0.2dev documentation</title>
+    <title>Tutorial &mdash; TOPKAPI v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.2dev',
+        VERSION:     '0.2.0',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,9 +19,8 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="TOPKAPI v0.2dev documentation" href="index.html" />
-    <link rel="up" title="PyTOPKAPI documentation contents" href="contents.html" />
-    <link rel="next" title="Bug Reports" href="bugs.html" />
+    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="index.html" />
+    <link rel="next" title="PyTOPKAPI API Documentation" href="api.html" />
     <link rel="prev" title="PyTOPKAPI installation instructions" href="install.html" /> 
   </head>
   <body>
@@ -42,27 +41,26 @@ logo"/></a>
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="bugs.html" title="Bug Reports"
+          <a href="api.html" title="PyTOPKAPI API Documentation"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="install.html" title="PyTOPKAPI installation instructions"
              accesskey="P">previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
-
-          <li><a href="contents.html" accesskey="U">PyTOPKAPI documentation contents</a> &raquo;</li> 
+ 
       </ul>
     </div>
 
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h3><a href="index.html">Table Of Contents</a></h3>
+            <h3><a href="contents.html">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">Tutorial</a><ul>
 <li><a class="reference external" href="#description-of-the-example">Description of the example</a></li>
 <li><a class="reference external" href="#running-the-model">Running the model</a><ul>
 <li><a class="reference external" href="#input-data">Input data</a></li>
-<li><a class="reference external" href="#id1">Tutorial</a><ul>
+<li><a class="reference external" href="#id2">Tutorial</a><ul>
 <li><a class="reference external" href="#open-a-python-shell">Open a Python shell</a></li>
 <li><a class="reference external" href="#run-the-model">Run the model</a></li>
 <li><a class="reference external" href="#analysing-the-simulations">Analysing the simulations</a></li>
@@ -79,8 +77,8 @@ logo"/></a>
             <p class="topless"><a href="install.html"
                                   title="previous chapter">PyTOPKAPI installation instructions</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="bugs.html"
-                                  title="next chapter">Bug Reports</a></p>
+            <p class="topless"><a href="api.html"
+                                  title="next chapter">PyTOPKAPI API Documentation</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/tutorial.txt"
@@ -108,7 +106,7 @@ logo"/></a>
           <div class="body">
             
   <div class="section" id="tutorial">
-<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
 <p>A tutorial introduction to using the PyTOPKAPI model is provided by
 way of an example simulation, set-up for the Liebenbergsvlei catchment
 in central South Africa.</p>
@@ -261,8 +259,8 @@ catchment.</p>
 run the model.</p>
 </div>
 </div>
-<div class="section" id="id1">
-<h3>Tutorial<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Tutorial<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>Open the directory TOPKAPI_Example/. It contains three sub-directories
 that correspond to the three steps of the process presented in the
 introduction (create_the_parameter_files, run_the_model and
@@ -294,7 +292,7 @@ Leave the iPython window open - we will use it shortly.</p>
 <p>At the end of the simulation, a folder <cite>results</cite> should have been
 created in the run_the_model folder, containing an HDF5 file called
 Example_simulation_results.h5; to open it you will have to associate
-the file (if it’s the first <a href="#id2"><span class="problematic" id="id3">*</span></a>.h5 file you’ve opened) with
+the file (if it’s the first <a href="#id3"><span class="problematic" id="id4">*</span></a>.h5 file you’ve opened) with
 HDF_Explorer. This file is composed of three groups: Channel, Overland
 and Soil. The group Channel contains the table Qc_out that is the
 channel flow of each cell (in m3/s) [to view a file’s content, double
@@ -330,7 +328,7 @@ labelled 2 in Figure 1).</p>
 plot_Qsim_Qobs_Rain. As reported on Figure 8, it contains three items
 [files], [groups] and [flags]. In [files] are reported all the input
 files required by the program as well as the output file which must be
-ended by a typical picture format (<a href="#id4"><span class="problematic" id="id5">*</span></a>.png, <a href="#id6"><span class="problematic" id="id7">*</span></a>.jpg, …). In [groups] is
+ended by a typical picture format (<a href="#id5"><span class="problematic" id="id6">*</span></a>.png, <a href="#id7"><span class="problematic" id="id8">*</span></a>.jpg, …). In [groups] is
 reported the name of the group to look in the result of simulation
 file. With [flags] are associated three Boolean that correspond to
 different options in the graphic: Qobs must be True to plot the
@@ -444,22 +442,21 @@ file run_example.py located in TOPKAPI_Example/.</p>
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="bugs.html" title="Bug Reports"
+          <a href="api.html" title="PyTOPKAPI API Documentation"
              >next</a> |</li>
         <li class="right" >
           <a href="install.html" title="PyTOPKAPI installation instructions"
              >previous</a> |</li>
   <li><a href="index.html">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
-
-          <li><a href="contents.html" >PyTOPKAPI documentation contents</a> &raquo;</li> 
+ 
       </ul>
     </div>
 <p align="right">
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 10, 2010
+    Last updated on Sep 28, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 

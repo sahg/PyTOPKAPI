@@ -5,27 +5,27 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Contact &mdash; TOPKAPI v0.2.0 documentation</title>
-    <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
-    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <title>Two and three dots in difference specs &mdash; TOPKAPI v0.2.0 documentation</title>
+    <link rel="stylesheet" href="../static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '#',
+        URL_ROOT:    '../',
         VERSION:     '0.2.0',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="static/jquery.js"></script>
-    <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="index.html" /> 
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="../index.html" /> 
   </head>
   <body>
 
 <div style="background-color: white; text-align: left; padding: 10px 10px 15px 15px">
 
-<a href="index.html"><img src="static/logo.png" border="0" alt="pyTOPKAPI
+<a href="../index.html"><img src="../static/logo.png" border="0" alt="pyTOPKAPI
 logo"/></a>
 </div>
 
@@ -33,13 +33,13 @@ logo"/></a>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="../modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
-  <li><a href="index.html">Home</a>|&nbsp;</li>
-  <li><a href="search.html">Search</a>|&nbsp;</li>
+  <li><a href="../index.html">Home</a>|&nbsp;</li>
+  <li><a href="../search.html">Search</a>|&nbsp;</li>
  
       </ul>
     </div>
@@ -48,12 +48,12 @@ logo"/></a>
         <div class="sphinxsidebarwrapper">
             <h3>This Page</h3>
             <ul class="this-page-menu">
-              <li><a href="sources/contact.txt"
+              <li><a href="../sources/gitwash/dot2_dot3.txt"
                      rel="nofollow">Show Source</a></li>
             </ul>
           <div id="searchbox" style="display: none">
             <h3>Quick search</h3>
-              <form class="search" action="search.html" method="get">
+              <form class="search" action="../search.html" method="get">
                 <input type="text" name="q" size="18" />
                 <input type="submit" value="Go" />
                 <input type="hidden" name="check_keywords" value="yes" />
@@ -72,15 +72,25 @@ logo"/></a>
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="contact">
-<span id="id1"></span><h1>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h1>
-<p>User support and development discussion takes place on the official
-<a class="reference external" href="http://groups.google.co.za/group/pytopkapi/">mailing list</a>. If you
-have a Google account, just sign in and join the group.</p>
-<p>It is also possible to join the group without a Google account, simply
-send an e-mail to <cite>[Groupname]+subscribe&#64;googlegroups.com</cite> from the
-e-mail account you wish to use, be sure to replace <cite>[Groupname]</cite> with
-<cite>pytopkapi</cite>.</p>
+  <div class="section" id="two-and-three-dots-in-difference-specs">
+<span id="dot2-dot3"></span><h1>Two and three dots in difference specs<a class="headerlink" href="#two-and-three-dots-in-difference-specs" title="Permalink to this headline">¶</a></h1>
+<p>Thanks to Yarik Halchenko for this explanation.</p>
+<p>Imagine a series of commits A, B, C, D...  Imagine that there are two
+branches, <em>topic</em> and <em>master</em>.  You branched <em>topic</em> off <em>master</em> when
+<em>master</em> was at commit &#8216;E&#8217;.  The graph of the commits looks like this:</p>
+<div class="highlight-python"><pre>     A---B---C topic
+     /
+D---E---F---G master</pre>
+</div>
+<p>Then:</p>
+<div class="highlight-python"><pre>git diff master..topic</pre>
+</div>
+<p>will output the difference from G to C (i.e. with effects of F and G),
+while:</p>
+<div class="highlight-python"><pre>git diff master...topic</pre>
+</div>
+<p>would output just differences in the topic branch (i.e. only A, B, and
+C).</p>
 </div>
 
 
@@ -93,13 +103,13 @@ e-mail account you wish to use, be sure to replace <cite>[Groupname]</cite> with
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="modindex.html" title="Global Module Index"
+          <a href="../modindex.html" title="Global Module Index"
              >modules</a> |</li>
-  <li><a href="index.html">Home</a>|&nbsp;</li>
-  <li><a href="search.html">Search</a>|&nbsp;</li>
+  <li><a href="../index.html">Home</a>|&nbsp;</li>
+  <li><a href="../search.html">Search</a>|&nbsp;</li>
  
       </ul>
     </div>

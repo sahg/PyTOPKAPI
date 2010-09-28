@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Get Started &mdash; TOPKAPI v0.2dev documentation</title>
+    <title>Overview &mdash; TOPKAPI v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '#',
-        VERSION:     '0.2dev',
+        VERSION:     '0.2.0',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,8 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="TOPKAPI v0.2dev documentation" href="#" />
-    <link rel="next" title="PyTOPKAPI documentation contents" href="contents.html" /> 
+    <link rel="top" title="TOPKAPI v0.2.0 documentation" href="#" /> 
   </head>
   <body>
 
@@ -39,9 +38,6 @@ logo"/></a>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
-        <li class="right" >
-          <a href="contents.html" title="PyTOPKAPI documentation contents"
-             accesskey="N">next</a> |</li>
   <li><a href="#">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
  
@@ -50,14 +46,6 @@ logo"/></a>
 
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <h4>Next topic</h4>
-            <p class="topless"><a href="contents.html"
-                                  title="next chapter">PyTOPKAPI documentation contents</a></p>
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="sources/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
           <div id="searchbox" style="display: none">
             <h3>Quick search</h3>
               <form class="search" action="search.html" method="get">
@@ -79,44 +67,66 @@ logo"/></a>
         <div class="bodywrapper">
           <div class="body">
             
-  <p>PyTOPKAPI is a <a class="reference external" href="http://www.opensource.org/licenses/bsd-license.html">BSD licensed</a> Python library
-implementing the TOPKAPI Hydrological model (Liu and Todini, 2002).
-The model is a physically-based and fully distributed hydrological
-model, which has already been successfully applied in several
-countries around the world (Liu and Todini, 2002; Bartholomes and
-Todini, 2005; Liu et al., 2005; Martina et al., 2006; Vischel et al.,
-2008).</p>
-<p>The main strengths of the TOPKAPI model are:</p>
-<ul class="simple">
-<li>The physical basis of the equations,</li>
-<li>the fine-scale representation of the spatial catchment features,</li>
-<li>the parsimonious parametrisation linked to field/catchment information,</li>
-<li>the good computation time performance,</li>
-<li>the modularity of the processes,</li>
-<li>the ease of use.</li>
-</ul>
-<p>These and the good results obtained in modelling the river discharges
-of Liebenbergsvlei catchment, make the TOPKAPI model a promising tool
-for hydrological modelling of catchments in South Africa and around
-the world.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">PyTOPKAPI is under active development and the public interface
-(API) is not yet considered stable. However, the model is already
-usable and we would welcome feedback from users and collaborators
-as we work to stabilize the API and make the model more robust and
-useful.</p>
-</div>
-<div class="section" id="get-started">
-<h1>Get Started<a class="headerlink" href="#get-started" title="Permalink to this headline">¶</a></h1>
-<ul>
-<li class="toctree-l1"><a class="reference external" href="contents.html">Read the PyTOPKAPI Documentation</a></li>
-<li class="toctree-l1"><a class="reference external" href="install.html">Find out how to Download and install PyTOPKAPI</a></li>
-<li class="toctree-l1"><a class="reference external" href="contact.html">Join the Mailing list</a></li>
-<li class="toctree-l1"><a class="reference external" href="bugs.html">Report Bugs</a></li>
-<li class="toctree-l1"><a class="reference external" href="developer.html">Help with Model Development and Documentation</a></li>
-</ul>
-</div>
+  <p>
+    PyTOPKAPI is
+    a <a href="http://www.opensource.org/licenses/bsd-license.html">BSD
+    licensed</a> Python library implementing the TOPKAPI Hydrological
+    model (Liu and Todini, 2002). The model is a physically-based and
+    fully distributed hydrological model, which has already been
+    successfully applied in several countries around the world (Liu
+    and Todini, 2002; Bartholomes and Todini, 2005; Liu et al., 2005;
+    Martina et al., 2006; Vischel et al., 2008).
+  </p>
+
+  <p>
+	The main strengths of the TOPKAPI model are:
+  </p>
+
+  <ul>
+	<li>The physical basis of the equations,</li>
+	<li>the fine-scale representation of the spatial catchment
+	features,</li>
+	<li>the parsimonious parametrisation linked to field/catchment
+	information,</li>
+	<li>the good computation time performance,</li>
+	<li>the modularity of the processes,</li>
+	<li>the ease of use.</li>
+  </ul>
+
+  <p>
+	These and the good results obtained in modelling the river
+	discharges of Liebenbergsvlei catchment, make the TOPKAPI model a
+	promising tool for hydrological modelling of catchments in South
+	Africa and around the world.
+  </p>
+
+  <div class="admonition note">
+
+	<p class="first admonition-title">Note</p>
+	<p class="last">
+	  PyTOPKAPI is under active development and the public interface
+	  (API) is not yet considered stable. However, the model is
+	  already usable and we would welcome feedback from users and
+	  collaborators as we work to stabilize the API and make the model
+	  more robust.
+	</p>
+  </div>
+
+  <div class="section" id="get-started">
+	<h1>Get Started<a class="headerlink" href="#get-started"
+	title="Permalink to this headline">¶</a></h1>
+	<ul>
+	  <li><a href="contents.html">Read the PyTOPKAPI
+	  Documentation</a></li>
+	  <li><a href="install.html">Find out how to Download and
+	  install PyTOPKAPI</a></li>
+	  <li><a href="contact.html">Join the Mailing
+	  list</a></li>
+	  <li><a href="bugs.html">Report Bugs</a></li>
+	  <li><a href="developer.html">Help with Model
+	  Development and Documentation</a></li>
+	</ul>
+  </div>
 
 
           </div>
@@ -133,9 +143,6 @@ useful.</p>
         <li class="right" >
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
-        <li class="right" >
-          <a href="contents.html" title="PyTOPKAPI documentation contents"
-             >next</a> |</li>
   <li><a href="#">Home</a>|&nbsp;</li>
   <li><a href="search.html">Search</a>|&nbsp;</li>
  
@@ -145,7 +152,7 @@ useful.</p>
   <a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0.5" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
    Copyright 2008-2010, Theo Vischel, Scott Sinclair & Geoff Pegram
   <br />
-    Last updated on Sep 13, 2010
+    Last updated on Sep 28, 2010
    | Created using <a href="http://sphinx.pocoo.org/">Sphinx</a>
 </p>
 
