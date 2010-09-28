@@ -10,10 +10,9 @@ PyTOPKAPI documentation contents
    intro
    install
    tutorial
+   api
    bugs
    developer
-   api
-
 
 Indices and tables
 ==================

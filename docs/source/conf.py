@@ -40,7 +40,7 @@ source_suffix = '.rst'
 #source_encoding = 'utf-8'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = 'contents'
 
 # General information about the project.
 project = u'TOPKAPI'
@@ -156,6 +156,8 @@ html_last_updated_fmt = '%b %d, %Y'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'TOPKAPIdoc'
+html_index = 'index.html'
+html_additional_pages = {'index': 'index.html'}
 
 
 # Options for LaTeX output
