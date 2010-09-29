@@ -57,12 +57,35 @@ if __name__ == '__main__':
 
     setup(name='PyTOPKAPI',
           version=full_version,
-          description='SAHG TOPKAPI model implementation',
+          description='TOPKAPI hydrological model in Python',
+          long_description = """\
+PyTOPKAPI - a Python implementation of the TOPKAPI Hydrological model
+=====================================================================
+
+PyTOPKAPI is a BSD licensed Python library implementing the TOPKAPI
+Hydrological model (Liu and Todini, 2002). The model is a
+physically-based and fully distributed hydrological model, which has
+already been successfully applied in several countries around the
+world (Liu and Todini, 2002; Bartholomes and Todini, 2005; Liu et al.,
+2005; Martina et al., 2006; Vischel et al., 2008).
+
+""",
           license='BSD',
           author='Theo Vischel & Scott Sinclair',
           author_email='theo.vischel@hmg.inpg.fr; sinclaird@ukzn.ac.za',
+          url='http://sahg.github.com/PyTOPKAPI',
+          download_url='http://github.com/sahg/PyTOPKAPI/downloads',
           packages=['pytopkapi',
                     'pytopkapi.parameter_utils',
                     'pytopkapi.results_analysis'],
+          classifiers=[
+          'Development Status :: 4 - Beta',
+          'License :: OSI Approved :: BSD License',
+          'Environment :: Console',
+          'Operating System :: OS Independent',
+          'Intended Audience :: Science/Research',
+          'Programming Language :: Python',
+          'Topic :: Scientific/Engineering',
+          ],
           )
 
