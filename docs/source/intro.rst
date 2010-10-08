@@ -10,7 +10,8 @@ of the modelling methodology, although some methodological aspects are
 addressed. For a comprehensive description of the theory and
 methodology associated with the TOPKAPI model, readers should refer to
 the following references: Liu and Todini (2002), Pegram et al. (2006),
-Vischel et al. (2008a) and Vischel et al. (2008b).
+Vischel et al. (2008a), Vischel et al. (2008b) and Sinclair and Pegram
+(2010).
 
 There are three basic steps in the use of the PyTOPKAPI package. The
 first step is the creation of one or more model parameter files
@@ -60,6 +61,10 @@ rainfall-runoff model, Hydrol. Earth Syst. Sci., 6(5), 859 – 881.
 2006**, National Flood Nowcasting System: Towards an integrated
 mitigation strategy, WRC Report No. 1429/1/06, Water Research
 Commission, Pretoria, South Africa.
+
+**Sinclair S. and Pegram G.G.S., 2010**, A comparison of ASCAT and
+modeled soil moisture over South Africa, using TOPKAPI in land surface
+mode, Hydrol. Earth Syst. Sci., 14, 613-626.
 
 **Vischel T., Pegram G.G.S., Sinclair S., Wagner W. and Bartsch A.,
 2008a**, Comparison of soil moisture fields estimated by catchment
