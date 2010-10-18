@@ -13,7 +13,7 @@ def _green_ampt_cum_eq(F, psi, dtheta, K, t):
     # np.log(x) computes ln(x)
     return F - tmp*np.log(1 + F/tmp) - K*t
 
-def green_ampt_cum_infiltration(psi, dtheta, K, t):
+def green_ampt_cum_infiltration(psi, eff_theta, eff_sat, K, t):
     """Compute the Green-Ampt cumulative infiltration
 
     Compute the potential cumulative infiltration up to time `t`,
@@ -23,8 +23,10 @@ def green_ampt_cum_infiltration(psi, dtheta, K, t):
     ----------
     psi : array_like
         Soil suction head at wetting front.
-    dtheta : array_like
-        Ratio of initial effective saturation to effective porosity.
+    eff_theta : array_like
+        Effective porosity.
+    eff_sat : array_like
+        Effective saturation.
     K : array_like
         Saturated hydraulic conductivity.
     t : array_like
@@ -41,6 +43,8 @@ def green_ampt_cum_infiltration(psi, dtheta, K, t):
 
     """
 
+    dtheta = (1 - eff_sat)*eff_theta
+
     F = K*t # initial guess
 
     soln, infodict, ierr, mesg = fsolve(_green_ampt_cum_eq, F,
@@ -56,10 +60,11 @@ def test_basic_green_ampt():
     """Test the Green-Ampt cumulative infiltration solution"""
 
     psi = 16.7
-    dtheta = 0.34
+    eff_theta = 0.486
+    eff_sat = 0.3
     K = 0.65
     t = 1
 
-    result = green_ampt_cum_infiltration(psi, dtheta, K, t)
+    result = green_ampt_cum_infiltration(psi, eff_theta, eff_sat, K, t)
 
-    assert np.allclose(result, [3.16641923])
+    assert np.allclose(result, [3.16721373])
