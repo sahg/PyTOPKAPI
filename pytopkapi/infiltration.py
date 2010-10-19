@@ -21,20 +21,20 @@ def green_ampt_cum_infiltration(psi, eff_theta, eff_sat, K, t):
 
     Parameters
     ----------
-    psi : array_like
+    psi : scalar
         Soil suction head at wetting front.
-    eff_theta : array_like
+    eff_theta : scalar
         Effective porosity.
-    eff_sat : array_like
+    eff_sat : scalar
         Effective saturation.
-    K : array_like
+    K : scalar
         Saturated hydraulic conductivity.
-    t : array_like
+    t : scalar
         Time since beginning of event
 
     Returns
     -------
-    soln : array_like
+    soln : scalar
         Cumulative infiltration up to time `t`.
 
     Raises
