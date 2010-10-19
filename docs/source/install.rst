@@ -32,7 +32,9 @@ Source Install
 
 The PyTOPKAPI package currently consists of pure Python code and does
 not require any extension modules to be built, so installation from
-source is straightforward on all popular operating systems.
+source is straightforward on all popular operating systems. Windows
+users who have installed PyTOPKAPI using the binary installer do not
+need to perform a source install.
 
 Once the prerequisite Python packages have been successfully
 installed, PyTOPKAPI can be installed by issuing the following command
