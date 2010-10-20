@@ -1,5 +1,5 @@
-from TOPKAPI import pretreatment as pm
-from TOPKAPI import utils as ut
+from pytopkapi import pretreatment as pm
+from pytopkapi import utils as ut
 import numpy as np
 
 def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max_val=0.):

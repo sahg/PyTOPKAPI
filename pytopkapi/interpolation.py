@@ -2,7 +2,7 @@ import numpy as np
 import rpy
 from rpy import r
 
-from TOPKAPI import arcfltgrid
+from pytopkapi import arcfltgrid
 
 def krige_to_grid(grid_fname, obs_x, obs_y, obs_data, vgm_par):
     """Interpolate point data onto a grid using Kriging.

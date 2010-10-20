@@ -35,8 +35,8 @@ import scipy.io as io
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
-#External modules from TOPKAPI
-from TOPKAPI import arcfltgrid
+#External modules from pytopkapi
+from pytopkapi import arcfltgrid
 
 def bingrid_to_label(file_grid, file_label='label.dat', write_file=False):
     """

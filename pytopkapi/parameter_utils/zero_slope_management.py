@@ -14,9 +14,9 @@ import scipy.io as io
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
-#External modules from TOPKAPI
+#External modules from pytopkapi
 #pretreatment: used for subroutines to read the column type files.
-from TOPKAPI import pretreatment as pm
+from pytopkapi import pretreatment as pm
 
 
 def run(ini_file='zero_slope_management.ini'):
