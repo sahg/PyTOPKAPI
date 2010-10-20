@@ -10,16 +10,12 @@ Modifying the created parameter files in order to
 *** COMMENT
 
 """
-import sys
 
 #Internal modules
 import numpy as np
-import scipy as sp
 import pylab as pl
 from numpy import ma
-import tables as h5
-import os
-import os.path
+
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
@@ -878,9 +874,6 @@ def field_map(ar_field, ar_coorx, ar_coory, X, picture_out, title, flip=0):
     Plot an overview depicting the location of the subcatchment.
 
     """
-
-    import matplotlib.numerix.ma as M
-
     max_val=max(ar_field)
 
     xmin=min(ar_coorx);xmax=max(ar_coorx)
@@ -892,13 +885,13 @@ def field_map(ar_field, ar_coorx, ar_coory, X, picture_out, title, flip=0):
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
 
-    ar_map=sp.ones((ny,nx))*-99.9
+    ar_map=np.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
 
     if flip==1:
         ar_map=np.flipud(ar_map)
 
-    ar_map2 = M.masked_where(ar_map <0, ar_map)
+    ar_map2 = ma.masked_where(ar_map <0, ar_map)
 
 
     ut.check_file_exist(picture_out)

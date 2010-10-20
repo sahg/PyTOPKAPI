@@ -27,21 +27,15 @@ to South is:
 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 
 """
-import sys
 from shutil import copyfile
 
 #Python modules
 import numpy as np
-import pylab as pl
-from numpy import ma
 import scipy.io as io
-import tables as h5
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
 #External modules from TOPKAPI
-from TOPKAPI import utils as ut
-from TOPKAPI import pretreatment as pm
 from TOPKAPI import arcfltgrid
 
 def bingrid_to_label(file_grid, file_label='label.dat', write_file=False):

@@ -30,7 +30,6 @@ import sys
 import numpy as np
 import pylab as pl
 from numpy import ma
-import tables as h5
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 

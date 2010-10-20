@@ -9,10 +9,8 @@ __date__ = "$Date: 08/08/2007 $"
 
 #Python modules
 import numpy as np
-import pylab as pl
-from numpy import ma
 import scipy.io as io
-import tables as h5
+
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
