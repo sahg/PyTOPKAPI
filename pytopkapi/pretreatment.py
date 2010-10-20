@@ -6,7 +6,6 @@ physical parameters
 """
 
 import numpy as np
-import scipy.io as io
 
 def read_global_parameters(file_name):
     """Read global model parameters from file.

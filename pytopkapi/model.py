@@ -11,7 +11,6 @@ from ConfigParser import SafeConfigParser
 
 import numpy as np
 import tables as h5
-import scipy.io as io
 
 #Personnal module importation
 import utils as ut
