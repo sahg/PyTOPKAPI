@@ -9,7 +9,6 @@ __date__ = "$Date: 08/08/2007 $"
 
 #Python modules
 import numpy as np
-import scipy.io as io
 
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
@@ -243,13 +242,7 @@ def run(ini_file='zero_slope_management.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-
-    f = file(file_cell_param_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
-
-                    
-                
+    np.savetxt(file_cell_param_out, tab_param)
                 
         
                     

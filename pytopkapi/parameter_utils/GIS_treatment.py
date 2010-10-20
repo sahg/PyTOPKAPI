@@ -31,7 +31,6 @@ from shutil import copyfile
 
 #Python modules
 import numpy as np
-import scipy.io as io
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
@@ -61,9 +60,7 @@ def bingrid_to_label(file_grid, file_label='label.dat', write_file=False):
     tab=tab.astype('int32')
 
     if write_file:
-        f = file(file_label, 'w')
-        io.write_array(f, tab)
-        f.close()
+        np.savetxt(file_label, tab)
 
     return tab
 
@@ -89,9 +86,7 @@ def from_asciigrid_to_label(file_ascii_grid,file_label='label.dat',write_file=Fa
     tab=tab.astype('int32')
 
     if write_file:
-        f = file(file_label, 'w')
-        io.write_array(f, tab)
-        f.close()
+        np.savetxt(file_label, tab)
 
     return tab
 
@@ -113,10 +108,7 @@ def from_flowacc_to_stream(file_flowacc_grid,file_stream_grid,threshold_cell):
     
     tab_stream=np.reshape(ar_stream,(nrows,ncols))
     
-    f = file(file_stream_grid, 'w')
-    io.write_array(f, tab_stream)
-    f.close()
-
+    np.savetxt(file_stream_grid, tab_stream)
 
 def compute_slope_8D(file_flowdir, file_DEM, 
                      file_slope_degree, file_slope, Xcell=1000.0):
@@ -206,13 +198,9 @@ def compute_slope_8D(file_flowdir, file_DEM,
                     print 'Problem cell external to the catchment...'
                     print tab_label[i,j],direction,tab_label[x,y],tab_DEM[i,j],tab_DEM[x,y]
 
-    f = file(file_slope_degree, 'w')
-    io.write_array(f, tab_slope_degree)
-    f.close()
+    np.savetxt(file_slope_degree, tab_slope_degree)
     
-    f = file(file_slope, 'w')
-    io.write_array(f, tab_slope)
-    f.close()
+    np.savetxt(file_slope, tab_slope)
 
 def create_channel_slope_file(file_flowdir, file_DEM, file_slope_degree):
     """Compute the channel slopes from 8D flow direction and a DEM.
