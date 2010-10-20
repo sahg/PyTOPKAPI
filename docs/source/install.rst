@@ -22,6 +22,11 @@ these are: `NumPy <http://www.numpy.org>`_, `SciPy
 <http://www.pytables.org>`_. All of the 3rd party packages must be
 installed and working on your system for PyTOPKAPI to work correctly.
 
+In order to produce plots in the tutorial and to use the tools in the
+`results_analysis` sub-package, there is an additional optional
+dependency. Users wishing to produce plots using these tools must also
+install `Matplotlib <http://matplotlib.sourceforge.net>`_.
+
 Windows Binary Installer
 ------------------------
 
