@@ -1,7 +1,6 @@
-from TOPKAPI import pretreatment as pm
-from TOPKAPI import utils as ut
+from pytopkapi import pretreatment as pm
+from pytopkapi import utils as ut
 import numpy as np
-import scipy as sp
 
 def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max_val=0.):
 
@@ -19,7 +18,7 @@ def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
     
-    ar_map=sp.ones((ny,nx))*-99.9
+    ar_map=np.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
     
     if flip==1:
@@ -52,7 +51,7 @@ def field_map2(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,ma
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
     
-    ar_map=sp.ones((ny,nx))*-99.9
+    ar_map=np.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
     
     if flip==1:

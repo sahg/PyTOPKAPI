@@ -9,16 +9,13 @@ __date__ = "$Date: 08/08/2007 $"
 
 #Python modules
 import numpy as np
-import pylab as pl
-from numpy import ma
-import scipy.io as io
-import tables as h5
+
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
 
-#External modules from TOPKAPI
+#External modules from pytopkapi
 #pretreatment: used for subroutines to read the column type files.
-from TOPKAPI import pretreatment as pm
+from pytopkapi import pretreatment as pm
 
 
 def run(ini_file='zero_slope_management.ini'):
@@ -245,13 +242,7 @@ def run(ini_file='zero_slope_management.ini'):
     tab_param[:,17]=ar_Qc_t0
     tab_param[:,18]=ar_kc
 
-
-    f = file(file_cell_param_out, 'w')
-    io.write_array(f, tab_param)
-    f.close()
-
-                    
-                
+    np.savetxt(file_cell_param_out, tab_param)
                 
         
                     

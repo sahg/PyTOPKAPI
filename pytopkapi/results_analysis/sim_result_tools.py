@@ -1,6 +1,6 @@
 __all__ = ['extract_ssi']
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import h5py
 import numpy as np

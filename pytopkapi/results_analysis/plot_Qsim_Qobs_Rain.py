@@ -1,9 +1,8 @@
 #General module importation
 import numpy as np
-import scipy as sp
 import pylab as pl
 import datetime as dt
-from matplotlib.dates import drange,date2num,num2date,YearLocator, MonthLocator,DayLocator, HourLocator,DateFormatter
+from matplotlib.dates import drange,num2date,YearLocator, MonthLocator,DayLocator,DateFormatter
 import tables as h5
 from ConfigParser import SafeConfigParser
 config = SafeConfigParser()
@@ -136,7 +135,7 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     pl.ylabel(r'$Rainfall \  (mm)$',fontsize=18,color=color_P)
     #pl.plot(X,ar_rain,'b-')
     X_fill=np.concatenate((X[0:1],X,X[-1:]))
-    rain_fill=np.concatenate((sp.zeros(1),ar_rain,sp.zeros(1)))
+    rain_fill=np.concatenate((np.zeros(1),ar_rain,np.zeros(1)))
     p=pl.fill(X_fill,rain_fill,facecolor=color_P,edgecolor=color_P,alpha=transparency_P)
     pl.ylim(max(ar_rain)*2,min(ar_rain))
     pl.xlim(X[0],X[-1])
