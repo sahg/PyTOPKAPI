@@ -6,7 +6,8 @@ Tutorial
 
 A tutorial introduction to using the PyTOPKAPI model is provided by
 way of an example simulation, set-up for the Liebenbergsvlei catchment
-in central South Africa.
+in central South Africa. The tutorial materials for the example can be
+separately downloaded at http://github.com/sahg/PyTOPKAPI/downloads.
 
 Description of the example
 ==========================
