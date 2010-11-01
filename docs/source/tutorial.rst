@@ -314,7 +314,7 @@ comparing observed and simulated discharges.
 
 In the Python shell, import the module plot_Qsim_Qobs_Rain ::
 
-   ln [4]: from TOPKAPI.results_analysis import plot_Qsim_Qobs_Rain
+   ln [4]: from pytopkapi.results_analysis import plot_Qsim_Qobs_Rain
    # Create a plot of the simulated and observed discharge records
    ln [5]: plot_Qsim_Qobs_Rain.run('analyse_the_results/plot_Qsim_Qobs_Rain.ini')
 
