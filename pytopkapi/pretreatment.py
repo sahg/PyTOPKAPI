@@ -338,7 +338,7 @@ def compute_cell_param(X, ar_Xc, Dt, alpha_s, alpha_o,
     -------
     ar_Vsm : (N,) float array
         The saturated moisture volume of the soil store for each cell
-        (:math:`m^3/s`)
+        (:math:`m^3`)
     ar_b_s : (N,) float array
         The constant term of the non differential equation for each
         soil store --> :math:`dV_s/dt = a_s - b_s V_s^{\\alpha_s}`
