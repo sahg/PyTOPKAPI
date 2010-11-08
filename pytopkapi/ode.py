@@ -16,7 +16,19 @@ from numpy import *
 #### Solution if a=0
 def input_zero_solution(b, alpha, V0, delta_t):
     """Analytical solution of the ODE when inflow is zero."""
-    V1 = (V0**(1-alpha) + b*(alpha-1)*delta_t)**(1/(1-alpha))
+    if V0 > 0:
+        V1 = (V0**(1-alpha) + b*(alpha-1)*delta_t)**(1/(1-alpha))
+    elif V0 < 0:
+        raise ValueError('Volume in cell store cannot be negative')
+    else:
+        # V0 must be zero and cannot be raised to the negative
+        # exponent (1 - alpha) since this is undefined. In most cases
+        # the term b*(alpha-1)*delta_t is small compared to
+        # V0**(1-alpha) as V0 tends to zero, and can be ignored. In
+        # the limit the analytical solution tends to V1 = V0 as V0
+        # tends to zero.
+        V1 = V0
+
     return V1
 
 #### Solution if b=0
