@@ -363,7 +363,14 @@ def compute_cell_param(X, ar_Xc, Dt, alpha_s, alpha_o,
     A_total=nb_cell*X**2
     ar_W = W_max + ((W_max-W_min)/(A_total**0.5-A_thres**0.5)) \
            * (ar_A_drained**0.5-A_total**0.5)
+
+    # Ignore erroneous zero-division warnings. These are printed for
+    # all Numpy arrays (even masked arrays) when a scalar is divided
+    # by an array containing zeros.
+    old_settings = np.seterr(divide='ignore')
     ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
+    np.seterr(divide=old_settings['divide'])
+
     ar_b_c=ar_Cc*ar_W/((ar_Xc*ar_W)**(alpha_c))
     ar_W[ar_lambda==0]=-99.9
     ar_b_c[ar_lambda==0]=-99.9
