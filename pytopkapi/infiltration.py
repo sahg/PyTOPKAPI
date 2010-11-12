@@ -123,19 +123,28 @@ def green_ampt_cum_infiltration(rain, psi, eff_theta,
             else:
                 # ponding has occurred
                 dtheta = (1 - eff_sat)*eff_theta
-                Fp = (K*psi*dtheta)/(rain - K)
 
-                dtprime = (Fp - F_t0)/rain
+                tst = np.array([F_t0, dtheta])
+                if np.allclose(tst, np.zeros(2)):
+                    # The cumulative infiltration equation simplifies
+                    # and the root is trivial to find in this
+                    # case. Special case to avoid dividing by zero and
+                    # to find a quick solution.
+                    F_t1 = K*dt
+                else:
+                    Fp = (K*psi*dtheta)/(rain - K)
 
-                F = K*dt # initial guess
-                dtp = dt - dtprime
-                soln, infodict, ierr, mesg = fsolve(_green_ampt_cum_eq, F,
-                                                    args=(Fp, psi,
-                                                          dtheta, K, dtp),
-                                                    full_output=True)
-                F_t1 = soln[0]
+                    dtprime = (Fp - F_t0)/rain
 
-                if ierr != 1:
-                    raise ValueError(mesg)
+                    F = K*dt # initial guess
+                    dtp = dt - dtprime
+                    soln, infodict, ierr, mesg = fsolve(_green_ampt_cum_eq, F,
+                                                        args=(Fp, psi,
+                                                              dtheta, K, dtp),
+                                                        full_output=True)
+                    F_t1 = soln[0]
+
+                    if ierr != 1:
+                        raise ValueError(mesg)
 
     return F_t1
