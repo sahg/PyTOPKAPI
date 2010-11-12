@@ -5,7 +5,8 @@ from ConfigParser import SafeConfigParser
 import tables as h5
 import numpy as np
 
-import TOPKAPI.model as topkapi
+import pytopkapi
+import pytopkapi.model as topkapi
 
 def compute_precip_volume(precip_fname, group_name, X):
     """Compute the volume of precipitation over the catchment.
@@ -139,6 +140,9 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     ET_fname = config.get('input_files', 'file_ET')
     group_name = config.get('groups', 'group_name')
     result_fname = config.get('output_files', 'file_out')
+
+    # write model version
+    print 'PyTOPKAPI version = %s' % pytopkapi.__version__
 
     # compute the terms in the continuity eqn.
     initial_storage, final_storage = compute_storage(result_fname)
