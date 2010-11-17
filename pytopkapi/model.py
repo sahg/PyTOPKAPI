@@ -376,7 +376,7 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== SOIL STORE ===== ##
             ## ====================== ##
             #~~~~ Computation of soil input
-            ar_a_s[cell] = fl.input_soil(ndar_rain[t, cell],
+            ar_a_s[cell] = fl.input_soil(infiltration_depth,
                                          Dt, X,
                                          ar_Q_to_next_cell,
                                          li_cell_up[cell])
@@ -404,13 +404,14 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== OVERLAND STORE ===== ##
             ## ========================== ##
             #~~~~ Computation of overland input
-            if Vs_prim > ar_Vsm[cell]:
-                ar_a_o[cell] = max(0.,
-                                   ar_a_s[cell]
-                                   - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt
-                                   + ar_Qs_out[cell]))
-            else:
-                ar_a_o[cell] = 0.
+            rain_excess = ndar_rain[t, cell] - infiltration_depth
+            if rain_excess < 0:
+                raise ValueError('Infiltration greater than rainfall')
+
+            ar_a_o[cell] = ar_a_s[cell] \
+                           - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
+                              + ar_Qs_out[cell]) \
+                           + rain_excess/Dt
 
             #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
