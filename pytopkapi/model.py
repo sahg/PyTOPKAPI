@@ -18,6 +18,7 @@ import pretreatment as pm
 import fluxes as fl
 import ode as om
 import evap as em
+from infiltration import green_ampt_cum_infiltration
 
 def run(ini_file='TOPKAPI.ini'):
     """Run the model with the set-up defined by `ini_file`.
@@ -332,6 +333,8 @@ def run(ini_file='TOPKAPI.ini'):
         E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
+    eff_theta = ar_theta_s - ar_theta_r
+
     ##===========================##
     ##     Core of the Model     ##
     ##===========================##
@@ -342,6 +345,9 @@ def run(ini_file='TOPKAPI.ini'):
     ## Loop on time
     for t in range(nb_time_step):
         print t+1, '/', nb_time_step
+
+        eff_sat = ar_Vs0/ar_Vsm
+        psi = np.ones(nb_cell)*170 # constant for now
 
         ## Loop on cells
         n=-1
@@ -354,6 +360,17 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== INTERCEPTION ===== ##
             ## ======================== ##
             ## No interception for the moment
+
+            ## ======================== ##
+            ## ===== INFILTRATION ===== ##
+            ## ======================== ##
+            rain_rate = ndar_rain[t, cell]/Dt
+
+            infiltration_depth = green_ampt_cum_infiltration(rain_rate,
+                                                             psi[cell],
+                                                             eff_theta[cell],
+                                                             eff_sat[cell],
+                                                             ar_Ks[cell], Dt)
 
             ## ====================== ##
             ## ===== SOIL STORE ===== ##
