@@ -406,14 +406,13 @@ def run(ini_file='TOPKAPI.ini'):
             #~~~~ Computation of overland input
             rain_excess = ndar_rain[t, cell] - infiltration_depth
             # convert mm to m^3/s
-            rain_excess = (rain_excess*(10**-3)/Dt)*X**2
-            if rain_excess < 0:
-                raise ValueError('Infiltration greater than rainfall')
+            rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
 
-            ar_a_o[cell] = ar_a_s[cell] \
-                           - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
-                              + ar_Qs_out[cell]) \
-                           + rain_excess
+            ar_a_o[cell] = max(0,
+                               ar_a_s[cell] \
+                               - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
+                                  + ar_Qs_out[cell]) \
+                               + rain_excess)
 
             #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
