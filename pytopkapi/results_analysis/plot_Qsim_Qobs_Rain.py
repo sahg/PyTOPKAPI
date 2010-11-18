@@ -1,6 +1,6 @@
 #General module importation
 import numpy as np
-import pylab as pl
+import matplotlib.pyplot as plt
 import datetime as dt
 from matplotlib.dates import drange,num2date,YearLocator, MonthLocator,DayLocator,DateFormatter
 import tables as h5
@@ -64,10 +64,10 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 
 
     ##Graph
-    pl.clf()
+    plt.clf()
     #Set up the date axes
     lim_day0=3;lim_day1=61;lim_day2=3*365
-    ax=pl.subplot(111)
+    ax=plt.subplot(111)
 
     d=num2date(X[-1])-num2date(X[0])
     time_length=d.days
@@ -78,26 +78,26 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     Fmt = DateFormatter("%m/%y")
     ax.xaxis.set_major_formatter(Fmt)
     labels = ax.get_xticklabels()
-    #pl.setp(labels,'rotation', 90)
+    #plt.setp(labels,'rotation', 90)
     if time_length>lim_day1 and time_length<lim_day2:
         ax.xaxis.set_major_locator(months)
         Fmt = DateFormatter("%m/%y")
         ax.xaxis.set_major_formatter(Fmt)
         labels = ax.get_xticklabels()
-        #pl.setp(labels,'rotation', 90)
+        #plt.setp(labels,'rotation', 90)
     elif time_length>=lim_day2:
         ax.xaxis.set_major_locator(years)
         ax.xaxis.set_minor_locator(months)
         Fmt = DateFormatter("%m/%y")
         ax.xaxis.set_major_formatter(Fmt)
         labels = ax.get_xticklabels()
-        #pl.setp(labels,'rotation', 90)
+        #plt.setp(labels,'rotation', 90)
     elif time_length>lim_day0 and time_length<lim_day1:
         ax.xaxis.set_major_locator(months)
         ax.xaxis.set_minor_locator(days)
         Fmt = DateFormatter("%d/%m/%y")
         ax.xaxis.set_major_formatter(Fmt)
-        #pl.setp(labels,'rotation', 90)
+        #plt.setp(labels,'rotation', 90)
     else:
         ax.xaxis.set_major_locator(hours)
         ax.xaxis.set_minor_locator(hours)
@@ -106,41 +106,41 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 
     #plot the graph
     if Qobs:
-        pl.plot(X,ar_Qobs,color=tab_col[-1],linestyle=tab_style[-1],linewidth=tab_width[-1])
+        plt.plot(X,ar_Qobs,color=tab_col[-1],linestyle=tab_style[-1],linewidth=tab_width[-1])
         tab_leg.append(('Observation'))
         tab_leg=tab_leg[::-1]
         
 
-    pl.plot(X,ar_Qsim,color=tab_col[0],linestyle=tab_style[0],linewidth=tab_width[0])
+    plt.plot(X,ar_Qsim,color=tab_col[0],linestyle=tab_style[0],linewidth=tab_width[0])
 
     if nash:
         nash_value=ut.Nash(ar_Qsim,ar_Qobs)
-        pl.plot(X[0:1],ar_Qsim[0:1],'w:')
+        plt.plot(X[0:1],ar_Qsim[0:1],'w:')
         tab_leg.append(('Eff= '+str(nash_value)[0:5]))
             
-    pl.xlim(X[0],X[-1])
+    plt.xlim(X[0],X[-1])
     ytitle=r'$Q \  (m^3/s)$'
-    pl.ylabel(ytitle,fontsize=18)
-    pl.title(group_name)
-    pl.legend(tab_leg,'center')
-    leg = pl.gca().get_legend()
+    plt.ylabel(ytitle,fontsize=18)
+    plt.title(group_name)
+    plt.legend(tab_leg,'center')
+    leg = plt.gca().get_legend()
     leg.draw_frame(False)
     ltext  = leg.get_texts()
-    pl.setp(ltext, fontsize=14)
+    plt.setp(ltext, fontsize=14)
 
 
-    ax2 = pl.twinx()
+    ax2 = plt.twinx()
     ax2.yaxis.tick_right()
     #Plot the rain first
-    pl.ylabel(r'$Rainfall \  (mm)$',fontsize=18,color=color_P)
-    #pl.plot(X,ar_rain,'b-')
+    plt.ylabel(r'$Rainfall \  (mm)$',fontsize=18,color=color_P)
+    #plt.plot(X,ar_rain,'b-')
     X_fill=np.concatenate((X[0:1],X,X[-1:]))
     rain_fill=np.concatenate((np.zeros(1),ar_rain,np.zeros(1)))
-    p=pl.fill(X_fill,rain_fill,facecolor=color_P,edgecolor=color_P,alpha=transparency_P)
-    pl.ylim(max(ar_rain)*2,min(ar_rain))
-    pl.xlim(X[0],X[-1])
+    p=plt.fill(X_fill,rain_fill,facecolor=color_P,edgecolor=color_P,alpha=transparency_P)
+    plt.ylim(max(ar_rain)*2,min(ar_rain))
+    plt.xlim(X[0],X[-1])
 
-    pl.savefig(image_out)
+    plt.savefig(image_out)
 
 
 #SUBROUTINE
