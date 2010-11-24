@@ -1,0 +1,67 @@
+==============================================================
+Incorporating Green-Ampt infiltration into the PyTOPKAPI model
+==============================================================
+
+Introduction
+============
+
+The purpose of this document is the describe the changes applied to
+the PyTOPKAPI model formulation when including infiltration into the
+model processes.
+
+Infiltration calculations
+-------------------------
+
+The infiltration depth during any interval is calculated using the
+Green-Ampt method (Green and Ampt, 1911).
+
+.. math::
+    F_{t+\Delta t} - F_t - \psi\Delta\theta ln(\frac{F_{t+\Delta t} + \psi\Delta\theta}{F_t + \psi\Delta\theta}) = K\Delta t
+
+.. math::
+    \psi = \frac{\psi_b}{\theta_e^{-\lambda}}
+
+Water transfer
+--------------
+
+Currently the total rainfall volume for a time-step enters the soil
+store directly at a constant rate over the interval. The final volume
+in the soil store is calculated by solving the differential equation
+for a generic soil store
+
+.. math::
+    \frac{dV}{dt} = a - bV^\alpha
+
+where :math:`V` is the water volume in the store, :math:`a` is the
+constant input rate during the time-step, and :math:`b` and
+:math:`\alpha` are parameters describing the properties of the store.
+
+In the current model formulation, water can only enter the overland
+store via the mechanism of saturation excess when the soil store
+becomes saturated during a time-step. For a given cell, the total
+inflow rate to the overland store :math:`Q_{in}^O` is given by
+
+.. math::
+
+    Q_{in}^O = Q_{in}^S - ( \frac{\Delta V^S}{\Delta t} + Q_{out}^S )
+
+where :math:`Q_{in}^S` is the combined inflow rate to the soil store
+for the current time-step as a result of rainfall, overland flow from
+up-slope cells and soil drainage from up-slope cells. :math:`\Delta
+V^S` is change is storage in the soil store during the interval. In
+the revised model formulation :math:`Q_{in}^O` becomes
+
+.. math::
+
+    Q_{in}^O = Q_{in}^S - ( \frac{\Delta V^S}{\Delta t} + Q_{out}^S ) + P_{excess}
+
+where :math:`P_{excess}` is calculated as
+
+.. math::
+    P_{excess} = P - F
+
+References
+==========
+
+Green and Ampt, 1911, 
+
