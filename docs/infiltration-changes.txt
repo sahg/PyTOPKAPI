@@ -2,24 +2,104 @@
 Incorporating Green-Ampt infiltration into the PyTOPKAPI model
 ==============================================================
 
-Introduction
-============
-
 The purpose of this document is the describe the changes applied to
-the PyTOPKAPI model formulation when including infiltration into the
+the PyTOPKAPI model formulation by including infiltration into the
 model processes.
 
 Infiltration calculations
 -------------------------
 
-The infiltration depth during any interval is calculated using the
-Green-Ampt method (Green and Ampt, 1911).
+*A few words on why Green-Ampt was chosen* - Parameters can be
+estimated from available information; some authors show it's good
+performance relative to observed data and full 1D solution of Richards
+equation (Ma et al., 2010).; Easy to code/implement and quick to run?;
+Can be extended to multiple layers (Han et al., 2001)
+
+Description of Green-Ampt applied to PyTOPKAPI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The infiltration depth during each interval is calculated using the
+Green-Ampt method (Green and Ampt, 1911). The Green-Ampt cumulative
+infiltration during an infiltration event is determined by solving
 
 .. math::
     F_{t+\Delta t} - F_t - \psi\Delta\theta ln(\frac{F_{t+\Delta t} + \psi\Delta\theta}{F_t + \psi\Delta\theta}) = K\Delta t
 
+where :math:`F_{t+\Delta t}` is the cumulative infiltration depth at
+the end of the time-step :math:`t`, :math:`F_t` is the cumulative
+infiltration depth at the start of time-step :math:`t`, :math:`\psi`
+is the soil suction head at the wetting front and :math:`K` is the
+saturated hydraulic conductivity of the soil. :math:`\Delta\theta` is
+equal to the difference between the effective porosity :math:`\eta_e`
+and the effective saturation at the start of the infiltration event
+:math:`s_e` . If the porosity is :math:`\eta`, the soil moisture
+content at the start of the event is :math:`\theta` and the residual
+soil moisture content is :math:`\theta_r`, then
+
+.. math::
+    \eta_e = \eta - \theta_r
+
+and
+
+.. math::
+    s_e = \frac{\theta - \theta_r}{\eta_e}
+
+so
+
+.. math::
+    \Delta\theta = \eta_e - s_e
+
+Since PyTOPKAPI works from time-step to time-step by tracking the
+water volumes in the soil, overland and channel stores, the model
+keeps track of :math:`s_e`, which is updated at each time-step and
+:math:`F_t` can be reset to zero each time. The Green-Ampt cumulative
+infiltration equation therefore reduces to
+
+.. math::
+    F_{t+\Delta t} - \psi\Delta\theta ln(\frac{F_{t+\Delta t} + \psi\Delta\theta}{\psi\Delta\theta}) - K\Delta t = 0
+
+This equation is non-linear in :math:`F_{t+\Delta t}` and the roots
+must be obtained by an iterative technique. The solver used in
+PyTOPKAPI is a modified version of the Powell hybrid method (Powell,
+1970), accessed via the Scipy (Jones et al., 2001) wrappers of the
+MINPACK FORTRAN library (Moré et al., 1980)
+
+The parameters of the Green-Ampt model are :math:`K`,
+:math:`\Delta\theta` and :math:`\psi`. :math:`K` and
+:math:`\Delta\theta` are already easily obtainable from the PyTOPKAPI
+model. Therefore :math:`\psi` must be estimated. Since :math:`\psi`
+varies as a function of :math:`\theta` and soil type (Chow et al.,
+1988), it is necessary to obtain a functional form for
+:math:`\psi(\theta)` by soil type. El-Kadi (1985) evaluated a number
+of well-known models for :math:`\psi(\theta)` by fitting them to
+measured data for a selection of soil samples and comparing the model
+fits. In general El-Kadi (1985) found that there was relatively little
+difference in the model performances, but suggested that the Brooks
+and Corey relationship (Brooks and Corey, 1964) was most insensitive
+to the number of :math:`\psi` samples near saturation. This suggests
+that the model is most robust out of those tested by El-Kadi (1985)
+and is one of the reasons for selecting the Brooks Corey model for use
+in PyTOPKAPI. The Brooks and Corey model is given by
+
+.. math::
+    \theta_e = [\frac{\psi_b}{\psi}]^\lambda
+
+or
+
 .. math::
     \psi = \frac{\psi_b}{\theta_e^{-\lambda}}
+
+where :math:`\psi_b` is the bubbling pressure and :math:`\lambda` is a
+pore size distribution index for the soil.
+
+A second reason to choose the Brooks and Corey model is the
+availability of model parameter estimates (:math:`\psi_b` and
+:math:`\lambda`) for a large number of soil samples in the United
+States produced by Rawls et al. (1982). The Brooks and Corey model
+parameters given by Rawls et al. (1982) are provided 11 different soil
+texture classes, which are readily available for South Africa from
+Middleton and Bailey (2009), and are already used to estimate other
+parameters in the PyTOPKAPI model.
 
 Water transfer
 --------------
@@ -61,7 +141,36 @@ where :math:`P_{excess}` is calculated as
     P_{excess} = P - F
 
 References
-==========
+----------
 
-Green and Ampt, 1911, 
+**Brooks R.H. and Corey A.T., 1964**, "Hydraulic properties of porous
+media", Hydrology Paper No. 3, Colorado State University, Fort
+Collins, Colorado.
+
+**El-Kadi A.I., 1985**, "On estimating the Hydraulic properties of
+soils, Part 1. Comparison between forms to estimate the soil-water
+characteristic function, Adv. Water Res., vol 8, pp 136-147.
+
+**Green W.H. and Ampt G.A.**, 1911, "Studies on soil physics, part 1,
+the flow of air and water through soils", J. Agric. Sci., vol 4(1),
+pp. 1-24
+
+**Jones E., Oliphant T., Peterson P., and others.**, 2001, "SciPy:
+Open Source Scientific Tools for Python ", http://www.scipy.org/
+
+**Middleton B.J. and Bailey A.K., 2009**, "Water Resources of South
+Africa, 2005 Study", WRC Report No. TT 380/08, Water Research
+Commission, Pretoria, South Africa.
+
+**Moré J.J., Garbow B.S., and Hillstrom K.E.**, 1980, "User Guide for
+MINPACK-1", Argonne National Laboratory Report ANL-80-74, Argonne,
+Ill.
+
+**Powell M.J.D.**, 1970, "A Hybrid Method for Nonlinear Equations" in
+"Numerical Methods for Nonlinear Algebraic Equations", Rabinowitz P.,
+editor. Gordon and Breach.
+
+**Rawls W.J., Brakensiek D.L. and Saxton K.E., 1982**, "Estimation of
+soil water properties", Trans. of the ASAE, vol 25(5), pp 1316-1320
+and 1328
 
