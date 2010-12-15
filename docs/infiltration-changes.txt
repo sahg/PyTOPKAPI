@@ -101,25 +101,32 @@ texture classes, which are readily available for South Africa from
 Middleton and Bailey (2009), and are already used to estimate other
 parameters in the PyTOPKAPI model.
 
-Water transfer
---------------
+Revised water transfer mechanism in the model
+---------------------------------------------
 
-Currently the total rainfall volume for a time-step enters the soil
+Currently the total rainfall volume for each time-step enters the soil
 store directly at a constant rate over the interval. The final volume
 in the soil store is calculated by solving the differential equation
-for a generic soil store
+for a generic cell
 
 .. math::
     \frac{dV}{dt} = a - bV^\alpha
 
 where :math:`V` is the water volume in the store, :math:`a` is the
 constant input rate during the time-step, and :math:`b` and
-:math:`\alpha` are parameters describing the properties of the store.
+:math:`\alpha` are parameters describing the drainage properties of
+the store.
 
-In the current model formulation, water can only enter the overland
-store via the mechanism of saturation excess when the soil store
-becomes saturated during a time-step. For a given cell, the total
-inflow rate to the overland store :math:`Q_{in}^O` is given by
+In the current model formulation, all water entering the channel store
+(if it exists) comes from upstream channel stores or from
+contributions by the soil and overland stores of the cell. Water can
+only exit a channel store via direct evaporation or flow to a
+down-slope channel store. All other input (precipitation and flow from
+upstream cells) goes directly to the soil store. The consequence of
+this is that water can only enter the overland store via the mechanism
+of saturation excess when the soil store becomes saturated during a
+time-step. For a given cell, the total inflow rate to the overland
+store :math:`Q_{in}^O` is given by
 
 .. math::
 
@@ -128,8 +135,10 @@ inflow rate to the overland store :math:`Q_{in}^O` is given by
 where :math:`Q_{in}^S` is the combined inflow rate to the soil store
 for the current time-step as a result of rainfall, overland flow from
 up-slope cells and soil drainage from up-slope cells. :math:`\Delta
-V^S` is change is storage in the soil store during the interval. In
-the revised model formulation :math:`Q_{in}^O` becomes
+V^S` is change is storage in the soil store during the interval and
+:math:`Q_{out}^S` is the outflow to the down-slope cell from the
+overland and soil stores. In the revised model formulation
+:math:`Q_{in}^O` becomes
 
 .. math::
 
