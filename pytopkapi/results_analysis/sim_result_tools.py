@@ -1,4 +1,4 @@
-__all__ = ['extract_ssi', 'extract_ssi_to_file']
+__all__ = ['extract_ssi', 'extract_ssi_to_file', 'extract_Q_channel']
 
 from datetime import timedelta
 from ConfigParser import SafeConfigParser
@@ -9,6 +9,45 @@ import numpy.ma as ma
 
 # gzip compression flag
 comp = 6
+
+def extract_Q_channel(control_fname):
+    """Extract channel flow rates from a PyTOPKAPI simulation file.
+
+    Read a PyTOPKAPI simulation file and return the simulated channel
+    flows in a Numpy masked array.
+
+    Parameters
+    ----------
+    control_fname : string
+        The file name of a PyTOPKAPI simulation control file. The name
+        should contain the full path relative to the current
+        directory.
+
+    Returns
+    -------
+    Qc : Numpy masked array
+        A Numpy masked array containing the simulated flow rates for
+        channel cells.
+
+    """
+    config = SafeConfigParser()
+    config.read(control_fname)
+
+    param_fname = config.get('input_files', 'file_cell_param')
+    sim_fname = config.get('output_files', 'file_out')
+
+    params = np.loadtxt(param_fname)
+
+    tkpi_file = h5py.File(sim_fname)
+    Qc = tkpi_file['/Channel/Qc_out'][...]
+    tkpi_file.close()
+
+    channel_mask = params[:, 3]
+    cond = params[:, 3]*np.ones(Qc.shape, dtype=np.int) != 1
+
+    Qc = np.ma.masked_where(cond, Qc)
+
+    return Qc
 
 def extract_ssi(control_fname):
     """Extract SSI from a PyTOPKAPI simulation file.
