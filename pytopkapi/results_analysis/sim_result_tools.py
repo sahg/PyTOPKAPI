@@ -1,4 +1,5 @@
-__all__ = ['extract_ssi', 'extract_ssi_to_file', 'extract_Q_channel']
+__all__ = ['extract_ssi', 'extract_ssi_to_file',
+           'extract_Q_channel', 'extract_Q_down']
 
 from datetime import timedelta
 from ConfigParser import SafeConfigParser
@@ -9,6 +10,37 @@ import numpy.ma as ma
 
 # gzip compression flag
 comp = 6
+
+def extract_Q_down(control_fname):
+    """Extract combined soil and overland out flow rates.
+
+    Read a PyTOPKAPI simulation file and return the combined overland
+    andsoil store outflows in a Numpy array.
+
+    Parameters
+    ----------
+    control_fname : string
+        The file name of a PyTOPKAPI simulation control file. The name
+        should contain the full path relative to the current
+        directory.
+
+    Returns
+    -------
+    Qdown : Numpy array
+        A Numpy array containing the simulated outflow flow rates from
+        the overland and soil store of each cell.
+
+    """
+    config = SafeConfigParser()
+    config.read(control_fname)
+
+    sim_fname = config.get('output_files', 'file_out')
+
+    tkpi_file = h5py.File(sim_fname)
+    Qdown = tkpi_file['/Q_down'][...]
+    tkpi_file.close()
+
+    return Qdown
 
 def extract_Q_channel(control_fname):
     """Extract channel flow rates from a PyTOPKAPI simulation file.
