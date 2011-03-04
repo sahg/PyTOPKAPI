@@ -129,7 +129,8 @@ def run(ini_file='TOPKAPI.ini'):
     ar_theta_r, ar_theta_s, \
     ar_n_o0, ar_n_c0, \
     ar_cell_down, ar_pVs_t0, \
-    ar_Vo_t0, ar_Qc_t0, ar_kc = pm.read_cell_parameters(file_cell_param)
+    ar_Vo_t0, ar_Qc_t0, \
+    ar_kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell = len(ar_cell_label)
@@ -347,7 +348,9 @@ def run(ini_file='TOPKAPI.ini'):
         print t+1, '/', nb_time_step
 
         eff_sat = ar_Vs0/ar_Vsm
-        psi = np.ones(nb_cell)*170 # constant for now
+
+        # estimate soil suction head using Brookes and Corey (1964)
+        psi = psi_b/np.power(eff_sat, -lamda)
 
         ## Loop on cells
         n=-1
