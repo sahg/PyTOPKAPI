@@ -350,7 +350,7 @@ def run(ini_file='TOPKAPI.ini'):
         eff_sat = ar_Vs0/ar_Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)
-        psi = psi_b/np.power(eff_sat, -lamda)
+        psi = psi_b/np.power(eff_sat, 1.0/lamda)
 
         ## Loop on cells
         n=-1
