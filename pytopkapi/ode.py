@@ -5,7 +5,7 @@ Differential Equations in TOPKAPI.
 """
 
 from copy import *
-from math import * 
+from math import *
 from scipy import *
 from numpy import *
 
@@ -43,24 +43,24 @@ def coefb_zero_solution(a, V0, Dt):
 def storage_eq(a,b,alpha):
     return lambda x:a-b*x**alpha
 
-###```````````````````````````````````````````    
+###```````````````````````````````````````````
 class RKF:
     """
     Adaptive Runge-Kutte Fehlberg solver
-    
+
     """
     def __init__(self, min_step=10e-10, max_step=3600,
                  min_tol=1e-7, max_tol=1e-3, init_time_step=3600):
         self.min_step = min_step
         self.max_step = max_step
-        self.min_tol = min_tol    
+        self.min_tol = min_tol
         self.max_tol = max_tol
         self.resultbuffer = 0
         self.timebuffer = 0
 
         self.estimates = []
         self.steps = []
-        
+
         if init_time_step==0:
             self.delta_t = (max_step + min_step)/2.
         else:
@@ -68,7 +68,7 @@ class RKF:
 
     def compute_error(self, f, x, t, delta_t):
         # define all the constants for Runge-Kutta of order 4 and 5
-        #From numerical recipes        
+        #From numerical recipes
         a2 = 1/5.; a3 = 3/10.; a4 = 3/5.; a5 = 1.; a6 = 7/8.
 
         b21 = 1/5.
@@ -124,7 +124,7 @@ class RKF:
             return Err1
         else:
             k6 = delta_t*f(tmpx)
-            
+
         # compute the new variables
         newx_rk5 = x + c1*k1 + c2*k2 + c3*k3 + c4*k4 + c5*k5 + c6*k6
         newx_rk4 = x + d1*k1 + d2*k2 + d3*k3 + d4*k4 + d5*k5 + d6*k6
@@ -185,7 +185,7 @@ class RKF:
         if delta_t==0:
             # we should have called getnewdelta_t before, to obtain the time
             # step used and hence the solution should already be computed and
-            # put in resultbuffer            
+            # put in resultbuffer
             if self.timebuffer!=t+self.delta_t:
 #                print 'WARNING: This was not expected to ever occur!!!!'
                 self.getnewdelta_t(f, x, t, delta_t)
@@ -207,11 +207,11 @@ class RKF:
 ###=======================================###
 ###       QUASI ANALYTICAL SOLUTION       ###
 ###=======================================###
-        
+
 def qas(a, b, alpha, V0, delta_t,derivative=0):
     """
     Quasi-analytical solution for volume in a TOPKAPI water store
-    
+
     This function calculates the volume in a generic store at the end
     of the defined time-step, given the initial volume, inflow and ODE
     parameters.  This is done using Todini's quasi-analytical solution
@@ -236,7 +236,7 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
     -------
     V1 : scalar
         The estimated volume at the end of the current time-step.
-    
+
     """
     if alpha > 2:
         exposant=alpha/(alpha-1)
@@ -248,7 +248,7 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
         y0=V0
         a_eq=a
         b_eq=b
-        
+
     #   Definition of the variables alpha0 and beta0
     #   that approximate y**(exposant-1)=alpha0+beta0*y
     if derivative==1:
@@ -266,14 +266,14 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
         A=-b*beta0
         B=alpha0/beta0
         C=-a/(b*beta0)
-        
-    
+
+
     y1=solution(A,B,C,y0,delta_t)
     if alpha > 2:
         V1=y1**(1/(1-alpha))
     else:
         V1=y1
-        
+
     return V1
 
 def adjust_2points_line(a_eq,b_eq,exposant,y0,delta_t):
@@ -295,7 +295,7 @@ def solution(A,B,C,y0,delta_t):
 def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
     """
     Compute the final volume in a TOPKAPI water store for one time-step
-    
+
     This function calculates the volume in a generic store at the end
     of the defined time-step, given the initial volume, inflow and ODE
     parameters.  This is done by solving the storage ODE :math:`dV/dt
@@ -325,7 +325,7 @@ def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
     -------
     Vt1 : scalar
         The estimated volume at the end of the current time-step.
-    
+
     """
     if I == 0.:
         Vt1 = input_zero_solution(b, alpha, Vt0, Dt)

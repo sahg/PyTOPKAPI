@@ -157,12 +157,14 @@ def read_cell_parameters(file_name):
     ar_Vo_t0=tab_read[:,16]
     ar_Qc_t0=tab_read[:,17]
     ar_kc=tab_read[:,18]
+    psi_b=tab_read[:,19]
+    lamda=tab_read[:,20]
 
     return ar_cell_label, ar_coorx,ar_coory, ar_lambda, \
            ar_Xc,ar_dam, ar_tan_beta, ar_tan_beta_channel, \
            ar_L,ar_Ks, ar_theta_r, ar_theta_s, \
            ar_n_o, ar_n_c, ar_cell_down, \
-           ar_pVs_t0, ar_Vo_t0, ar_Qc_t0, ar_kc
+           ar_pVs_t0, ar_Vo_t0, ar_Qc_t0, ar_kc, psi_b, lamda
 
 def sort_cell(ar_cell_label, ar_cell_down):
     """Determine a suitable computation order for the cells.

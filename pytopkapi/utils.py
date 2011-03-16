@@ -160,7 +160,7 @@ def distance(x1,y1,x2,y2):
 def find_cell_coordinates(ar_cell_label, Xoutlet, Youtlet,
                           ar_coorx, ar_coory, ar_lambda, channel=True):
     """Find the label of the cell closest to (Xoutlet, Youtlet).
-    
+
     Find the label of the model cell containing the specified location. The
     co-ordinates of the location must be given in the same co-ordinate system
     as that specifying the model catchment.
