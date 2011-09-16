@@ -1,12 +1,18 @@
+"""Wrapper script to set-up proper environment to run GRASS
+
+Before importing the grass package, the correct environment variables
+must be set. This script sets up the environment for a Linux system,
+then calls the processing script in a subprocess.
+
+"""
 import os
 import subprocess
 
-# Before importing the grass package, set environment variables for a
-# Linux system
 def prepend_env_var(key, val):
     """Prepend `val` to an environment variable
 
-    A new variable is created if `key` doesn't exist.
+    A new variable is created if `key` doesn't exist, otherwise `val`
+    is prepended to the existing environment variable.
 
     """
     if key in os.environ.keys():
@@ -22,6 +28,8 @@ def prepend_env_var(key, val):
     print('Edited %s:' % key)
     print(os.environ[key])
 
+# To Do: Find out how to discover the GRASS installation directory and
+# avoid hard-coding this
 gis_base = '/usr/lib/grass64'
 home = os.environ['HOME']
 
