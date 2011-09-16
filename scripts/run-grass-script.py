@@ -16,17 +16,11 @@ def prepend_env_var(key, val):
 
     """
     if key in os.environ.keys():
-        print('Key %s exists:' % key)
-        print(os.environ[key])
-
         old_val = os.environ[key]
 
         os.environ[key] = ':'.join([val, old_val])
     else:
         os.environ[key] = val
-
-    print('Edited %s:' % key)
-    print(os.environ[key])
 
 # To Do: Find out how to discover the GRASS installation directory and
 # avoid hard-coding this
