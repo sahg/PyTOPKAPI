@@ -1,4 +1,4 @@
-import grass
+import grass.script as grass
 
 print(grass)
 

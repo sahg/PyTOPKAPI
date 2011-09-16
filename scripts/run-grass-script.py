@@ -27,9 +27,12 @@ def prepend_env_var(key, val):
 gis_base = '/usr/lib/grass64'
 home = os.environ['HOME']
 
+prepend_env_var('GISBASE', '%s' % gis_base)
 prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
+prepend_env_var('LD_LIBRARY_PATH', '%s/lib' % gis_base)
 prepend_env_var('PYTHONPATH', '%s/etc/python' % gis_base)
 prepend_env_var('GISRC', '%s/.grassrc6' % home)
+prepend_env_var('GIS_LOCK', '%s' % os.getpid())
 
 cmd = ['python', 'process-catchment.py']
 subprocess.call(cmd)
