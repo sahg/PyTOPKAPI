@@ -22,9 +22,23 @@ def prepend_env_var(key, val):
     else:
         os.environ[key] = val
 
-# To Do: Find out how to discover the GRASS installation directory and
-# avoid hard-coding this
-gis_base = '/usr/lib/grass64'
+def find_gisbase():
+    """Find the value of the GISBASE environ variable on Linux
+
+    A bit hackish, but seems to work for now..
+
+    """
+    gscript = subprocess.check_output(['which', 'grass']).strip('\n')
+
+    fp = open(gscript, 'r')
+    for line in fp:
+        if 'GISBASE=' in line:
+            gis_base = line.split('=')[1]
+    fp.close()
+
+    return gis_base.strip() # remove line-endings
+
+gis_base = find_gisbase()
 home = os.environ['HOME']
 
 prepend_env_var('GISBASE', '%s' % gis_base)
