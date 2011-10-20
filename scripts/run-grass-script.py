@@ -41,12 +41,14 @@ def find_gisbase():
 gis_base = find_gisbase()
 home = os.environ['HOME']
 
+gisrc = 'grassrc'
+
 prepend_env_var('GISBASE', '%s' % gis_base)
 prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
 prepend_env_var('LD_LIBRARY_PATH', '%s/lib' % gis_base)
 prepend_env_var('PYTHONPATH', '%s/etc/python' % gis_base)
-prepend_env_var('GISRC', '%s/.grassrc6' % home)
+prepend_env_var('GISRC', gisrc)
 prepend_env_var('GIS_LOCK', '%s' % os.getpid())
 
-cmd = ['python', 'process-catchment.py']
+cmd = ['python', 'scripts/process-catchment.py']
 subprocess.call(cmd)
