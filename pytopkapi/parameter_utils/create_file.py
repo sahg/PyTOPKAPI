@@ -235,13 +235,7 @@ def run(ini_file='create_file.ini'):
 ####### READING THE BINARY FILES ###########
 
 def read_bin_data(fname):
-    """Read data from a binary file into an array.
-
-    Read the data from a binary file created by wgrib into
-    a Numpy array. This assumes that wgrib has output the data
-    in float format and seems to work for the UM outputs that
-    are being sent to us by SAWS. The first and last values
-    read from the file are trimmed since they are superflous.
+    """Read data from a float32 binary file into an array.
 
     """
 
@@ -255,12 +249,7 @@ def read_bin_data(fname):
     return data
 
 def read_arc_bin(bingrid_name):
-    """Read the data field from a grib file into an array.
-
-    This function uses wgrib to write and then read the GRIB1
-    data to an intermediate binary format, which is later
-    deleted. It is currently very specific to the GRIB1 data
-    files produced by the UM.
+    """Read data from an ArcGIS float32 binary file into an array.
 
     """
 
@@ -305,8 +294,8 @@ def read_headers_arc_bin(bingrid_name):
 
     return li_headers
 
-def arc_bin_plot(bin_name, fig_name, title='GRIB Plot'):
-    """Create a plot of the data in a GRIB1 file."""
+def arc_bin_plot(bin_name, fig_name, title='Plot'):
+    """Create a plot of the data in a binary file."""
 
     a = read_arc_bin(bin_name)
 
