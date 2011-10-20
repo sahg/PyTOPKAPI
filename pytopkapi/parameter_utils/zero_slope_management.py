@@ -32,7 +32,7 @@ def run(ini_file='zero_slope_management.ini'):
     file_cell_param_out=config.get('output_files','file_cell_param_out')
     ##~~~~~~ numerical_values ~~~~~~##
     nb_param=config.getfloat('numerical_values','nb_param')
-    
+
     ##============================##
     ## Pretreatment of input data ##
     ##============================##
@@ -66,7 +66,7 @@ def run(ini_file='zero_slope_management.ini'):
     for cell1 in ar_label_sort:
         print cell1
         cell=np.where(ar_cell_label==cell1)[0][0]
-        
+
         li_label_path=[cell]
         li_slope_path=[ar_tan_beta[cell]]
 
@@ -101,7 +101,7 @@ def run(ini_file='zero_slope_management.ini'):
                 if ar_slope_path[i]==0. and ar_slope_path[i-1]!=0:
                     li_ind_start.append(i)
                 if ar_slope_path[i]!=0. and ar_slope_path[i-1]==0.:
-                    li_ind_end.append(i)         
+                    li_ind_end.append(i)
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
@@ -114,7 +114,7 @@ def run(ini_file='zero_slope_management.ini'):
         if len(np.where(a<0)[0])!=0:
             print 'problem index'
             stop
-        
+
         #Then the slope are changed according to the defined index arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
@@ -136,7 +136,7 @@ def run(ini_file='zero_slope_management.ini'):
                 n=n+1
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
-                
+
             #Change the values
             ar_tan_beta[ar_ind_cell_zero]=slope
 
@@ -144,7 +144,7 @@ def run(ini_file='zero_slope_management.ini'):
     for cell1 in ar_label_sort:
         print cell1
         cell=np.where(ar_cell_label==cell1)[0][0]
-        
+
         li_label_path=[cell]
         li_slope_path=[ar_tan_beta_channel[cell]]
 
@@ -179,7 +179,7 @@ def run(ini_file='zero_slope_management.ini'):
                 if ar_slope_path[i]==0. and ar_slope_path[i-1]!=0:
                     li_ind_start.append(i)
                 if ar_slope_path[i]!=0. and ar_slope_path[i-1]==0.:
-                    li_ind_end.append(i)         
+                    li_ind_end.append(i)
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
@@ -192,7 +192,7 @@ def run(ini_file='zero_slope_management.ini'):
         if len(np.where(a<0)[0])!=0:
             print 'problem index'
             stop
-        
+
         #Then the slope are changed according to the defined index arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
@@ -214,7 +214,7 @@ def run(ini_file='zero_slope_management.ini'):
                 n=n+1
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
-                
+
             #Change the values
             ar_tan_beta_channel[ar_ind_cell_zero]=slope
 
@@ -243,8 +243,3 @@ def run(ini_file='zero_slope_management.ini'):
     tab_param[:,18]=ar_kc
 
     np.savetxt(file_cell_param_out, tab_param)
-                
-        
-                    
-        
-

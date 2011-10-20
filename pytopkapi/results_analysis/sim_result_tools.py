@@ -20,7 +20,7 @@ def extract_ssi(sim_fname, param_fname, result_fname, start_dt):
     params = np.loadtxt(param_fname)
     lon = params[:, 1]
     lat = params[:, 2]
-    
+
     soil_depth = params[:, 8]
     factor = params[:, 11] - params[:, 10]
     cell_area = 1000.0**2 # m^2
@@ -75,5 +75,5 @@ def extract_ssi(sim_fname, param_fname, result_fname, start_dt):
         dset.attrs['units'] = '% saturation'
 
         curr_dt += timedelta(hours=3)
-    
+
     result_file.close()
