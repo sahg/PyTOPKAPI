@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 """Wrapper script to set-up proper environment to run GRASS
 
 Before importing the grass package, the correct environment variables
@@ -38,17 +40,21 @@ def find_gisbase():
 
     return gis_base.strip() # remove line-endings
 
-gis_base = find_gisbase()
-home = os.environ['HOME']
+def main():
+    gis_base = find_gisbase()
+    home = os.environ['HOME']
 
-gisrc = 'grassrc'
+    gisrc = 'grassrc'
 
-prepend_env_var('GISBASE', '%s' % gis_base)
-prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
-prepend_env_var('LD_LIBRARY_PATH', '%s/lib' % gis_base)
-prepend_env_var('PYTHONPATH', '%s/etc/python' % gis_base)
-prepend_env_var('GISRC', gisrc)
-prepend_env_var('GIS_LOCK', '%s' % os.getpid())
+    prepend_env_var('GISBASE', '%s' % gis_base)
+    prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
+    prepend_env_var('LD_LIBRARY_PATH', '%s/lib' % gis_base)
+    prepend_env_var('PYTHONPATH', '%s/etc/python' % gis_base)
+    prepend_env_var('GISRC', gisrc)
+    prepend_env_var('GIS_LOCK', '%s' % os.getpid())
 
-cmd = ['python', 'scripts/process-catchment.py']
-subprocess.call(cmd)
+    cmd = ['python', 'scripts/process-catchment.py']
+    subprocess.call(cmd)
+
+if __name__ == '__main__':
+    main()
