@@ -47,12 +47,20 @@ grass.mapcalc('lieb_accum_thresh=abs(lieb_accum) >= %s' % accum_thresh,
 
 grass.mapcalc('lieb_accum_abs=abs(lieb_accum)', overwrite=True)
 
+# crop region to mask
+grass.run_command('g.region', zoom='lieb_mask_py', align='lieb_mask_py')
+
 # output to GTiff for further processing
 grass.run_command('r.out.gdal',
                   type='Int16',
                   input='lieb_dir',
                   format='GTiff',
                   output='lieb-flow-dir.tif')
+
+grass.run_command('r.out.gdal',
+                  input='lieb_mask',
+                  format='GTiff',
+                  output='lieb-mask.tif')
 
 grass.run_command('r.out.gdal',
                   input='lieb_slope',
