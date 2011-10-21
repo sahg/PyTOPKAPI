@@ -71,6 +71,7 @@ def main():
          gisrc = options.gisrc
     elif len(arguments) != 1:
         parser.print_help()
+        exit(0)
 
     prepend_env_var('GISBASE', '%s' % gis_base)
     prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
