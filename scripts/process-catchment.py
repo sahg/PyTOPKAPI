@@ -48,7 +48,19 @@ grass.run_command('r.watershed',
                   elevation = '%s_dem' % tertiary,
                   accumulation = '%s_accum' % tertiary,
                   drainage = '%s_dir' % tertiary,
+                  stream = '%s_str' % tertiary,
                   threshold=250)
+
+# the stream raster usually requires thinning
+grass.run_command('r.thin',
+                  flags = '-o',
+                  input = '%s_str' % tertiary,
+                  out = '%s_str_thin' % tertiary)
+
+grass.run_command('r.to.vect',
+                  input = '%s_str_thin' % tertiary,
+                  out = '%s_streams' % tertiary,
+                  feature = 'line')
 
 grass.mapcalc('%s_accum_thresh=abs(%s_accum) >= %s' % (tertiary, tertiary, accum_thresh),
               overwrite=True)
