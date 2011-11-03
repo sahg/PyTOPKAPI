@@ -18,9 +18,15 @@ grass.run_command('v.dissolve',
                   output = 'lieb_dissolve_py',
                   column='TERTIARY')
 
-grass.run_command('v.to.rast',
+grass.run_command('v.buffer',
                   flags = '-o',
                   input = 'lieb_dissolve_py',
+                  output = 'lieb_buffer_py',
+                  distance='5000.0')
+
+grass.run_command('v.to.rast',
+                  flags = '-o',
+                  input = 'lieb_buffer_py',
                   out = 'lieb_mask_py',
                   use = 'val')
 
