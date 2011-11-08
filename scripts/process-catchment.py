@@ -1,3 +1,4 @@
+import numpy as np
 import grass.script as grass
 
 accum_thresh = 30
@@ -58,9 +59,42 @@ grass.run_command('r.thin',
                   out = '%s_str_thin' % tertiary)
 
 grass.run_command('r.to.vect',
+                  flags = '-o',
                   input = '%s_str_thin' % tertiary,
                   out = '%s_streams' % tertiary,
                   feature = 'line')
+
+# Find outlet point and upstream cells
+grass.run_command('v.patch',
+                  flags = '-o',
+                  input = '%s_streams,%s_dissolve_py' % (tertiary, tertiary),
+                  out = '%s_streams_catch' % tertiary)
+
+grass.run_command('v.clean',
+                  flags = '-o',
+                  input = '%s_streams_catch' % tertiary,
+                  out = '%s_streams_catch_clean' % tertiary,
+                  tool = 'break',
+                  error = '%s_catch_outlet' % tertiary)
+
+grass.run_command('v.out.ascii',
+                  flags = '-o',
+                  input = '%s_catch_outlet' % tertiary,
+                  out = '%s_catch_outlet.txt' % tertiary,
+                  format = 'point',
+                  fs = 'space')
+
+easting, northing = np.loadtxt('%s_catch_outlet.txt' % tertiary)
+
+grass.run_command('r.water.outlet',
+                  drain = '%s_dir' % tertiary,
+                  east = easting,
+                  north = northing,
+                  basin = '%s_catch_mask' % tertiary)
+
+grass.run_command('r.null',
+                  map = '%s_catch_mask' % tertiary,
+                  setnull = '0')
 
 grass.mapcalc('%s_accum_thresh=abs(%s_accum) >= %s' % (tertiary, tertiary, accum_thresh),
               overwrite=True)
