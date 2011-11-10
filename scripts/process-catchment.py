@@ -1,8 +1,7 @@
 import numpy as np
 import grass.script as grass
 
-accum_thresh = 30
-
+buffer_range = 5000
 tertiary = 'B60'
 
 # make sure the region is set correctly
@@ -25,7 +24,7 @@ grass.run_command('v.buffer',
                   flags = '-o',
                   input = '%s_dissolve_py' % tertiary,
                   output = '%s_buffer_py' % tertiary,
-                  distance='5000.0')
+                  distance='%s' % buffer_range)
 
 grass.run_command('v.to.rast',
                   flags = '-o',
@@ -87,6 +86,7 @@ grass.run_command('v.out.ascii',
 easting, northing = np.loadtxt('%s_catch_outlet.txt' % tertiary)
 
 grass.run_command('r.water.outlet',
+                  flags = '-o',
                   drain = '%s_dir' % tertiary,
                   east = easting,
                   north = northing,
@@ -96,16 +96,16 @@ grass.run_command('r.null',
                   map = '%s_catch_mask' % tertiary,
                   setnull = '0')
 
-grass.mapcalc('%s_accum_thresh=abs(%s_accum) >= %s' % (tertiary, tertiary, accum_thresh),
-              overwrite=True)
-
-grass.mapcalc('%s_accum_abs=abs(%s_accum)' % (tertiary, tertiary),
-              overwrite=True)
-
-# crop region to mask
+# crop region to catchment mask
 grass.run_command('g.region',
-                  zoom='%s_mask_py' % tertiary,
-                  align='%s_mask_py' % tertiary)
+                  zoom = '%s_catch_mask' % tertiary,
+                  align = '%s_catch_mask' % tertiary)
+
+# use new mask to extract catchment information
+grass.run_command('r.mask', input='%s_catch_mask' % tertiary)
+grass.mapcalc('%s_slope=srtm_slopes' % tertiary, overwrite=True)
+grass.mapcalc('%s_dir=%s_dir' % (tertiary, tertiary), overwrite=True)
+grass.run_command('r.mask', flags='r')
 
 # output to GTiff for further processing
 grass.run_command('r.out.gdal',
@@ -115,7 +115,7 @@ grass.run_command('r.out.gdal',
                   output='lieb-flow-dir.tif')
 
 grass.run_command('r.out.gdal',
-                  input='%s_mask_py' % tertiary,
+                  input='%s_catch_mask' % tertiary,
                   format='GTiff',
                   output='lieb-mask.tif')
 
@@ -123,13 +123,3 @@ grass.run_command('r.out.gdal',
                   input='%s_slope' % tertiary,
                   format='GTiff',
                   output='lieb-slope.tif')
-
-grass.run_command('r.out.gdal',
-                  input='%s_accum_abs' % tertiary,
-                  format='GTiff',
-                  output='lieb-accum-abs.tif')
-
-grass.run_command('r.out.gdal',
-                  input='%s_accum_thresh' % tertiary,
-                  format='GTiff',
-                  output='lieb-accum-thresh.tif')
