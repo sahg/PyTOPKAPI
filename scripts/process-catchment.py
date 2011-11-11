@@ -103,11 +103,15 @@ grass.mapcalc('%s_dem=%s_dem' % (catch_id, catch_id), overwrite=True)
 grass.mapcalc('%s_slope=srtm_slope' % catch_id, overwrite=True)
 grass.mapcalc('%s_n_overland=manning_overland' % catch_id, overwrite=True)
 grass.mapcalc('%s_soil_depth=soil_depth' % catch_id, overwrite=True)
-grass.mapcalc('%s_sat_moisture_content=sat_moisture_content' % catch_id, overwrite=True)
-grass.mapcalc('%s_residual_moisture_content=residual_moisture_content' % catch_id, overwrite=True)
-grass.mapcalc('%s_hydraulic_conductivity=hydraulic_conductivity' % catch_id, overwrite=True)
+grass.mapcalc('%s_sat_moisture_content=sat_moisture_content' \
+              % catch_id, overwrite=True)
+grass.mapcalc('%s_residual_moisture_content=residual_moisture_content' \
+              % catch_id, overwrite=True)
+grass.mapcalc('%s_hydraulic_conductivity=hydraulic_conductivity' \
+              % catch_id, overwrite=True)
 grass.mapcalc('%s_pore_size=pore_size' % catch_id, overwrite=True)
-grass.mapcalc('%s_bubbling_pressure=bubbling_pressure' % catch_id, overwrite=True)
+grass.mapcalc('%s_bubbling_pressure=bubbling_pressure' \
+              % catch_id, overwrite=True)
 grass.mapcalc('%s_dir=%s_dir' % (catch_id, catch_id), overwrite=True)
 grass.mapcalc('%s_str_thin=%s_str_thin' % (catch_id, catch_id), overwrite=True)
 grass.run_command('r.mask', flags='r')
