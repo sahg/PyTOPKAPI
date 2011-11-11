@@ -1,0 +1,5 @@
+GISDBASE: /home/scott/Data/grassdata
+LOCATION_NAME: pytopkapi_sa
+MAPSET: work
+MONITOR: x0
+GRASS_GUI: text
