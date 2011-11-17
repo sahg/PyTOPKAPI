@@ -1,28 +1,21 @@
+#!/usr/bin/python
+
+import sys
+
 import numpy as np
 import grass.script as grass
 
-buffer_range = 5000
-catch_id = 'B60'
+catch_shp = sys.argv[1]
+catch_id = sys.argv[2]
+buffer_range = sys.argv[3]
 
 # make sure the region is set correctly
 grass.run_command('g.region', rast='srtm_dem')
 
-# create catchment mask
-grass.run_command('v.extract',
-                  flags = '-o',
-                  input = 'wr2005_catchments',
-                  output = '%s_py' % catch_id,
-                  where="TERTIARY = '%s'" % catch_id)
-
-grass.run_command('v.dissolve',
-                  flags = '-o',
-                  input = '%s_py' % catch_id,
-                  output = '%s_dissolve_py' % catch_id,
-                  column='TERTIARY')
-
+# create initial catchment mask
 grass.run_command('v.buffer',
                   flags = '-o',
-                  input = '%s_dissolve_py' % catch_id,
+                  input = catch_shp,
                   output = '%s_buffer_py' % catch_id,
                   distance='%s' % buffer_range)
 
@@ -61,7 +54,7 @@ grass.run_command('r.to.vect',
 # Find outlet point and upstream cells
 grass.run_command('v.patch',
                   flags = '-o',
-                  input = '%s_streams,%s_dissolve_py' % (catch_id, catch_id),
+                  input = '%s_streams,%s' % (catch_id, catch_shp),
                   out = '%s_streams_catch' % catch_id)
 
 grass.run_command('v.clean',
