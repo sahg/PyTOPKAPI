@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import os
 import sys
 
 import numpy as np
@@ -72,6 +72,7 @@ grass.run_command('v.out.ascii',
                   fs = 'space')
 
 easting, northing = np.loadtxt('%s_catch_outlet.txt' % catch_id)
+os.remove('%s_catch_outlet.txt' % catch_id)
 
 grass.run_command('r.water.outlet',
                   flags = '-o',
