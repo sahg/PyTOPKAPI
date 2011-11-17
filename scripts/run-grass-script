@@ -12,11 +12,20 @@ import warnings
 import optparse
 import subprocess
 
+from pytopkapi.utils import exec_command
+
 def prepend_env_var(key, val):
     """Prepend `val` to an environment variable
 
     A new variable is created if `key` doesn't exist, otherwise `val`
     is prepended to the existing environment variable.
+
+    Parameters
+    ----------
+    key : string
+        The name of the environment variable
+    val : string
+        The value to prepend
 
     """
     if key in os.environ.keys():
@@ -58,7 +67,7 @@ def main():
     gis_base = find_gisbase()
     home = os.environ['HOME']
 
-    if (len(arguments) == 1) and not options.gisrc:
+    if (len(arguments) >= 2) and not options.gisrc:
         # custom gisrc not specified use default in users $HOME
         gisrc = os.path.join(home, '.grassrc6')
         if not os.path.exists(gisrc):
@@ -66,10 +75,10 @@ def main():
             gisrc = os.path.join(home, '.grassrc7')
             if not os.path.exists(gisrc):
                 raise IOError, 'File %s does not exist' % gisrc
-    elif (len(arguments) == 1) and options.gisrc:
+    elif (len(arguments) >= 2) and options.gisrc:
         # custom gisrc specified
          gisrc = options.gisrc
-    elif len(arguments) != 1:
+    elif len(arguments) < 2:
         parser.print_help()
         exit(0)
 
@@ -80,8 +89,8 @@ def main():
     prepend_env_var('GISRC', gisrc)
     prepend_env_var('GIS_LOCK', '%s' % os.getpid())
 
-    cmd = ['python', arguments[0]]
-    subprocess.call(cmd)
+    cmd = ['python'] + arguments
+    stdout, stderr, retcode = exec_command(cmd)
 
 if __name__ == '__main__':
     main()
