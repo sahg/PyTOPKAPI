@@ -310,11 +310,18 @@ def arc_bin_plot(bin_name, fig_name, title='Plot'):
 def from_grid_to_param(file_bin_grid):
     """
     * Objective
+
     Directly extract the values at the cell locations from the grid
+
     * Input:
+
     GIS binary grid
+
     * Output
-    A 1D array with nb_cell values. Cells are ordered from West to East, North to South.
+
+    A 1D array with nb_cell values. Cells are ordered from West to
+    East, North to South.
+
     """
     tab=read_arc_bin(file_bin_grid)
     nrows=np.shape(tab)[0]
@@ -328,17 +335,36 @@ def from_grid_to_param(file_bin_grid):
 def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
     """
     * Objective:
-      Estimation of the overland manning's coefficient for each catchment cell from the GLCC land cover/use map
+
+      Estimation of the overland manning's coefficient for each
+      catchment cell from the GLCC land cover/use map
+
     * Input
-      - file_bin_GLCC is the binary grid file containing the GLCC land use/cover codes
-      - file_table_GLCC_manning is an ASCII file containing a table of correspondance between the GLCC land use/cover codes
-      and the values of manning's coef proposed in different references (Chow et al., 1998; Maidment,1993 - give a range of values and the MUSIC report)
+
+      - file_bin_GLCC is the binary grid file containing the GLCC land
+        use/cover codes
+
+      - file_table_GLCC_manning is an ASCII file containing a table of
+      correspondance between the GLCC land use/cover codes and the
+      values of manning's coef proposed in different references (Chow
+      et al., 1998; Maidment,1993 - give a range of values and the
+      MUSIC report)
+
     * Ouput
-      This routine returns a 1D array (ar_n_o) containing the values of the Manning's coefficient for each cell. Cells are ordered from West to East, North to South.
+
+      This routine returns a 1D array (ar_n_o) containing the values
+      of the Manning's coefficient for each cell. Cells are ordered
+      from West to East, North to South.
+
     * Comment:
-      This routine has to be used carefully since the code is dependant to:
+
+      This routine has to be used carefully since the code is
+      dependant to:
+
        1. the format of the Table (file_table_GLCC_manning)
+
        2. the choice of the user to use a given reference
+
     """
     #Read the binary grid file of GLCC land use type
     tab=read_arc_bin(file_bin_GLCC)
@@ -370,18 +396,38 @@ def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
 def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
     """
     * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or humidity at saturation) for each catchment cell from the SIRI map
+
+      Extraction of the parameters L (soil depth) and theta_s
+      (porosity or humidity at saturation) for each catchment cell
+      from the SIRI map
+
     * Input
-      - file_bin_SIRI is the binary grid file containing the SIRI soil property codes
-      - file_table_SIRI_soil is an ASCII file containing a table of correspondance between the SIRI codes
-      and the values of a selection of the soil parameters proposed by SIRI (Land-type, depth A, depth B, WP A, WP B, FC A, FC B, Por A, Por B)
+
+      - file_bin_SIRI is the binary grid file containing the SIRI soil
+        property codes
+
+      - file_table_SIRI_soil is an ASCII file containing a table of
+      correspondance between the SIRI codes and the values of a
+      selection of the soil parameters proposed by SIRI (Land-type,
+      depth A, depth B, WP A, WP B, FC A, FC B, Por A, Por B)
+
     * Ouput
-      This routine returns two 1D array (ar_L, ar_theta_s) containing respectively the values of L and theta_s for each cell. Cells are ordered from West to East, North to South.
+
+      This routine returns two 1D array (ar_L, ar_theta_s) containing
+      respectively the values of L and theta_s for each cell. Cells
+      are ordered from West to East, North to South.
+
     * Comment:
-      This routine has to be used carefully since the code is dependant to:
+
+      This routine has to be used carefully since the code is
+      dependant to:
+
        1. the format of the Table (file_table_SIRI_soil)
-       2. the choice of the user to use only one soil layer A, or combining the two soil layer A+B characteristics provided by SIRI.
-       Here L=LA+LB and Theta_S=average(theta_sA,theta_sB)
+
+       2. the choice of the user to use only one soil layer A, or
+       combining the two soil layer A+B characteristics provided by
+       SIRI. Here L=LA+LB and Theta_S=average(theta_sA,theta_sB)
+
     """
     #Read the binary grid file of GLCC land use type
     tab=read_arc_bin(file_bin_SIRI)
@@ -412,19 +458,27 @@ def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
 def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
     """
     * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or
-      humidity at saturation) for each catchment cell from the SIRI map
+
+      Extraction of the parameters L (soil depth) and theta_s
+      (porosity or humidity at saturation) for each catchment cell
+      from the SIRI map
+
     * Input
-      - file_bin_WRC90 is the binary grid file containing the WRC90 soil
-        property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam,
-        1 for Clay)
+
+      - file_bin_WRC90 is the binary grid file containing the WRC90
+        soil property codes (Here only three 3 for Loamy Sand, 2 for
+        Sandy Loam, 1 for Clay)
+
       - file_table_WRC90_soil is an ASCII file containing a table of
         correspondance between the WRC90 codes and the values of Ks
         (permeability) and theta_r (residual soil moisture)
+
     * Ouput
-      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing
-      respectively the values of Ks and theta_r for each cell. Cells are
-      ordered from West to East, North to South.
+
+      This routine returns two 1D array (ar_theta_r, ar_theta_s)
+      containing respectively the values of Ks and theta_r for each
+      cell. Cells are ordered from West to East, North to South.
+
     """
     #Read the binary grid file of GLCC land use type
     tab=read_arc_bin(file_bin_WRC90)
@@ -451,17 +505,33 @@ def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
 
     return ar_theta_r, ar_Ks
 
-def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,ar_lambda):
+def from_Strahler_to_channel_manning(file_bin_strahler,
+                                     file_table_strahler_manning, ar_lambda):
     """
-    * objective:
-      Extraction of the channel mannings for each channel cell within the catchment from the strahler order map
+    * Objective:
+
+      Extraction of the channel mannings for each channel cell within
+      the catchment from the strahler order map
+
     * Input
-      - file_bin_strahler is the binary grid file containing the strahler order of the channel cells
-      - file_table_strahler_manning is an ASCII file containing a table of correspondance between the strahler order
-      and the values of manning strickler proposed by Liu and Todini (2002)
-      - ar_lambda is an array (dimension equal to the number of cell) with value 1 for channel cells, 0 otherwise. Cells being ordered from West to East, North to South.
+
+      - file_bin_strahler is the binary grid file containing the
+        strahler order of the channel cells
+
+      - file_table_strahler_manning is an ASCII file containing a
+      table of correspondance between the strahler order and the
+      values of manning strickler proposed by Liu and Todini (2002)
+
+      - ar_lambda is an array (dimension equal to the number of cell)
+        with value 1 for channel cells, 0 otherwise. Cells being
+        ordered from West to East, North to South.
+
     * Ouput
-      This routine returns a 1D array (ar_n_c), ar_theta_s) containing the values of the manning coefficient for each channel cell. Cells are ordered from West to East, North to South.
+
+      This routine returns a 1D array (ar_n_c), ar_theta_s) containing
+      the values of the manning coefficient for each channel
+      cell. Cells are ordered from West to East, North to South.
+
     """
 
     #Read the binary grid file of GLCC land use type
@@ -490,13 +560,26 @@ def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manni
 def from_flowdir_to_celldown_4D(file_bin_flowdir):
     """
     * objective:
-      Associate to each cell the label of the celldown (outcell) according to the 4D flow directions:
+
+      Associate to each cell the label of the celldown (outcell)
+      according to the 4D flow directions
+
     * Input
-      - file_bin_flowdir: 4D flow direction binary file (from GIS) with codes: 1 right, 16 left, 64 up, 4 down
+
+      - file_bin_flowdir: 4D flow direction binary file (from GIS)
+        with codes: 1 right, 16 left, 64 up, 4 down
+
     * Output
-      - ar_cell_down: an array (dimension equal to the number of cell) containing the label of the outcells.
+
+      - ar_cell_down: an array (dimension equal to the number of cell)
+        containing the label of the outcells.
+
     * Commment
-     Some errors can occur in the direction files that should be detected by the routine. A manual correction is required if it does happen.
+
+     Some errors can occur in the direction files that should be
+     detected by the routine. A manual correction is required if it
+     does happen.
+
     """
 
     tab_flowdir=read_arc_bin(file_bin_flowdir)
@@ -535,20 +618,34 @@ def from_flowdir_to_celldown_4D(file_bin_flowdir):
                         outlet=1
                     else:
                         n=n+1
-                        #Print the data to detect where the errors are (manual correction to be done...)
+                        #Print the data to detect where the errors are
+                        #(manual correction to be done...)
                         print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
     return ar_cell_down
 
 def from_flowdir_to_celldown_8D(file_bin_flowdir):
     """
     * objective:
-      Associate to each cell the label of the celldown (outcell) according to the 4D flow directions:
+
+      Associate to each cell the label of the celldown (outcell)
+      according to the 4D flow directions:
+
     * Input
-      - file_bin_flowdir: 8D flow direction binary file (from GIS) with codes: 1 E, 16 W, 64 N, 4 S, 32 NW, 128 NE, 2 SE, 8 SW.
+
+      - file_bin_flowdir: 8D flow direction binary file (from GIS)
+        with codes: 1 E, 16 W, 64 N, 4 S, 32 NW, 128 NE, 2 SE, 8 SW.
+
     * Output
-      - ar_cell_down: an array (dimension equal to the number of cell) containing the label of the outcells.
+
+      - ar_cell_down: an array (dimension equal to the number of cell)
+        containing the label of the outcells.
+
     * Commment
-     Some errors can occur in the direction files that should be detected by the routine. A manual correction is required if it does happen.
+
+     Some errors can occur in the direction files that should be
+     detected by the routine. A manual correction is required if it
+     does happen.
+
     """
 
     tab_flowdir=read_arc_bin(file_bin_flowdir)
@@ -599,7 +696,8 @@ def from_flowdir_to_celldown_8D(file_bin_flowdir):
                         outlet=1
                     else:
                         n=n+1
-                        #Print the data to detect where the errors are (manual correction to be done...)
+                        #Print the data to detect where the errors are
+                        #(manual correction to be done...)
                         print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
     return ar_cell_down
 
@@ -607,12 +705,19 @@ def from_flowdir_to_celldown_8D(file_bin_flowdir):
 def from_bingrid_to_label(file_bin_grid,write_file=False):
     """
     * Objective
-      Replace values of the grid by the label of the cells.
-      The label are assigned from 0 to nb_cell, from West to East, North to South.
+
+      Replace values of the grid by the label of the cells.  The label
+      are assigned from 0 to nb_cell, from West to East, North to
+      South.
+
     * Input
+
       file_bin_grid: A binary grid file (whatever it is).
+
     * Output
+
       tab: a 1D array with nb_cell components.
+
     """
     tab=read_arc_bin(file_bin_grid)
     nrows=np.shape(tab)[0]
@@ -635,12 +740,18 @@ def from_bingrid_to_label(file_bin_grid,write_file=False):
 def from_bingrid_to_coordinate(file_bin_grid):
     """
     * Objective
-    Compute the coordinates of the cells relatively to
-    the low-left corner from any binary grid file
+
+    Compute the coordinates of the cells relatively to the low-left
+    corner from any binary grid file
+
     * Input
+
       file_bin_grid: A binary grid file (whatever it is).
+
     * Output
+
       ar_coorX,ar_coorY: two 1D array with nb_cell components.
+
     """
     li_headers=read_headers_arc_bin(file_bin_grid)
     ncols = li_headers[0] # fixed for UM grid
