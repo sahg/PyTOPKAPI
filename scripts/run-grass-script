@@ -89,7 +89,7 @@ def main():
     prepend_env_var('GISRC', gisrc)
     prepend_env_var('GIS_LOCK', '%s' % os.getpid())
 
-    cmd = ['python'] + arguments
+    cmd = arguments
     stdout, stderr, retcode = exec_command(cmd)
 
 if __name__ == '__main__':
