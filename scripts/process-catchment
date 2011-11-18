@@ -1,16 +1,33 @@
 #!/usr/bin/python
 import os
 import sys
+from ConfigParser import SafeConfigParser
 
 import numpy as np
 import grass.script as grass
 
-catch_shp = sys.argv[1]
-catch_id = sys.argv[2]
-buffer_range = sys.argv[3]
+# Read configuration file
+ini_file = sys.argv[1]
+config = SafeConfigParser()
+config.read(ini_file)
+
+catch_id = config.get('parameters', 'catchment_id')
+buffer_range = config.get('parameters', 'buffer_range')
+
+catch_shp = config.get('GIS_layers', 'catchment_boundary')
+dem_lyr = config.get('GIS_layers', 'DEM')
+surface_slope = config.get('GIS_layers', 'surface_slope')
+manning_overland = config.get('GIS_layers', 'manning_overland')
+soil_depth = config.get('GIS_layers', 'soil_depth')
+sat_moisture_content = config.get('GIS_layers', 'sat_moisture_content')
+residual_moisture_content = config.get('GIS_layers',
+                                       'residual_moisture_content')
+hydraulic_conductivity = config.get('GIS_layers', 'hydraulic_conductivity')
+pore_size_index = config.get('GIS_layers', 'pore_size_index')
+bubbling_pressure = config.get('GIS_layers', 'bubbling_pressure')
 
 # make sure the region is set correctly
-grass.run_command('g.region', rast='srtm_dem')
+grass.run_command('g.region', rast=dem_lyr)
 
 # create initial catchment mask
 grass.run_command('v.buffer',
@@ -27,7 +44,7 @@ grass.run_command('v.to.rast',
 
 # use mask to extract catchment from DEM
 grass.run_command('r.mask', input='%s_mask_py' % catch_id)
-grass.mapcalc('%s_dem=srtm_dem' % catch_id, overwrite=True)
+grass.mapcalc('%s_dem=%s' % (catch_id, dem_lyr), overwrite=True)
 grass.run_command('r.mask', flags='r')
 
 # obtain parameters from DEM
@@ -94,18 +111,18 @@ grass.run_command('g.region',
 # or catchment buffer
 grass.run_command('r.mask', input='%s_catch_mask' % catch_id)
 grass.mapcalc('%s_dem=%s_dem' % (catch_id, catch_id), overwrite=True)
-grass.mapcalc('%s_slope=srtm_slope' % catch_id, overwrite=True)
-grass.mapcalc('%s_n_overland=manning_overland' % catch_id, overwrite=True)
-grass.mapcalc('%s_soil_depth=soil_depth' % catch_id, overwrite=True)
-grass.mapcalc('%s_sat_moisture_content=sat_moisture_content' \
-              % catch_id, overwrite=True)
-grass.mapcalc('%s_residual_moisture_content=residual_moisture_content' \
-              % catch_id, overwrite=True)
-grass.mapcalc('%s_hydraulic_conductivity=hydraulic_conductivity' \
-              % catch_id, overwrite=True)
-grass.mapcalc('%s_pore_size=pore_size' % catch_id, overwrite=True)
-grass.mapcalc('%s_bubbling_pressure=bubbling_pressure' \
-              % catch_id, overwrite=True)
+grass.mapcalc('%s_slope=%s' % (catch_id, surface_slope), overwrite=True)
+grass.mapcalc('%s_n_overland=%s' % (catch_id, manning_overland), overwrite=True)
+grass.mapcalc('%s_soil_depth=%s' % (catch_id, soil_depth), overwrite=True)
+grass.mapcalc('%s_sat_moisture_content=%s' \
+              % (catch_id, sat_moisture_content), overwrite=True)
+grass.mapcalc('%s_residual_moisture_content=%s' \
+              % (catch_id, residual_moisture_content), overwrite=True)
+grass.mapcalc('%s_hydraulic_conductivity=%s' \
+              % (catch_id, hydraulic_conductivity), overwrite=True)
+grass.mapcalc('%s_pore_size=%s' % (catch_id, pore_size_index), overwrite=True)
+grass.mapcalc('%s_bubbling_pressure=%s' \
+              % (catch_id, bubbling_pressure), overwrite=True)
 grass.mapcalc('%s_dir=%s_dir' % (catch_id, catch_id), overwrite=True)
 grass.mapcalc('%s_str_thin=%s_str_thin' % (catch_id, catch_id), overwrite=True)
 grass.run_command('r.mask', flags='r')
