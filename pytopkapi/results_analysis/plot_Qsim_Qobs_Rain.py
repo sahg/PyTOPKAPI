@@ -17,13 +17,13 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     file_Qobs=config.get('files','file_Qobs')
     file_rain=config.get('files','file_rain')
     image_out=config.get('files','image_out')
-    
+
     group_name=config.get('groups','group_name')
 
     Qobs=config.getboolean('flags','Qobs')
     Pobs=config.getboolean('flags','Pobs')
     nash=config.getboolean('flags','nash')
-            
+
     tab_col=['k','r']
     tab_style=['-','-']
     tab_width=['1','1']
@@ -75,7 +75,7 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
         nash_value = ut.Nash(ar_Qsim,ar_Qobs)
         lines.append(ax.plot(ar_date[0:1], ar_Qsim[0:1], 'w:'))
         tab_leg.append(('Eff = '+str(nash_value)[0:5]))
-            
+
     ax.set_xlim(ar_date[0], ar_date[-1])
     ytitle=r'$Q \  (m^3/s)$'
     ax.set_ylabel(ytitle, fontsize=18)
@@ -126,5 +126,3 @@ def read_observed_flow(file_name):
     Q = np.loadtxt(file_name, usecols=(5,))
 
     return dates, Q
-
-

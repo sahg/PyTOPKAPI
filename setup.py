@@ -79,6 +79,7 @@ world (Liu and Todini, 2002; Bartholomes and Todini, 2005; Liu et al.,
           packages=['pytopkapi',
                     'pytopkapi.parameter_utils',
                     'pytopkapi.results_analysis'],
+          scripts=['scripts/run-grass-script', 'scripts/process-catchment'],
           classifiers=[
           'Development Status :: 4 - Beta',
           'License :: OSI Approved :: BSD License',
@@ -89,4 +90,3 @@ world (Liu and Todini, 2002; Bartholomes and Todini, 2005; Liu et al.,
           'Topic :: Scientific/Engineering',
           ],
           )
-

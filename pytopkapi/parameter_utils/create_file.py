@@ -1,27 +1,30 @@
 """
 *** OBJECTIVE
 
-1. creating the TOPKAPI parameter file from GIS binary files (binary grid format).
-   -main routine "creat_param_file"
+1. creating the TOPKAPI parameter file from GIS binary files (binary
+grid format).  -main routine 'creat_param_file'
 
 *** COMMENT
-In the present program, to write the parameter file, generally the grid are tranformed in an array
-by rearranging the cell order from the West to East and North to South, as in the following example:
+
+In the present program, to write the parameter file,
+generally the grid are tranformed in an array by rearranging the cell
+order from the West to East and North to South, as in the following
+example:
 
 The grid format is like:
 
-GIS bingrid file 
+GIS bingrid file
 -9999  -9999  -9999  -9999  -9999  -9999  -9999
 -9999      0      1  -9999  -9999  -9999  -9999
 -9999      2      3     4   -9999  -9999  -9999
-    5      6      7     8       9  -9999  -9999 
+    5      6      7     8       9  -9999  -9999
 -9999     10     11    12      13     14  -9999
 -9999  -9999     15    16      17  -9999  -9999
 -9999  -9999  -9999  -9999     18  -9999  -9999
 -9999  -9999  -9999 -9999   -9999  -9999  -9999
 
-The corresponding array extracted and ordered from West to East, North to South is:
-0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
+The corresponding array extracted and ordered from West to East, North
+to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 
 """
 import sys
@@ -43,48 +46,95 @@ from pytopkapi import pretreatment as pm
 def run(ini_file='create_file.ini'):
     """
     * objective:
-      Create a parameter file from the catchment data (GIS maps), in association with the TABLES povided in the litterature.
-      
+    Create a parameter file from the catchment data (GIS maps), in
+      association with the TABLES povided in the litterature.
+
     * Input:
       +Binary grid files (from GIS)
-      - file_bin_streamnet: grid of the streamnet (code: 1 for channel cell, 0 for hillslope cell)
+
+      - file_bin_streamnet: grid of the streamnet (code: 1 for channel
+        cell, 0 for hillslope cell)
+
       - file_bin_beta: grid of cell slopes in degress.
+
       - file_bin_flowdir: grid of flow directions
-      - file_bin_GLCC: grid file containing the GLCC land use/cover codes
+
+      - file_bin_GLCC: grid file containing the GLCC land use/cover
+        codes
+
       - file_bin_SIRI: grid of soil properties (code given by SIRI)
-      - file_bin_WRC90: binary grid file containing the WRC90 soil property codes (Here only three codes are considered (cf. comments): 3 for Loamy Sand, 2 for Sandy Loam, 1 for Clay)
-      - file_bin_strahler: grid of strahler order of the channel cells.
-      +Tables from litterature for transformaing grids into TOPKAPI physical parameters
-      - file_table_GLCC_manning: an ASCII file containing a table of correspondance between the GLCC land use/cover codes
-                                and the values of manning's coef proposed in different references
-                                (Chow et al., 1998; Maidment,1993 - give a range of values and the MUSIC report)
-      - file_table_SIRI_soil: an ASCII file containing a table of correspondance between the SIRI codes
-                              and the values of a selection of the soil parameters proposed by SIRI
-                              (Land-type, depth A, depth B, WP A, WP B, FC A, FC B, Por A, Por B)
-      - file_table_WRC90_soil: an ASCII file containing a table of correspondance between the WRC90 codes
-                               and the values of Ks (permeability) and theta_r (residual soil moisture) from Maidment(1993)
-      - file_table_strahler_manning: an ASCII file containing a table of correspondance between the strahler order
-                                     and the values of manning strickler proposed by Liu and Todini (2002)
+
+      - file_bin_WRC90: binary grid file containing the WRC90 soil
+        property codes (Here only three codes are considered
+        (cf. comments): 3 for Loamy Sand, 2 for Sandy Loam, 1 for
+        Clay)
+
+      - file_bin_strahler: grid of strahler order of the channel
+        cells.
+
+      +Tables from litterature for transformaing grids into TOPKAPI
+      physical parameters
+
+      - file_table_GLCC_manning: an ASCII file containing a table of
+                                correspondance between the GLCC land
+                                use/cover codes and the values of
+                                manning's coef proposed in different
+                                references (Chow et al., 1998;
+                                Maidment,1993 - give a range of values
+                                and the MUSIC report)
+
+      - file_table_SIRI_soil: an ASCII file containing a table of
+                              correspondance between the SIRI codes
+                              and the values of a selection of the
+                              soil parameters proposed by SIRI
+                              (Land-type, depth A, depth B, WP A, WP
+                              B, FC A, FC B, Por A, Por B)
+
+      - file_table_WRC90_soil: an ASCII file containing a table of
+                               correspondance between the WRC90 codes
+                               and the values of Ks (permeability) and
+                               theta_r (residual soil moisture) from
+                               Maidment(1993)
+
+      - file_table_strahler_manning: an ASCII file containing a table
+                                     of correspondance between the
+                                     strahler order and the values of
+                                     manning strickler proposed by Liu
+                                     and Todini (2002)
+
       +Constant parameters
-      - Vs_t0: Constant value for the initial soil saturation of each cell.
-      - Vc_t0: Constant value for the initial channel water 
+
+      - Vs_t0: Constant value for the initial soil saturation of each
+        cell.
+
+      - Vc_t0: Constant value for the initial channel water
+
       - kc: Crop coefficient
-      
+
     * Output:
+
       - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda Xc dam tan_beta L Ks Theta_r Theta_s n_o n_c cell_down pVs_t0 Vo_t0 Qc_t0 kc
+       label X Y lambda Xc dam tan_beta L Ks Theta_r Theta_s n_o n_c
+       cell_down pVs_t0 Vo_t0 Qc_t0 kc
 
     * Comment:
-     1. !!!!VERY IMPORTANT!!!!
-     The routine refers to several subroutines listed below that must be carefully read before running the programm. This programm is helpfull for
-     creating the parameter file but it is not automated.
-     Some valuable informations are required inside these subroutines especially for data that are assigned using Tables.
-     The Tables are indeed simple ASCII files that were created for the special case of the Liebenbergsvlei catchment.
-     The application to another catchment might require the modification of the Tables and thus the subroutines.
-     One must refer to the headers of each subroutine for the detailed information.
 
-     2. Note that here, the initial soil moisture value, as well as the initial channel saturation are constant.
-        Assigning a spatially variable initial soil moisture can be done through the routine "from_param_to_new_param_catchVsi" in this file.
+     1. !!!!VERY IMPORTANT!!!! The routine refers to several
+     subroutines listed below that must be carefully read before
+     running the programm. This programm is helpfull for creating the
+     parameter file but it is not automated.  Some valuable
+     informations are required inside these subroutines especially for
+     data that are assigned using Tables.  The Tables are indeed
+     simple ASCII files that were created for the special case of the
+     Liebenbergsvlei catchment.  The application to another catchment
+     might require the modification of the Tables and thus the
+     subroutines.  One must refer to the headers of each subroutine
+     for the detailed information.
+
+     2. Note that here, the initial soil moisture value, as well as
+     the initial channel saturation are constant.  Assigning a
+     spatially variable initial soil moisture can be done through the
+     routine 'from_param_to_new_param_catchVsi' in this file.
 
     """
     ### READ THE PARAMETERS ###
@@ -120,14 +170,14 @@ def run(ini_file='create_file.ini'):
     ut.check_file_exist(file_out)
 
     #~~~~~Paremeters directly read ~~~~~~#
-    #Table of channel cells (1 for channel, 0 otherwise) 
+    #Table of channel cells (1 for channel, 0 otherwise)
     ar_lambda=from_grid_to_param(file_bin_streamnet)
     #Table of Dam cells (1 for Dam, 0 otherwise)
     ar_dam=np.zeros(len(ar_lambda))
     #beta is given in degres -->tan(beta) is computed
     ar_tan_beta=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta))
     ar_tan_beta_channel=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta_channel))
-    
+
     #~~~~~Parameters extracted from GIS and estimated from TABLES~~~~~#
     ### !!!USER MUST CHECK THESE 4 SUBROUTINES BEFORE RUNNING THE CODE!!! ###
     ar_n_o=from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning)
@@ -178,23 +228,17 @@ def run(ini_file='create_file.ini'):
 
     np.savetxt(file_out, tab_param)
 
-##############################################    
+##############################################
 ###  SUBROUTINE USED IN "creat_param_file" ###
 ##############################################
 
 ####### READING THE BINARY FILES ###########
 
 def read_bin_data(fname):
-    """Read data from a binary file into an array.
-    
-    Read the data from a binary file created by wgrib into
-    a Numpy array. This assumes that wgrib has output the data
-    in float format and seems to work for the UM outputs that
-    are being sent to us by SAWS. The first and last values
-    read from the file are trimmed since they are superflous.
+    """Read data from a float32 binary file into an array.
 
     """
-    
+
     f = open(fname, "rb")
     raw = f.read()
     f.close()
@@ -205,12 +249,7 @@ def read_bin_data(fname):
     return data
 
 def read_arc_bin(bingrid_name):
-    """Read the data field from a grib file into an array.
-
-    This function uses wgrib to write and then read the GRIB1
-    data to an intermediate binary format, which is later
-    deleted. It is currently very specific to the GRIB1 data
-    files produced by the UM.
+    """Read data from an ArcGIS float32 binary file into an array.
 
     """
 
@@ -218,7 +257,7 @@ def read_arc_bin(bingrid_name):
 
     rows = li_headers[1] # fixed for UM grid
     cols = li_headers[0] # fixed for UM grid
-    
+
     bin_name = bingrid_name + '.flt'
 
     a = read_bin_data(bin_name)
@@ -252,14 +291,14 @@ def read_headers_arc_bin(bingrid_name):
             li_headers.append(float(donnees[1]))
         else:
             li_headers.append(donnees[1])
-            
+
     return li_headers
 
-def arc_bin_plot(bin_name, fig_name, title='GRIB Plot'):
-    """Create a plot of the data in a GRIB1 file."""
-    
+def arc_bin_plot(bin_name, fig_name, title='Plot'):
+    """Create a plot of the data in a binary file."""
+
     a = read_arc_bin(bin_name)
-    
+
     a_mask = ma.masked_where(a < 0, a)
     pl.imshow(a_mask, interpolation='nearest')
     pl.colorbar()
@@ -283,7 +322,7 @@ def from_grid_to_param(file_bin_grid):
     tab=np.reshape(tab,ncols*nrows)
     ind=np.where(tab>-99)
     ar_param=tab[ind]
-    
+
     return ar_param
 
 def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
@@ -299,7 +338,7 @@ def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
     * Comment:
       This routine has to be used carefully since the code is dependant to:
        1. the format of the Table (file_table_GLCC_manning)
-       2. the choice of the user to use a given reference 
+       2. the choice of the user to use a given reference
     """
     #Read the binary grid file of GLCC land use type
     tab=read_arc_bin(file_bin_GLCC)
@@ -325,7 +364,7 @@ def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
             ar_n_o[ind]=ar_n_chow[np.where(ar_code==i)][0]
         if i==1:
             ar_n_o[ind]=ar_n_music[np.where(ar_code==i)][0]
-        
+
     return ar_n_o
 
 def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
@@ -351,7 +390,7 @@ def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
     tab=np.reshape(tab,ncols*nrows)
     ind=np.where(tab>-99)
     ar_SIRI=tab[ind]
-    
+
     #Read the Table file within a header line
     tab=pm.read_column_input(file_table_SIRI_soil,9)
     ar_code=tab[:,0]
@@ -367,24 +406,24 @@ def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
         #!!!! TO BE CHANGED ACCORDING TO USER CHOICE !!!#
         ar_L[ind]=ar_depthA[np.where(ar_code==i)][0]+ar_depthB[np.where(ar_code==i)][0]
         ar_theta_s[ind]=0.5*(ar_porA[np.where(ar_code==i)][0]+ar_porB[np.where(ar_code==i)][0])
-    
+
     return ar_L, ar_theta_s
 
 def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
     """
     * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or 
+      Extraction of the parameters L (soil depth) and theta_s (porosity or
       humidity at saturation) for each catchment cell from the SIRI map
     * Input
-      - file_bin_WRC90 is the binary grid file containing the WRC90 soil 
-        property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam, 
+      - file_bin_WRC90 is the binary grid file containing the WRC90 soil
+        property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam,
         1 for Clay)
-      - file_table_WRC90_soil is an ASCII file containing a table of 
-        correspondance between the WRC90 codes and the values of Ks 
+      - file_table_WRC90_soil is an ASCII file containing a table of
+        correspondance between the WRC90 codes and the values of Ks
         (permeability) and theta_r (residual soil moisture)
     * Ouput
-      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing 
-      respectively the values of Ks and theta_r for each cell. Cells are 
+      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing
+      respectively the values of Ks and theta_r for each cell. Cells are
       ordered from West to East, North to South.
     """
     #Read the binary grid file of GLCC land use type
@@ -409,7 +448,7 @@ def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
         #!!!! TO BE CHANGED FOR PARAMETER ADJUSTMENT !!!#
         ar_theta_r[ind]=ar_theta_r_moy[np.where(ar_code==i)][0]
         ar_Ks[ind]=ar_conduct[np.where(ar_code==i)][0]
-         
+
     return ar_theta_r, ar_Ks
 
 def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,ar_lambda):
@@ -433,7 +472,7 @@ def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manni
     ind=np.where(tab>-99)
     ar_strahler=tab[ind]
     ar_lambda[ar_lambda==1]=ar_strahler
-    
+
     #Read the Table file within a header line
     tab=pm.read_column_input(file_table_strahler_manning,2)
     ar_code=tab[:,0]
@@ -609,11 +648,11 @@ def from_bingrid_to_coordinate(file_bin_grid):
     xmin = li_headers[2]
     ymin = li_headers[3]
     cellsize= li_headers[4]
-    
+
     ar_line_coorX=xmin+np.arange(ncols)*cellsize
     ar_line_coorY=ymin+np.arange(nrows)*cellsize
     ar_line_coorY=ar_line_coorY[::-1]
-    
+
     mat_coorX=np.zeros((nrows,ncols))
     mat_coorY=np.zeros((nrows,ncols))
     for i in range(int(nrows)):
@@ -626,13 +665,13 @@ def from_bingrid_to_coordinate(file_bin_grid):
 
     ar_coorX=mat_coorX[ind]
     ar_coorY=mat_coorY[ind]
-    
+
     return ar_coorX,ar_coorY
 
 
 def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
     ar_Xc=np.array(ar_lambda,float)
-    
+
     for i in range(len(ar_label)):
         if ar_cell_down[i]>=0:
             cell_down=ar_cell_down[i]
@@ -643,7 +682,7 @@ def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
             Ycell_down=ar_coorY[np.where(ar_label==cell_down)[0][0]]
 #            print ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
             ar_Xc[i]=ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
-                
+
     ind_outlet=np.where(ar_cell_down<0)
     ar_Xc[ind_outlet]=min(ar_Xc)
 
@@ -652,15 +691,12 @@ def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
 
 def matrix_plot(matrix, fig_name, title='GRID Plot'):
     """Create a plot of the data in a GRIB1 file."""
-    
+
     a=matrix
-    
+
     a_mask = ma.masked_where(a < 0, a)
     pl.imshow(a_mask, interpolation='nearest')
     pl.colorbar()
     pl.title(title)
     pl.savefig(fig_name)
     pl.close()
-
-
-    

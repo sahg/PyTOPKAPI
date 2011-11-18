@@ -1,0 +1,97 @@
+#! /usr/bin/env python
+
+"""Wrapper script to set-up proper environment to run GRASS
+
+Before importing the grass package, the correct environment variables
+must be set. This script sets up the environment for a Linux system,
+according to the specified GRASSRC file (or the default GRASSRC if not
+specified) then calls the processing script in a subprocess.
+
+"""
+import os
+import warnings
+import optparse
+import subprocess
+
+from pytopkapi.utils import exec_command
+
+def prepend_env_var(key, val):
+    """Prepend `val` to an environment variable
+
+    A new variable is created if `key` doesn't exist, otherwise `val`
+    is prepended to the existing environment variable.
+
+    Parameters
+    ----------
+    key : string
+        The name of the environment variable
+    val : string
+        The value to prepend
+
+    """
+    if key in os.environ.keys():
+        old_val = os.environ[key]
+
+        os.environ[key] = ':'.join([val, old_val])
+    else:
+        os.environ[key] = val
+
+def find_gisbase():
+    """Find the value of the GISBASE environ variable on Linux
+
+    A bit hackish, but seems to work for now..
+
+    """
+    gscript = subprocess.check_output(['which', 'grass']).strip('\n')
+
+    fp = open(gscript, 'r')
+    for line in fp:
+        if 'GISBASE=' in line:
+            gis_base = line.split('=')[1]
+    fp.close()
+
+    return gis_base.strip() # remove line-endings
+
+def main():
+    """Runs program and handles command line options"""
+
+    parser = optparse.OptionParser(description="""Set up proper environment for GRASS and run the specified script in a sub-process""",
+                                   prog='run-grass-script',
+                                   version='0.1',
+                                   usage='%prog <script>')
+
+    parser.add_option('--rc', action='store', type='string', dest='gisrc',
+                      help='Specify path to a GRASSRC file. Default is to use the one in the users $HOME directory')
+
+    options, arguments = parser.parse_args()
+
+    gis_base = find_gisbase()
+    home = os.environ['HOME']
+
+    if (len(arguments) >= 2) and not options.gisrc:
+        # custom gisrc not specified use default in users $HOME
+        gisrc = os.path.join(home, '.grassrc6')
+        if not os.path.exists(gisrc):
+            warnings.warn('File %s does not exist' % gisrc)
+            gisrc = os.path.join(home, '.grassrc7')
+            if not os.path.exists(gisrc):
+                raise IOError, 'File %s does not exist' % gisrc
+    elif (len(arguments) >= 2) and options.gisrc:
+        # custom gisrc specified
+         gisrc = options.gisrc
+    elif len(arguments) < 2:
+        parser.print_help()
+        exit(0)
+
+    prepend_env_var('GISBASE', '%s' % gis_base)
+    prepend_env_var('PATH', '%s/bin:%s/scripts' % (gis_base, gis_base))
+    prepend_env_var('LD_LIBRARY_PATH', '%s/lib' % gis_base)
+    prepend_env_var('PYTHONPATH', '%s/etc/python' % gis_base)
+    prepend_env_var('GISRC', gisrc)
+    prepend_env_var('GIS_LOCK', '%s' % os.getpid())
+
+    cmd = arguments
+    stdout, stderr, retcode = exec_command(cmd)
+
+if __name__ == '__main__':
+    main()
