@@ -4,7 +4,8 @@
 
 Before importing the grass package, the correct environment variables
 must be set. This script sets up the environment for a Linux system,
-then calls the processing script in a subprocess.
+according to the specified GRASSRC file (or the default GRASSRC if not
+specified) then calls the processing script in a subprocess.
 
 """
 import os

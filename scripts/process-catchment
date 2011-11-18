@@ -1,4 +1,21 @@
 #!/usr/bin/python
+
+"""Script to extract PyTOPKAPI catchment parameters from GRASS
+
+A helper script to generate catchment parameters required to generate
+a PyTOPKAPI parameter file, using the tools in the
+pytopkapi.parameter_utils sub-package. This scripts requires a GRASS
+GIS location, which contains raster files at the required modelling
+resolution, and a vector file describing the catchment boundary.
+
+A set of GeoTIFFs is automatically generated, which will be suitable
+for conversion to a PyTOPKAPI parameter file. Some manaul tweaking of
+the catchment boundary file may be required in order to get the script
+to run to completion (depending on the properties of the DEM at the
+required model resolution). In many cases, however such intervention
+should not be required.
+
+"""
 import os
 import sys
 from ConfigParser import SafeConfigParser
