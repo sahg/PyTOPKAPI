@@ -28,13 +28,13 @@ to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 
 """
 import sys
+from ConfigParser import SafeConfigParser
 
 #Python modules
 import numpy as np
 import pylab as pl
 from numpy import ma
-from ConfigParser import SafeConfigParser
-config = SafeConfigParser()
+from osgeo import gdal
 
 #External modules from PyTOPKAPI
 #Utilities
@@ -42,12 +42,72 @@ from pytopkapi import utils as ut
 #pretreatment: used for subroutines to read the column type files.
 from pytopkapi import pretreatment as pm
 
+def compute_cell_coordinates(mask_fname):
+    dset = gdal.Open(mask_fname)
+    mask = dset.ReadAsArray()
 
-def run(ini_file='create_file.ini'):
+    x0, dx, fy, y0, fx, dy = dset.GetGeoTransform()
+
+    # Adjust x0 and y0 to give pixel centres. GDAL specifies (x0, y0)
+    # as the top left corner of the top left pixel. PyTOPKAPI expects
+    # pixel centres. At the centre of the first pixel the following
+    # holds: (Xpixel, Yline) == (0.5, 0.5)
+    x0 = x0 + dx/2.0 + fy/2.0
+    y0 = y0 + fx/2.0 + dy/2.0
+
+    Yline, Xpixel = np.nonzero(mask == 1)
+
+    Xgeo = x0 + Xpixel*dx + Yline*fy
+    Ygeo = y0 + Xpixel*fx + Yline*dy
+
+    return Xgeo, Ygeo
+
+def read_raster(rast_fname, file_format='GTiff'):
+    """Read the data in a raster file
+
+    Parameters
+    ----------
+    rast_fname : string
+        The path to the raster file.
+    file_format : string
+        The file format of the raster file, currently this can only be
+        GeoTIFF ('GTiff' - default).
+
+    Returns
+    -------
+    data : Numpy ndarray
+        The 2D raster data in a Numpy array. The dtype of the returned
+        array is the same as the data type stored in the raster file.
+
     """
-    * objective:
-    Create a parameter file from the catchment data (GIS maps), in
-      association with the TABLES povided in the litterature.
+    if file_format != 'GTiff':
+        err_str = 'Reading %s files not implemented.' % file_format
+        raise NotImplementedError(err_str)
+    else:
+        dset = gdal.Open(rast_fname)
+        data = dset.ReadAsArray()
+
+    return data
+
+def generate_param_file(ini_fname, isolated_cells=False):
+    """Create a PyTOPKAPI parameter file
+
+    Generates a parameter file from the catchment data provided in a
+    set of georeferenced raster files. The input files may be GeoTIFF
+    or 32-bit raster files with ArcGIS style headers.
+
+    Parameters
+    ----------
+    ini_fname : string
+        The path to an ini-style config file specifying the input data
+        file locations and format.
+
+    Returns
+    -------
+    Nothing
+
+    Notes
+    -----
 
     * Input:
       +Binary grid files (from GIS)
@@ -137,96 +197,82 @@ def run(ini_file='create_file.ini'):
      routine 'from_param_to_new_param_catchVsi' in this file.
 
     """
-    ### READ THE PARAMETERS ###
-    config.read(ini_file)
-    print 'Read the file ',ini_file
-    ##~~~~~~ GIS_files ~~~~~~##
-    file_bin_streamnet=config.get('GIS_files','file_bin_streamnet')
-    file_bin_beta=config.get('GIS_files','file_bin_beta')
-    file_bin_beta_channel=config.get('GIS_files','file_bin_beta_channel')
-    file_bin_flowdir=config.get('GIS_files','file_bin_flowdir')
-    file_bin_GLCC=config.get('GIS_files','file_bin_GLCC')
-    file_bin_SIRI=config.get('GIS_files','file_bin_SIRI')
-    file_bin_WRC90=config.get('GIS_files','file_bin_WRC90')
-    file_bin_strahler=config.get('GIS_files','file_bin_strahler')
+    config = SafeConfigParser()
+    config.read(ini_fname)
 
-    ##~~~~~~ table_files ~~~~~~##
-    file_table_GLCC_manning=config.get('table_files','file_table_GLCC_manning')
-    file_table_SIRI_soil=config.get('table_files','file_table_SIRI_soil')
-    file_table_WRC90_soil=config.get('table_files','file_table_WRC90_soil')
-    file_table_strahler_manning=config.get('table_files','file_table_strahler_manning')
+    mask_fname = config.get('raster_files', 'mask_fname')
+    soil_depth_fname = config.get('raster_files', 'soil_depth_fname')
+    conductivity_fname = config.get('raster_files', 'conductivity_fname')
+    hillslope_fname = config.get('raster_files', 'hillslope_fname')
+    theta_sat_fname = config.get('raster_files', 'sat_moisture_content_fname')
+    theta_r_fname = config.get('raster_files', 'resid_moisture_content_fname')
+    psi_b_fname = config.get('raster_files', 'bubbling_pressure_fname')
+    lamda_fname = config.get('raster_files', 'pore_size_dist_fname')
+    n_o_fname = config.get('raster_files', 'overland_manning_fname')
+    network_fname = config.get('raster_files', 'channel_network_fname')
+    flowdir_fname = config.get('raster_files', 'flowdir_fname')
 
-    ##~~~~~~ file_out ~~~~~~##
-    file_out=config.get('file_out','file_out')
+    param_fname = config.get('output', 'param_fname')
 
-    ##~~~~~~ numerical_values ~~~~~~##
-    nb_param=config.getfloat('numerical_values','nb_param')
-    pVs_t0=config.getfloat('numerical_values','pVs_t0')
-    Vo_t0=config.getfloat('numerical_values','Vo_t0')
-    Qc_t0=config.getfloat('numerical_values','Qc_t0')
-    kc=config.getfloat('numerical_values','kc')
+    # Read the input rasters
+    mask = read_raster(mask_fname)
+    hillslope = read_raster(hillslope_fname)
+    depth = read_raster(soil_depth_fname)
+    theta_sat = read_raster(theta_sat_fname)
+    theta_r = read_raster(theta_r_fname)
+    conductivity = read_raster(conductivity_fname)
+    psi_b = read_raster(psi_b_fname)
+    lamda = read_raster(lamda_fname)
+    n_o = read_raster(n_o_fname)
+    channel_network = read_raster(network_fname)
+    flowdir = read_raster(flowdir_fname)
 
-    #create path_out if it does'nt exist
-    ut.check_file_exist(file_out)
+    # Calculate parameters
+    ncells = mask[mask == 1].size
+    nparams = 21
+    tan_beta = np.tan((np.pi/180.0)*hillslope)
+    X, Y = compute_cell_coordinates(mask_fname)
 
-    #~~~~~Paremeters directly read ~~~~~~#
-    #Table of channel cells (1 for channel, 0 otherwise)
-    ar_lambda=from_grid_to_param(file_bin_streamnet)
-    #Table of Dam cells (1 for Dam, 0 otherwise)
-    ar_dam=np.zeros(len(ar_lambda))
-    #beta is given in degres -->tan(beta) is computed
-    ar_tan_beta=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta))
-    ar_tan_beta_channel=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta_channel))
+    if isolated_cells == True:
+        cell_down = -999
+        channel_length = 0
+    else:
+        # Calculate the network connections and channel lengths. This
+        # section is just a placeholder for now, these functions need
+        # work.
+        cell_down = from_flowdir_to_celldown_8D(flowdir)
+        channel_length = compute_Xchannel(ar_label, ar_lambda,
+                                          ar_coorX, ar_coorY, cell_down)
 
-    #~~~~~Parameters extracted from GIS and estimated from TABLES~~~~~#
-    ### !!!USER MUST CHECK THESE 4 SUBROUTINES BEFORE RUNNING THE CODE!!! ###
-    ar_n_o=from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning)
-    ar_L,ar_Theta_s=from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil)
-    ar_Theta_r, ar_Ks = from_WRC90_to_soil_properties(file_bin_WRC90,
-                                                      file_table_WRC90_soil)
-    ar_n_c=from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,np.array(ar_lambda))
+    channel_network[channel_network < 255] = 1
+    channel_network[channel_network == 255] = 0
 
-    #~~~~~Parameters computed~~~~~#
-    ar_label=np.arange(len(ar_lambda))
-    ar_coorX,ar_coorY=from_bingrid_to_coordinate(file_bin_streamnet)
-    ar_cell_down=from_flowdir_to_celldown_8D(file_bin_flowdir)
-    ar_Xc=compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down)
+    # Write parameter file
+    param_table = np.zeros((ncells, nparams))
+    param_table[:,0] = np.arange(ncells) # cell_label
+    param_table[:,1] = X
+    param_table[:,2] = Y
+    param_table[:,3] = channel_network[mask == 1]
+    param_table[:,4] = channel_length
+    ## param_table[:,5] = dam_locations
+    param_table[:,6] = tan_beta[mask == 1]
+    ## param_table[:,7] = tan_beta_channel
+    param_table[:,8] = depth[mask == 1]
+    param_table[:,9] = conductivity[mask == 1]
+    param_table[:,10] = theta_r[mask == 1]
+    param_table[:,11] = theta_sat[mask == 1]
+    param_table[:,12] = n_o[mask == 1]
+    ## param_table[:,13] = n_c[mask == 1]
+    param_table[:,14] = cell_down
+    ## param_table[:,15] = pVs_t0
+    ## param_table[:,16] = Vo_t0
+    ## param_table[:,17] = Qc_t0
+    param_table[:,18] = 1 # Kc
+    param_table[:,19] = psi_b[mask == 1]
+    param_table[:,20] = lamda[mask == 1]
 
-    #~~~~~ Initial values and crop factor (CONSTANT) ~~~~~~#
-    #Creation of a vector zero
-    ar_tab=ar_label*0.
-    #Constant value for the initial soil moisture (in percent)
-    ar_pVs_t0=ar_tab+pVs_t0
-    #Constant value for the initial overland (in m3)
-    ar_Vo_t0=ar_tab+Vo_t0
-    #Constant value for the initial channel discharge (in m3/s)
-    ar_Qc_t0=ar_tab+Qc_t0
-    #Constant value for the crop coefficient
-    ar_kc=ar_tab+kc
-
-    #~~~~~~Write parameter file~~~~~~#
-    tab_param=np.zeros((len(ar_tab),nb_param))
-    tab_param[:,0]=ar_label
-    tab_param[:,1]=ar_coorX
-    tab_param[:,2]=ar_coorY
-    tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_Xc
-    tab_param[:,5]=ar_dam
-    tab_param[:,6]=ar_tan_beta
-    tab_param[:,7]=ar_tan_beta_channel
-    tab_param[:,8]=ar_L
-    tab_param[:,9]=ar_Ks
-    tab_param[:,10]=ar_Theta_r
-    tab_param[:,11]=ar_Theta_s
-    tab_param[:,12]=ar_n_o
-    tab_param[:,13]=ar_n_c
-    tab_param[:,14]=ar_cell_down
-    tab_param[:,15]=ar_pVs_t0
-    tab_param[:,16]=ar_Vo_t0
-    tab_param[:,17]=ar_Qc_t0
-    tab_param[:,18]=ar_kc
-
-    np.savetxt(file_out, tab_param)
+    format = '%5d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
+    np.savetxt(param_fname, param_table, fmt=format)
 
 ##############################################
 ###  SUBROUTINE USED IN "creat_param_file" ###
