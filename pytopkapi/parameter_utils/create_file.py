@@ -28,6 +28,7 @@ to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 
 """
 import sys
+from warnings import warn
 from ConfigParser import SafeConfigParser
 
 #Python modules
@@ -211,6 +212,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
     n_o_fname = config.get('raster_files', 'overland_manning_fname')
     network_fname = config.get('raster_files', 'channel_network_fname')
     flowdir_fname = config.get('raster_files', 'flowdir_fname')
+    fdir_source = config.get('raster_files', 'flowdir_source')
 
     param_fname = config.get('output', 'param_fname')
 
@@ -237,12 +239,10 @@ def generate_param_file(ini_fname, isolated_cells=False):
         cell_down = -999
         channel_length = 0
     else:
-        # Calculate the network connections and channel lengths. This
-        # section is just a placeholder for now, these functions need
-        # work.
-        cell_down = from_flowdir_to_celldown_8D(flowdir)
-        channel_length = compute_Xchannel(ar_label, ar_lambda,
-                                          ar_coorX, ar_coorY, cell_down)
+        # Calculate the network connections and channel lengths.
+        cell_down = cell_connectivity(flowdir, mask, fdir_source)
+        ## channel_length = compute_Xchannel(ar_label, ar_lambda,
+        ##                                   ar_coorX, ar_coorY, cell_down)
 
     channel_network[channel_network < 255] = 1
     channel_network[channel_network == 255] = 0
@@ -253,7 +253,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
     param_table[:,1] = X
     param_table[:,2] = Y
     param_table[:,3] = channel_network[mask == 1]
-    param_table[:,4] = channel_length
+    ## param_table[:,4] = channel_length
     ## param_table[:,5] = dam_locations
     param_table[:,6] = tan_beta[mask == 1]
     ## param_table[:,7] = tan_beta_channel
@@ -271,7 +271,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
     param_table[:,19] = psi_b[mask == 1]
     param_table[:,20] = lamda[mask == 1]
 
-    format = '%5d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
+    format = '%d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
     np.savetxt(param_fname, param_table, fmt=format)
 
 ##############################################
@@ -669,84 +669,88 @@ def from_flowdir_to_celldown_4D(file_bin_flowdir):
                         print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
     return ar_cell_down
 
-def from_flowdir_to_celldown_8D(file_bin_flowdir):
+def cell_connectivity(flowdir, mask, source='GRASS'):
+    """Compute the connectivity between cells in the catchment
+
+    Associate each cell in the catchment with the label of it's
+    downstream neighbour. This defines the directed network of
+    connections between the cells which make up a catchment in the
+    model.
+
+    Parameters
+    ----------
+    flowdir : Numpy ndarray
+        8D flow direction codes as defined by your favourite GIS
+        toolbox.
+    mask : Numpy ndarray
+        A 2D array with the same shape as `flowdir`. Cells which
+        comprise the catchment should be marked by a value of 1.
+    source : string
+        A string describing the source of the flow direction
+        codes. Current options are 'ArcGIS' or 'GRASS' (default)
+
+    Returns
+    -------
+    cell_down : Numpy ndarray
+        An ordered array containing the label of the immediate
+        downstream cell for each cell in the catchment network. A 1D
+        array with length equal to the number of cells. The catchment
+        outlet is indiacted by a value of -999.
+
     """
-    * objective:
+    # Specify flow direction code from GRASS GIS r.watershed or ArcGIS
+    # Hydrology toolbox flow-direction tool
+    if source == 'GRASS':
+        ddict = {1 : (-1,  1),
+                 2 : (-1,  0),
+                 3 : (-1, -1),
+                 4 : ( 0, -1),
+                 5 : ( 1, -1),
+                 6 : ( 1,  0),
+                 7 : ( 1,  1),
+                 8 : ( 0,  1)}
+    elif source == 'ArcGIS':
+        ddict = {128 : (-1,  1),
+                 64  : (-1,  0),
+                 32  : (-1, -1),
+                 16  : ( 0, -1),
+                 8   : ( 1, -1),
+                 4   : ( 1,  0),
+                 2   : ( 1,  1),
+                 1   : ( 0,  1)}
+    else:
+        raise ValueError('Unknown flow direction scheme: %s' % source)
 
-      Associate to each cell the label of the celldown (outcell)
-      according to the 4D flow directions:
+    ncells = mask[mask == 1].size
+    int_min = np.iinfo(np.int).min
+    cell_id = np.ones(mask.shape, dtype=np.int)*int_min
+    cell_id[mask == 1] = np.arange(ncells)
 
-    * Input
+    cell_down = np.ones(ncells, dtype=np.int)*int_min
 
-      - file_bin_flowdir: 8D flow direction binary file (from GIS)
-        with codes: 1 E, 16 W, 64 N, 4 S, 32 NW, 128 NE, 2 SE, 8 SW.
-
-    * Output
-
-      - ar_cell_down: an array (dimension equal to the number of cell)
-        containing the label of the outcells.
-
-    * Commment
-
-     Some errors can occur in the direction files that should be
-     detected by the routine. A manual correction is required if it
-     does happen.
-
-    """
-
-    tab_flowdir=read_arc_bin(file_bin_flowdir)
-    tab_label=from_bingrid_to_label(file_bin_flowdir)
-    nrows=np.shape(tab_label)[0]
-    ncols=np.shape(tab_label)[1]
-    ar_cell_down=np.zeros(np.shape(np.where(tab_label>=0))[1])-99
-    n=0
-    num=0
-    outlet=0
+    nrows, ncols = mask.shape
     for i in range(nrows):
         for j in range(ncols):
-            flow=tab_flowdir[i,j]
-            OK=0
-            if tab_label[i,j] >= 0:
-                num=num+1
-                if flow==1:
-                    x=i
-                    y=j+1
-                elif flow==16:
-                    x=i
-                    y=j-1
-                elif flow==64:
-                    x=i-1
-                    y=j
-                elif flow==4:
-                    x=i+1
-                    y=j
-                elif flow==32:
-                    x=i-1
-                    y=j-1
-                elif flow==128:
-                    x=i-1
-                    y=j+1
-                elif flow==2:
-                    x=i+1
-                    y=j+1
-                elif flow==8:
-                    x=i+1
-                    y=j-1
-                else:
-                    print 'ERROR'
-                if tab_label[x,y]>=0:
-                    ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                else:
-                    if outlet==0:
-                        ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                        outlet=1
-                    else:
-                        n=n+1
-                        #Print the data to detect where the errors are
-                        #(manual correction to be done...)
-                        print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
-    return ar_cell_down
+            fdir = flowdir[i, j]
 
+            if fdir in ddict.keys():
+                r, c = ddict[fdir]
+                m, n = i+r, j+c
+
+                # To-do: Handle case where (m, n) is outside the array
+                # bounds
+                cell_down[cell_id[i, j]] = cell_id[m, n]
+
+    if cell_down[cell_down == int_min].size > 1:
+        warn_txt = """There are %d catchment cells without a downstream link.
+Check the validity of the flow-direction raster."""  \
+        % cell_down[cell_down == int_min].size
+
+        warn(warn_txt)
+
+    cell_down[cell_down == int_min] = -999
+
+    return cell_down
 
 def from_bingrid_to_label(file_bin_grid,write_file=False):
     """
