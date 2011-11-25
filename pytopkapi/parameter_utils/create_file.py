@@ -833,6 +833,39 @@ def from_bingrid_to_coordinate(file_bin_grid):
 
 
 def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
+    """Compute the channel length in channel cells
+
+    Cells draining diagonally have a different channel length from
+    cells draining North, South, East or West. This function computes
+    the channel length as a function of the drainage direction (based
+    on the catchment connectivity network).
+
+    Parameters
+    ----------
+    cell_labels : 1D Numpy ndarray
+        An array of the labels associated with each cell in the
+        catchment
+    channel_network : 1D Numpy ndarray
+        An ordered array with each channel cell indicated by a value
+        of one.
+    X : 1D Numpy ndarray
+        An ordered array of the X coordinate of the centre of each
+        cell.
+    Y : 1D Numpy ndarray
+        An ordered array of the Y coordinate of the centre of each
+        cell.
+    cell_down : 1D Numpy ndarray
+        An ordered array giving the label of the downstream cell in
+        the catchment network. The outlet of the catchment is
+        indicated by a negative number.
+
+    Returns
+    -------
+    Xc : 1D Numpy ndarray
+        An array containing the length of the channel in each channel
+        cell, zero otherwise.
+
+    """
     ar_Xc = np.zeros(cell_labels.shape)
 
     for i in cell_labels[channel_network == 1]:
