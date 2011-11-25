@@ -232,8 +232,12 @@ def generate_param_file(ini_fname, isolated_cells=False):
     # Calculate parameters
     ncells = mask[mask == 1].size
     nparams = 21
+    cell_labels = np.arange(ncells)
     tan_beta = np.tan((np.pi/180.0)*hillslope)
     X, Y = compute_cell_coordinates(mask_fname)
+
+    channel_network[channel_network < 255] = 1
+    channel_network[channel_network == 255] = 0
 
     if isolated_cells == True:
         cell_down = -999
@@ -241,19 +245,17 @@ def generate_param_file(ini_fname, isolated_cells=False):
     else:
         # Calculate the network connections and channel lengths.
         cell_down = cell_connectivity(flowdir, mask, fdir_source)
-        ## channel_length = compute_Xchannel(ar_label, ar_lambda,
-        ##                                   ar_coorX, ar_coorY, cell_down)
-
-    channel_network[channel_network < 255] = 1
-    channel_network[channel_network == 255] = 0
+        channel_length = compute_Xchannel(cell_labels,
+                                          channel_network[mask == 1],
+                                          X, Y, cell_down)
 
     # Write parameter file
     param_table = np.zeros((ncells, nparams))
-    param_table[:,0] = np.arange(ncells) # cell_label
+    param_table[:,0] = cell_labels
     param_table[:,1] = X
     param_table[:,2] = Y
     param_table[:,3] = channel_network[mask == 1]
-    ## param_table[:,4] = channel_length
+    param_table[:,4] = channel_length
     ## param_table[:,5] = dam_locations
     param_table[:,6] = tan_beta[mask == 1]
     ## param_table[:,7] = tan_beta_channel
@@ -830,25 +832,24 @@ def from_bingrid_to_coordinate(file_bin_grid):
     return ar_coorX,ar_coorY
 
 
-def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
-    ar_Xc=np.array(ar_lambda,float)
+def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
+    ar_Xc = np.zeros(cell_labels.shape)
 
-    for i in range(len(ar_label)):
-        if ar_cell_down[i]>=0:
-            cell_down=ar_cell_down[i]
-            Xcell=ar_coorX[i]
-            Ycell=ar_coorY[i]
-#            print np.where(ar_label==cell_down),np.where(ar_label==cell_down)[0]
-            Xcell_down=ar_coorX[np.where(ar_label==cell_down)[0][0]]
-            Ycell_down=ar_coorY[np.where(ar_label==cell_down)[0][0]]
-#            print ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
-            ar_Xc[i]=ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
+    for i in cell_labels:
+        if cell_down[i]>=0:
+            indx = cell_down[i]
+            Xcell = X[i]
+            Ycell = Y[i]
 
-    ind_outlet=np.where(ar_cell_down<0)
+            Xcell_down = X[cell_labels == indx]
+            Ycell_down = Y[cell_labels == indx]
+
+            ar_Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
+
+    ind_outlet=np.where(cell_down<0)
     ar_Xc[ind_outlet]=min(ar_Xc)
 
     return ar_Xc
-
 
 def matrix_plot(matrix, fig_name, title='GRID Plot'):
     """Create a plot of the data in a GRIB1 file."""
