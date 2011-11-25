@@ -835,7 +835,7 @@ def from_bingrid_to_coordinate(file_bin_grid):
 def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
     ar_Xc = np.zeros(cell_labels.shape)
 
-    for i in cell_labels:
+    for i in cell_labels[channel_network == 1]:
         if cell_down[i]>=0:
             indx = cell_down[i]
             Xcell = X[i]
