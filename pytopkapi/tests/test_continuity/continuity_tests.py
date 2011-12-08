@@ -7,6 +7,8 @@ import numpy as np
 
 import pytopkapi
 
+old_settings = None # global variable for numpy error settings
+
 def compute_precip_volume(precip_fname, group_name, X):
     """Compute the volume of precipitation over the catchment.
 
@@ -198,9 +200,12 @@ def setup():
     "set up test fixtures"
     os.chdir(os.path.join(os.getcwd(), 'pytopkapi/tests/test_continuity'))
 
+    old_settings = np.seterr(all='ignore')
+
 def teardown():
     "tear down test fixtures"
     os.chdir('../../..')
+    np.seterr(all=old_settings)
 
 def test_4cell_continuity():
     """Test continuity on the 4 cell catchment (Parak, 2006).
