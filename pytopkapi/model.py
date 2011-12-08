@@ -13,6 +13,7 @@ import numpy as np
 import tables as h5
 
 #Personnal module importation
+import pytopkapi
 import utils as ut
 import pretreatment as pm
 import fluxes as fl
@@ -236,6 +237,11 @@ def run(ini_file='TOPKAPI.ini'):
     ## HDF5 output file definition ##
     ##=============================##
     h5file = h5.openFile(file_out, mode=fmode, title='TOPKAPI_out')
+
+    root = h5file.getNode('/')
+    root._v_attrs.pytopkapi_version = pytopkapi.__version__
+    root._v_attrs.pytopkapi_git_revision = pytopkapi.__git_revision__
+
     atom = h5.Float32Atom()
     h5filter = h5.Filters(9)# maximum compression
 
