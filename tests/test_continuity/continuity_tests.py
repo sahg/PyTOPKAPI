@@ -6,7 +6,6 @@ import tables as h5
 import numpy as np
 
 import pytopkapi
-import pytopkapi.model as topkapi
 
 def compute_precip_volume(precip_fname, group_name, X):
     """Compute the volume of precipitation over the catchment.
@@ -130,7 +129,7 @@ def compute_down_drainage(result_fname, delta_t, cell_id):
 
 def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     # run the model using the supplied configuration
-    topkapi.run(ini_fname)
+    pytopkapi.run(ini_fname)
 
     # parse the config file
     config = SafeConfigParser()
