@@ -193,6 +193,15 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
 
     return error, precip_error, stor_error
 
+# Continuity tests and test environment
+def setup():
+    "set up test fixtures"
+    os.chdir(os.path.join(os.getcwd(), 'pytopkapi/tests/test_continuity'))
+
+def teardown():
+    "tear down test fixtures"
+    os.chdir('../../..')
+
 def test_4cell_continuity():
     """Test continuity on the 4 cell catchment (Parak, 2006).
 
