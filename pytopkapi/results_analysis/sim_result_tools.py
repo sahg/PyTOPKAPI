@@ -198,4 +198,5 @@ def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
 
         curr_dt += timedelta(hours=3)
 
+    tkpi_file.close()
     result_file.close()
