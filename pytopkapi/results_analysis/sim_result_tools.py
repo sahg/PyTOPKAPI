@@ -131,12 +131,35 @@ def extract_ssi(control_fname):
 
     return ssi
 
-def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
-    """
+def extract_ssi_to_file(sim_fname, param_fname,
+                        result_fname, start_dt, timestep):
+    """Extract percentage saturation to a file
+
     Read a TOPKAPI simulation file and it's associated parameter file
     and compute the SSI for each timestep. Store the results in a new
     HDF5 file, grouped by date and containing datasets of latitude,
     longitude and SSI value.
+
+    Parameters
+    ----------
+    sim_fname : string
+        The name of a PyTOPKAPI simulation file. This should include
+        the full or relative path.
+    param_fname : string
+        The name of a parameter file describing the catchment. This
+        should include the full or relative path.
+    result_fname : string
+        The name of an HDF5 file to store the output. This should
+        include the full or relative path.
+    start_dt : datetime.datetime
+        The starting date and time of the simulated results in
+        `sim_fname`.
+    timestep : int
+        The length of each model time-step in seconds.
+
+    Returns
+    -------
+    Nothing
 
     """
     params = np.loadtxt(param_fname)
@@ -196,7 +219,7 @@ def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
         dset.attrs['name'] = 'TOPKAPI soil saturation index'
         dset.attrs['units'] = '% saturation'
 
-        curr_dt += timedelta(hours=3)
+        curr_dt += timedelta(seconds=time_step)
 
     tkpi_file.close()
     result_file.close()
