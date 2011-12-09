@@ -140,8 +140,8 @@ def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
 
     """
     params = np.loadtxt(param_fname)
-    lon = params[:, 1]
-    lat = params[:, 2]
+    x = params[:, 1]
+    y = params[:, 2]
 
     soil_depth = params[:, 8]
     factor = params[:, 11] - params[:, 10]
@@ -149,8 +149,8 @@ def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
 
     soil_depth = ma.masked_values(soil_depth, 0.0)
     factor = ma.array(factor, mask=soil_depth.mask)
-    lon = ma.array(lon, mask=soil_depth.mask).compressed()
-    lat = ma.array(lat, mask=soil_depth.mask).compressed()
+    x = ma.array(x, mask=soil_depth.mask).compressed()
+    y = ma.array(y, mask=soil_depth.mask).compressed()
 
     div = factor*soil_depth*cell_area
 
@@ -161,21 +161,21 @@ def extract_ssi_to_file(sim_fname, param_fname, result_fname, start_dt):
     tkpi_file.close()
     rows, cols = soil_vol.shape
 
-    # lat
-    dset = result_file.require_dataset('lat', shape=lat.shape,
+    # y
+    dset = result_file.require_dataset('y', shape=y.shape,
                                        dtype=np.float32, compression=comp)
-    dset[...] = lat
+    dset[...] = y
 
-    dset.attrs['name'] = 'latitude'
-    dset.attrs['units'] = 'Decimal degrees'
+    dset.attrs['name'] = 'y coordinate'
+    dset.attrs['units'] = 'Projection dependent (Metres or Decimal degrees)'
 
-    # lon
-    dset = result_file.require_dataset('lon', shape=lon.shape,
+    # x
+    dset = result_file.require_dataset('x', shape=x.shape,
                                        dtype=np.float32, compression=comp)
-    dset[...] = lon
+    dset[...] = x
 
-    dset.attrs['name'] = 'longitude'
-    dset.attrs['units'] = 'Decimal degrees'
+    dset.attrs['name'] = 'x coordinate'
+    dset.attrs['units'] = 'Projection dependent (Metres or Decimal degrees)'
 
     curr_dt = start_dt
     for k in range(rows):
