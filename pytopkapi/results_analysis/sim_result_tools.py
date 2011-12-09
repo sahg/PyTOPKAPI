@@ -219,7 +219,7 @@ def extract_ssi_to_file(sim_fname, param_fname,
         dset.attrs['name'] = 'TOPKAPI soil saturation index'
         dset.attrs['units'] = '% saturation'
 
-        curr_dt += timedelta(seconds=time_step)
+        curr_dt += timedelta(seconds=timestep)
 
     tkpi_file.close()
     result_file.close()
