@@ -40,10 +40,11 @@ def run(ini_file='zero_slope_management.ini'):
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_global_param)
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
-    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
-        =pm.read_cell_parameters(file_cell_param)
+    ar_cell_label, ar_coorx, ar_coory, \
+    ar_lambda, ar_Xc, ar_dam, ar_tan_beta, \
+    ar_tan_beta_channel, ar_L, ar_Ks, ar_theta_r, \
+    ar_theta_s, ar_n_o, ar_n_c, ar_cell_down, ar_pVs_t0, ar_Vo_t0, \
+    ar_Qc_t0, ar_kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
@@ -226,28 +227,29 @@ def run(ini_file='zero_slope_management.ini'):
             # Change the values
             ar_tan_beta_channel[ar_ind_cell_zero]=slope
 
-
-
     # Write parameter file
-    tab_param=np.zeros((len(ar_cell_label),nb_param))
-    tab_param[:,0]=ar_cell_label
-    tab_param[:,1]=ar_coorx
-    tab_param[:,2]=ar_coory
-    tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_Xc
-    tab_param[:,5]=ar_dam
-    tab_param[:,6]=ar_tan_beta
-    tab_param[:,7]=ar_tan_beta_channel
-    tab_param[:,8]=ar_L
-    tab_param[:,9]=ar_Ks
-    tab_param[:,10]=ar_theta_r
-    tab_param[:,11]=ar_theta_s
-    tab_param[:,12]=ar_n_o
-    tab_param[:,13]=ar_n_c
-    tab_param[:,14]=ar_cell_down
-    tab_param[:,15]=ar_pVs_t0
-    tab_param[:,16]=ar_Vo_t0
-    tab_param[:,17]=ar_Qc_t0
-    tab_param[:,18]=ar_kc
+    param_table = np.zeros((len(ar_cell_label),nb_param))
+    param_table[:,0] = ar_cell_label
+    param_table[:,1] = ar_coorx
+    param_table[:,2] = ar_coory
+    param_table[:,3] = ar_lambda
+    param_table[:,4] = ar_Xc
+    param_table[:,5] = ar_dam
+    param_table[:,6] = ar_tan_beta
+    param_table[:,7] = ar_tan_beta_channel
+    param_table[:,8] = ar_L
+    param_table[:,9] = ar_Ks
+    param_table[:,10] = ar_theta_r
+    param_table[:,11] = ar_theta_s
+    param_table[:,12] = ar_n_o
+    param_table[:,13] = ar_n_c
+    param_table[:,14] = ar_cell_down
+    param_table[:,15] = ar_pVs_t0
+    param_table[:,16] = ar_Vo_t0
+    param_table[:,17] = ar_Qc_t0
+    param_table[:,18] = ar_kc
+    param_table[:,19] = psi_b
+    param_table[:,20] = lamda
 
-    np.savetxt(file_cell_param_out, tab_param)
+    format = '%d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
+    np.savetxt(file_cell_param_out, param_table, fmt=format)
