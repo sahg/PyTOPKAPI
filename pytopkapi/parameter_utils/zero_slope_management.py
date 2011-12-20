@@ -72,7 +72,9 @@ def run(ini_file='zero_slope_management.ini'):
 
         down_cell=ar_cell_down[cell]
 
-        #~~~~ Extract the arrays of (i) all cells in the path (ar_label_path) (ii) all corresponding slopes (ar_slope_path)
+        # Extract the arrays of (i) all cells in the path
+        # (ar_label_path) (ii) all corresponding slopes
+        # (ar_slope_path)
         while down_cell>-1:
             li_label_path.append(down_cell)
             li_slope_path.append(ar_tan_beta[down_cell])
@@ -80,9 +82,11 @@ def run(ini_file='zero_slope_management.ini'):
         ar_label_path=np.array(li_label_path)
         ar_slope_path=np.array(li_slope_path)
 
-        #~~~~ Go into the slope vector to detect the series of zero slopes
-        #The method first consists of creating an array containing the index of begining and end of zero series
-        #Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
+        # Go into the slope vector to detect the series of zero slopes
+        # The method first consists of creating an array containing
+        # the index of begining and end of zero series
+
+        # Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
         #--> ar_ind_start=array([2,5,7])
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
@@ -150,7 +154,9 @@ def run(ini_file='zero_slope_management.ini'):
 
         down_cell=ar_cell_down[cell]
 
-        #~~~~ Extract the arrays of (i) all cells in the path (ar_label_path) (ii) all corresponding slopes (ar_slope_path)
+        # Extract the arrays of (i) all cells in the path
+        # (ar_label_path) (ii) all corresponding slopes
+        # (ar_slope_path)
         while down_cell>-1:
             li_label_path.append(down_cell)
             li_slope_path.append(ar_tan_beta_channel[down_cell])
@@ -158,9 +164,11 @@ def run(ini_file='zero_slope_management.ini'):
         ar_label_path=np.array(li_label_path)
         ar_slope_path=np.array(li_slope_path)
 
-        #~~~~ Go into the slope vector to detect the series of zero slopes
-        #The method first consists of creating an array containing the index of begining and end of zero series
-        #Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
+        # Go into the slope vector to detect the series of zero slopes
+        # The method first consists of creating an array containing
+        # the index of begining and end of zero series
+
+        # Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
         #--> ar_ind_start=array([2,5,7])
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
@@ -193,21 +201,22 @@ def run(ini_file='zero_slope_management.ini'):
             print 'problem index'
             stop
 
-        #Then the slope are changed according to the defined index arrays
+        # Then the slope are changed according to the defined index
+        # arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
         for i in np.arange(len(ar_ind_start)):
-            #Compute the length of the zero path
+            # Compute the length of the zero path
             if ar_ind_end[i]!=-1:
                 length_path=ar_ind_end[i]-ar_ind_start[i]
             else:
                 length_path=len(ar_slope_path)-ar_ind_start[i]
-            #Compute the corresponding slope
+            # Compute the corresponding slope
             slope=1./(length_path*X)
-            #Replace the values of slope in the initial ar_tan_beta_channel
-            #select the cell labels
+            # Replace the values of slope in the initial
+            # ar_tan_beta_channel select the cell labels
             ar_label_cell_zero=ar_label_path[ar_ind_start[i]:ar_ind_end[i]]
-            #select the cell index (if different from the label)
+            # Select the cell index (if different from the label)
             ar_ind_cell_zero=np.array(ar_label_cell_zero,int)
             n=-1
             for label in ar_label_cell_zero:
@@ -215,12 +224,12 @@ def run(ini_file='zero_slope_management.ini'):
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
 
-            #Change the values
+            # Change the values
             ar_tan_beta_channel[ar_ind_cell_zero]=slope
 
 
 
-    #~~~~~~Write parameter file~~~~~~#
+    # Write parameter file
     tab_param=np.zeros((len(ar_cell_label),nb_param))
     tab_param[:,0]=ar_cell_label
     tab_param[:,1]=ar_coorx
