@@ -64,10 +64,29 @@ grass.run_command('r.mask', input='%s_mask_py' % catch_id)
 grass.mapcalc('%s_dem=%s' % (catch_id, dem_lyr), overwrite=True)
 grass.run_command('r.mask', flags='r')
 
+# Reset the region to match the buffered catchment mask
+grass.run_command('g.region',
+                  zoom = '%s_mask_py' % catch_id,
+                  align = '%s_mask_py' % catch_id)
+
+# Fill sinks in the DEM. In many cases this requires two runs to
+# remove all sinks, therefore do two runs by default.
+grass.run_command('r.fill.dir',
+                  flags = '-o',
+                  input = '%s_dem' % catch_id,
+                  elevation = '%s_filled_dem_v1' % catch_id,
+                  direction = '%s_filled_dir_v1' % catch_id)
+
+grass.run_command('r.fill.dir',
+                  flags = '-o',
+                  input = '%s_filled_dem_v1' % catch_id,
+                  elevation = '%s_filled_dem_v2' % catch_id,
+                  direction = '%s_filled_dir_v2' % catch_id)
+
 # obtain parameters from DEM
 grass.run_command('r.watershed',
                   flags = '-o',
-                  elevation = '%s_dem' % catch_id,
+                  elevation = '%s_filled_dem_v2' % catch_id,
                   drainage = '%s_dir' % catch_id,
                   stream = '%s_str' % catch_id,
                   threshold=250)
@@ -119,15 +138,10 @@ grass.run_command('r.null',
                   map = '%s_catch_mask' % catch_id,
                   setnull = '0')
 
-# crop region to catchment mask
-grass.run_command('g.region',
-                  zoom = '%s_catch_mask' % catch_id,
-                  align = '%s_catch_mask' % catch_id)
-
 # use new mask to extract catchment information from regional rasters
 # or catchment buffer
 grass.run_command('r.mask', input='%s_catch_mask' % catch_id)
-grass.mapcalc('%s_dem=%s_dem' % (catch_id, catch_id), overwrite=True)
+grass.mapcalc('%s_dem=%s_filled_dem_v2' % (catch_id, catch_id), overwrite=True)
 grass.mapcalc('%s_slope=%s' % (catch_id, surface_slope), overwrite=True)
 grass.mapcalc('%s_n_overland=%s' % (catch_id, manning_overland), overwrite=True)
 grass.mapcalc('%s_soil_depth=%s' % (catch_id, soil_depth), overwrite=True)
