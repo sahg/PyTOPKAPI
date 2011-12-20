@@ -43,10 +43,10 @@ hydraulic_conductivity = config.get('GIS_layers', 'hydraulic_conductivity')
 pore_size_index = config.get('GIS_layers', 'pore_size_index')
 bubbling_pressure = config.get('GIS_layers', 'bubbling_pressure')
 
-# make sure the region is set correctly
+# Make sure the region is set correctly
 grass.run_command('g.region', rast=dem_lyr)
 
-# create initial catchment mask
+# Create initial catchment mask
 grass.run_command('v.buffer',
                   flags = '-o',
                   input = catch_shp,
@@ -59,12 +59,12 @@ grass.run_command('v.to.rast',
                   out = '%s_mask_py' % catch_id,
                   use = 'val')
 
-# use mask to extract catchment from DEM
+# Use mask to extract catchment from larger DEM
 grass.run_command('r.mask', input='%s_mask_py' % catch_id)
 grass.mapcalc('%s_dem=%s' % (catch_id, dem_lyr), overwrite=True)
 grass.run_command('r.mask', flags='r')
 
-# Reset the region to match the buffered catchment mask
+# Reset the region to match the initial catchment mask
 grass.run_command('g.region',
                   zoom = '%s_mask_py' % catch_id,
                   align = '%s_mask_py' % catch_id)
@@ -83,7 +83,7 @@ grass.run_command('r.fill.dir',
                   elevation = '%s_filled_dem_v2' % catch_id,
                   direction = '%s_filled_dir_v2' % catch_id)
 
-# obtain parameters from DEM
+# Obtain the catchment properties from the filled DEM
 grass.run_command('r.watershed',
                   flags = '-o',
                   elevation = '%s_filled_dem_v2' % catch_id,
@@ -104,7 +104,8 @@ grass.run_command('r.to.vect',
                   out = '%s_streams' % catch_id,
                   feature = 'line')
 
-# Find outlet point and upstream cells
+# Find the stream outlet point and delineate the catchment using
+# upstream cells
 grass.run_command('v.patch',
                   flags = '-o',
                   input = '%s_streams,%s' % (catch_id, catch_shp),
@@ -138,7 +139,7 @@ grass.run_command('r.null',
                   map = '%s_catch_mask' % catch_id,
                   setnull = '0')
 
-# use new mask to extract catchment information from regional rasters
+# Use new mask to extract catchment information from regional rasters
 # or catchment buffer
 grass.run_command('r.mask', input='%s_catch_mask' % catch_id)
 grass.mapcalc('%s_dem=%s_filled_dem_v2' % (catch_id, catch_id), overwrite=True)
@@ -158,7 +159,8 @@ grass.mapcalc('%s_dir=%s_dir' % (catch_id, catch_id), overwrite=True)
 grass.mapcalc('%s_str_thin=%s_str_thin' % (catch_id, catch_id), overwrite=True)
 grass.run_command('r.mask', flags='r')
 
-# output to GTiff for further processing
+# Output results to GTiff for use by the PyTOPKAPI parameter file
+# generation tools
 grass.run_command('r.out.gdal',
                   type='Int16',
                   input='%s_dir' % catch_id,
