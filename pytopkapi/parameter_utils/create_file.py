@@ -200,6 +200,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
     config = SafeConfigParser()
     config.read(ini_fname)
 
+    dem_fname = config.get('raster_files', 'dem_fname')
     mask_fname = config.get('raster_files', 'mask_fname')
     soil_depth_fname = config.get('raster_files', 'soil_depth_fname')
     conductivity_fname = config.get('raster_files', 'conductivity_fname')
@@ -216,6 +217,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
     param_fname = config.get('output', 'param_fname')
 
     # Read the input rasters
+    dem = read_raster(dem_fname)
     mask = read_raster(mask_fname)
     hillslope = read_raster(hillslope_fname)
     depth = read_raster(soil_depth_fname)
@@ -241,12 +243,20 @@ def generate_param_file(ini_fname, isolated_cells=False):
     if isolated_cells == True:
         cell_down = -999
         channel_length = 0
+        n_c = 0
+        tan_beta_channel = 0
     else:
         # Calculate the network connections and channel lengths.
         cell_down = cell_connectivity(flowdir, mask, fdir_source)
-        channel_length = compute_Xchannel(cell_labels,
-                                          channel_network[mask == 1],
-                                          X, Y, cell_down)
+
+        channel_length, tan_beta_channel = channel_properties(cell_labels,
+                                                     channel_network[mask == 1],
+                                                     X, Y, cell_down,
+                                                     dem[mask == 1])
+
+        # Fixed value for now, use Strahler stream ordering at a later
+        # stage
+        n_c = 0.035
 
     # Write parameter file
     param_table = np.zeros((ncells, nparams))
@@ -257,13 +267,13 @@ def generate_param_file(ini_fname, isolated_cells=False):
     param_table[:,4] = channel_length
     ## param_table[:,5] = dam_locations
     param_table[:,6] = tan_beta[mask == 1]
-    ## param_table[:,7] = tan_beta_channel
+    param_table[:,7] = tan_beta_channel
     param_table[:,8] = depth[mask == 1]
     param_table[:,9] = conductivity[mask == 1]
     param_table[:,10] = theta_r[mask == 1]
     param_table[:,11] = theta_sat[mask == 1]
     param_table[:,12] = n_o[mask == 1]
-    ## param_table[:,13] = n_c[mask == 1]
+    param_table[:,13] = n_c
     param_table[:,14] = cell_down
     ## param_table[:,15] = pVs_t0
     ## param_table[:,16] = Vo_t0
@@ -475,13 +485,15 @@ Check the validity of the flow-direction raster."""  \
 
     return cell_down
 
-def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
-    """Compute the channel length in channel cells
+def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
+    """Compute the length and slope of the channels
 
     Cells draining diagonally have a different channel length from
     cells draining North, South, East or West. This function computes
     the channel length as a function of the drainage direction (based
-    on the catchment connectivity network).
+    on the catchment's cell connectivity). The slope is calculated as
+    the height difference over the length, in a downstream direction
+    (i.e. negative slopes indicate a problem with the input DEM).
 
     Parameters
     ----------
@@ -490,7 +502,7 @@ def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
         catchment
     channel_network : 1D Numpy ndarray
         An ordered array with each channel cell indicated by a value
-        of one.
+        of one, zero otherwise.
     X : 1D Numpy ndarray
         An ordered array of the X coordinate of the centre of each
         cell.
@@ -501,18 +513,25 @@ def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
         An ordered array giving the label of the downstream cell in
         the catchment network. The outlet of the catchment is
         indicated by a negative number.
+    dem : 1D Numpy ndarray
+        An ordered array of cell elevations.
 
     Returns
     -------
     Xc : 1D Numpy ndarray
         An array containing the length of the channel in each channel
         cell, zero otherwise.
+    tan_beta_channel : 1D Numpy ndarray
+        An array containing the slope of the channel in each channel
+        cell, -999 otherwise.
 
     """
-    ar_Xc = np.zeros(cell_labels.shape)
+    Xc = np.zeros(cell_labels.shape)
+    tan_beta_channel = -999*np.ones(cell_labels.shape, dtype=np.float)
 
     for i in cell_labels[channel_network == 1]:
-        if cell_down[i]>=0:
+        indx = cell_down[i]
+        if indx >= 0:
             indx = cell_down[i]
             Xcell = X[i]
             Ycell = Y[i]
@@ -520,9 +539,11 @@ def compute_Xchannel(cell_labels, channel_network, X, Y, cell_down):
             Xcell_down = X[cell_labels == indx]
             Ycell_down = Y[cell_labels == indx]
 
-            ar_Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
+            Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
+            tan_beta_channel[i] = (float(dem[i])
+                                   - float(dem[cell_labels == indx][0]))/Xc[i]
 
-    ind_outlet=np.where(cell_down<0)
-    ar_Xc[ind_outlet]=min(ar_Xc)
+    ind_outlet = np.where(cell_down < 0)
+    Xc[ind_outlet] = min(Xc)
 
-    return ar_Xc
+    return Xc, tan_beta_channel
