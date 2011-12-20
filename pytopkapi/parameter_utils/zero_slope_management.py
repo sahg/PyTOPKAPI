@@ -1,5 +1,9 @@
-""" model.py
-Main programm of the TOPKAPI model.
+""" zero_slope_management.py
+
+Correct cell and channel slopes to avoid situations with zero
+slopes. Water cannot drain downstream in these cases and the ODE's
+fail.
+
 """
 
 #Python modules
