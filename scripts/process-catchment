@@ -156,7 +156,7 @@ grass.mapcalc('%s_pore_size=%s' % (catch_id, pore_size_index), overwrite=True)
 grass.mapcalc('%s_bubbling_pressure=%s' \
               % (catch_id, bubbling_pressure), overwrite=True)
 grass.mapcalc('%s_dir=%s_dir' % (catch_id, catch_id), overwrite=True)
-grass.mapcalc('%s_str_thin=%s_str_thin' % (catch_id, catch_id), overwrite=True)
+grass.mapcalc('%s_str=%s_str' % (catch_id, catch_id), overwrite=True)
 grass.run_command('r.mask', flags='r')
 
 # Output results to GTiff for use by the PyTOPKAPI parameter file
@@ -178,7 +178,7 @@ grass.run_command('r.out.gdal',
                   output='%s-dem.tif' % catch_id)
 
 grass.run_command('r.out.gdal',
-                  input='%s_str_thin' % catch_id,
+                  input='%s_str' % catch_id,
                   format='GTiff',
                   output='%s-channel-network.tif' % catch_id)
 
