@@ -217,6 +217,9 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
     parameters.  This is done using Todini's quasi-analytical solution
     of the storage ODE :math:`dV/dt = a - bV^{\\alpha}`.
 
+    Some combinations of input parameters cause failures in the
+    algorithm, in this case `None` is returned.
+
     Parameters
     ----------
     a : scalar
@@ -234,8 +237,9 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
 
     Returns
     -------
-    V1 : scalar
-        The estimated volume at the end of the current time-step.
+    V1 : scalar, None
+        The estimated volume at the end of the current time-step. If
+        the function fails, returns `None`.
 
     """
     if V0 == 0.0:
