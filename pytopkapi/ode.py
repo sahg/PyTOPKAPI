@@ -217,6 +217,9 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
     parameters.  This is done using Todini's quasi-analytical solution
     of the storage ODE :math:`dV/dt = a - bV^{\\alpha}`.
 
+    Some combinations of input parameters cause failures in the
+    algorithm, in this case `None` is returned.
+
     Parameters
     ----------
     a : scalar
@@ -234,10 +237,16 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
 
     Returns
     -------
-    V1 : scalar
-        The estimated volume at the end of the current time-step.
+    V1 : scalar, None
+        The estimated volume at the end of the current time-step. If
+        the function fails, returns `None`.
 
     """
+    if V0 == 0.0:
+        # The quasi-analytical solution will fail in this
+        # case.
+        return None
+
     if alpha > 2:
         exposant=alpha/(alpha-1)
         y0=V0**(1-alpha)
@@ -248,6 +257,9 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
         y0=V0
         a_eq=a
         b_eq=b
+
+    if (y0+delta_t*a_eq)**(exposant-1) - y0**(exposant-1) == 0.0:
+        return None
 
     #   Definition of the variables alpha0 and beta0
     #   that approximate y**(exposant-1)=alpha0+beta0*y
@@ -267,12 +279,15 @@ def qas(a, b, alpha, V0, delta_t,derivative=0):
         B=alpha0/beta0
         C=-a/(b*beta0)
 
-
     y1=solution(A,B,C,y0,delta_t)
+
     if alpha > 2:
         V1=y1**(1/(1-alpha))
     else:
         V1=y1
+
+    if (V1 - V0)/delta_t > a:
+        return None
 
     return V1
 
@@ -327,7 +342,13 @@ def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
         The estimated volume at the end of the current time-step.
 
     """
-    if I == 0.:
+    # To-do: Find better way to test for float equality to zero..
+    if I == 0.0:
+        Vt1 = input_zero_solution(b, alpha, Vt0, Dt)
+    elif Vt0 - (Vt0 + I*Dt) == 0.0:
+        # The quasi-analytical solution will fail in this case,
+        # because I*Dt is very close to zero. Therefore special case
+        # to zero input analytical solution.
         Vt1 = input_zero_solution(b, alpha, Vt0, Dt)
     elif b == 0.0:
         Vt1 = coefb_zero_solution(I, Vt0, Dt)
@@ -335,7 +356,7 @@ def solve_storage_eq(I, b, alpha, Vt0, Dt, solve_method=1):
         if solve_method == 1:
             Vt1 = qas(I, b, alpha, Vt0, Dt)
 
-            if (Vt1 - Vt0)/Dt > I:
+            if Vt1 == None:
                 solve_method = 0
 
         if solve_method == 0:
