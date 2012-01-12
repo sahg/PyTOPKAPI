@@ -99,8 +99,40 @@ def generate_param_file(ini_fname, isolated_cells=False):
     Parameters
     ----------
     ini_fname : string
+
         The path to an ini-style config file specifying the input data
-        file locations and format.
+        file locations and format. The ini file should contain the
+        following sections and parameters:
+
+        [raster_files]
+        dem_fname = <path to DEM file>
+        mask_fname = <path to catchment mask file>
+        soil_depth_fname = <path to soil depth file>
+        conductivity_fname = <path to saturated conductivity file>
+        hillslope_fname = <path to hill slope file>
+        sat_moisture_content_fname = <path to saturated moisture content file>
+        resid_moisture_content_fname = <path to residual moisture content file>
+        bubbling_pressure_fname = <path to bubbling pressure file>
+        pore_size_dist_fname = <path to pore size index file>
+        overland_manning_fname = <path to overland Manning roughness file>
+        channel_network_fname = <path to channel network file>
+        flowdir_fname = <path to flow direction file>
+        flowdir_source = <source of flowdir file. Can be `GRASS` or `ARCGIS`>
+
+        [output]
+        param_fname = <path to output parameter file>
+
+        [numerical_values]
+        pVs_t0 = <initial percent saturation of soil stores>
+        Vo_t0 = <initial volume of overland stores>
+        Qc_t0 = <initial flow rate in channels>
+        Kc = <crop factor>
+
+    isolated_cells : bool
+        A flag indicating whether the generated parameter file should
+        consist of a set of isolated and unconnected cells. The
+        default value of `False` generates a parameter file for
+        modelling the catchment as a network of inter-connected cells.
 
     Returns
     -------
@@ -109,92 +141,11 @@ def generate_param_file(ini_fname, isolated_cells=False):
     Notes
     -----
 
-    * Input:
-      +Binary grid files (from GIS)
-
-      - file_bin_streamnet: grid of the streamnet (code: 1 for channel
-        cell, 0 for hillslope cell)
-
-      - file_bin_beta: grid of cell slopes in degress.
-
-      - file_bin_flowdir: grid of flow directions
-
-      - file_bin_GLCC: grid file containing the GLCC land use/cover
-        codes
-
-      - file_bin_SIRI: grid of soil properties (code given by SIRI)
-
-      - file_bin_WRC90: binary grid file containing the WRC90 soil
-        property codes (Here only three codes are considered
-        (cf. comments): 3 for Loamy Sand, 2 for Sandy Loam, 1 for
-        Clay)
-
-      - file_bin_strahler: grid of strahler order of the channel
-        cells.
-
-      +Tables from litterature for transformaing grids into TOPKAPI
-      physical parameters
-
-      - file_table_GLCC_manning: an ASCII file containing a table of
-                                correspondance between the GLCC land
-                                use/cover codes and the values of
-                                manning's coef proposed in different
-                                references (Chow et al., 1998;
-                                Maidment,1993 - give a range of values
-                                and the MUSIC report)
-
-      - file_table_SIRI_soil: an ASCII file containing a table of
-                              correspondance between the SIRI codes
-                              and the values of a selection of the
-                              soil parameters proposed by SIRI
-                              (Land-type, depth A, depth B, WP A, WP
-                              B, FC A, FC B, Por A, Por B)
-
-      - file_table_WRC90_soil: an ASCII file containing a table of
-                               correspondance between the WRC90 codes
-                               and the values of Ks (permeability) and
-                               theta_r (residual soil moisture) from
-                               Maidment(1993)
-
-      - file_table_strahler_manning: an ASCII file containing a table
-                                     of correspondance between the
-                                     strahler order and the values of
-                                     manning strickler proposed by Liu
-                                     and Todini (2002)
-
-      +Constant parameters
-
-      - Vs_t0: Constant value for the initial soil saturation of each
-        cell.
-
-      - Vc_t0: Constant value for the initial channel water
-
-      - kc: Crop coefficient
-
-    * Output:
-
-      - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda Xc dam tan_beta L Ks Theta_r Theta_s n_o n_c
-       cell_down pVs_t0 Vo_t0 Qc_t0 kc
-
-    * Comment:
-
-     1. !!!!VERY IMPORTANT!!!! The routine refers to several
-     subroutines listed below that must be carefully read before
-     running the programm. This programm is helpfull for creating the
-     parameter file but it is not automated.  Some valuable
-     informations are required inside these subroutines especially for
-     data that are assigned using Tables.  The Tables are indeed
-     simple ASCII files that were created for the special case of the
-     Liebenbergsvlei catchment.  The application to another catchment
-     might require the modification of the Tables and thus the
-     subroutines.  One must refer to the headers of each subroutine
-     for the detailed information.
-
-     2. Note that here, the initial soil moisture value, as well as
-     the initial channel saturation are constant.  Assigning a
-     spatially variable initial soil moisture can be done through the
-     routine 'from_param_to_new_param_catchVsi' in this file.
+    Note that the initial soil atore and overland volumes, as well as
+    the initial channel flow are constant for all cells. Spatially
+    varying values can be assigned by directly manipulating the
+    paramter file, or by using the routines in
+    `pytopkapi.parameter_utils.modify_file`.
 
     """
     config = SafeConfigParser()
