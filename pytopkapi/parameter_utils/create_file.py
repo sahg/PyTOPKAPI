@@ -493,7 +493,7 @@ def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
     the channel length as a function of the drainage direction (based
     on the catchment's cell connectivity). The slope is calculated as
     the height difference over the length, in a downstream direction
-    (i.e. negative slopes indicate a problem with the input DEM).
+    (i.e. negative slopes indicate an inconsistency in the input DEM).
 
     Parameters
     ----------
@@ -523,16 +523,24 @@ def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
         cell, zero otherwise.
     tan_beta_channel : 1D Numpy ndarray
         An array containing the slope of the channel in each channel
-        cell, -999 otherwise.
+        cell, zero otherwise.
 
     """
-    Xc = np.zeros(cell_labels.shape)
-    tan_beta_channel = -999*np.ones(cell_labels.shape, dtype=np.float)
+    # Ensure input arrays are numpy arrays of the correct dtype.
+    cell_labels = np.asarray(cell_labels, dtype=np.int)
+    channel_network = np.asarray(channel_network, dtype=np.int)
+    X = np.asarray(X, dtype=np.float)
+    Y = np.asarray(Y, dtype=np.float)
+    cell_down = np.asarray(cell_down, dtype=np.int)
+    dem = np.asarray(dem, dtype=np.float)
+
+    Xc = np.zeros(cell_labels.shape, dtype=np.float)
+    tan_beta_channel = np.zeros(cell_labels.shape, dtype=np.float)
 
     for i in cell_labels[channel_network == 1]:
         indx = cell_down[i]
         if indx >= 0:
-            indx = cell_down[i]
+            # Channel cells upstream of the catchment outlet.
             Xcell = X[i]
             Ycell = Y[i]
 
@@ -540,10 +548,16 @@ def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
             Ycell_down = Y[cell_labels == indx]
 
             Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
-            tan_beta_channel[i] = (float(dem[i])
-                                   - float(dem[cell_labels == indx][0]))/Xc[i]
+            tan_beta_channel[i] = (dem[i]
+                                   - dem[cell_labels == indx][0])/Xc[i]
 
-    ind_outlet = np.where(cell_down < 0)
-    Xc[ind_outlet] = min(Xc)
+    # Assign sensible values to the catchment outlet cell, since it
+    # has no downstream neighbour.
+    outlet_indx = np.nonzero(cell_down < 0)
+    cond = (channel_network == 1) & (cell_down == outlet_indx[0][0])
+    upstream_indx = cell_labels[cond][0]
+
+    Xc[outlet_indx] = Xc[upstream_indx]
+    tan_beta_channel[outlet_indx] = tan_beta_channel[upstream_indx]
 
     return Xc, tan_beta_channel
