@@ -302,6 +302,109 @@ def read_headers_arc_bin(bingrid_name):
 
     return li_headers
 
+def _make_strahler_dicts(G):
+    """Prepare dictionaries for the Strahler algorithm"""
+    nodes_per_arc = {}
+    arcs_per_node = {}
+
+    for edge_id, edge in enumerate(G.edges()):
+        nodes_per_arc[edge_id] = edge
+
+        for node in G.nodes():
+            if node in edge:
+                if node in arcs_per_node:
+                    arcs_per_node[node].append(edge_id)
+                else:
+                    arcs_per_node[node] = [edge_id]
+
+    return nodes_per_arc, arcs_per_node
+
+def strahler_stream_order(start_arc_id, start_up_node,
+                          nodes_per_arc, arcs_per_node, stream_orders):
+    """Calculate the Strahler stream order
+
+    This function recursively computes the Strahler stream order using
+    the algorithm described by Gleyzer et al. (2004). The sequence of
+    stream orders for the starting arc and each upstream arc is
+    returned in the dictionary `stream_orders`. To compute the
+    Strahler order for the entire network, `start_arc_id` should be
+    the arc ID for the stream arc closest to the catchment outlet and
+    `start_up_node` should be the node ID at the upstream end of
+    `start_arc_id`.
+
+    Parameters
+    ----------
+    start_arc_id : int
+        The integer ID of the current stream arc as defined in
+        `nodes_per_arc`.
+    start_up_node : int
+        The integer ID of the upstream node for the current stream
+        arc.
+    nodes_per_arc : dict
+        A dictionary containing an ordered tuple representing the
+        upstream and downstream node IDs for each stream arc
+        ID. e.g. {0 : (upstream_node, downstream_node)}
+    arcs_per_node : dict
+        A dictionary containing a list of the stream arc IDs for
+        stream arcs adjacent to each node in the network.
+    stream_orders : dict
+        A dictionary with the (key, value) pairs representing the
+        stream arc ID and associated Strahler order.
+
+    Returns
+    -------
+    order : int
+        The stream order of the stream arc described by
+        `start_arc_id`.
+
+    References
+    ----------
+    Alexander Gleyzer, Michael Denisyuk, Alon Rimmer and Yigal
+    Salingar, 2004. A Fast Recursive GIS Algorithm for Computing
+    Strahler Stream Order in Braided and Nonbraided Networks. Journal
+    of the American Water Resources Association (JAWRA) 40(4):937-946.
+
+    """
+    if len(arcs_per_node[start_up_node]) == 1:
+        stream_orders[start_arc_id] = 1
+    else:
+        upstream_orders = {}
+
+        for arc_id in arcs_per_node[start_up_node]:
+            if arc_id != start_arc_id:
+                up_node, down_node = nodes_per_arc[arc_id]
+                if up_node != start_up_node:
+                    upstream_orders[arc_id] = strahler_stream_order(arc_id,
+                                                                    up_node,
+                                                                  nodes_per_arc,
+                                                                  arcs_per_node,
+                                                                  stream_orders)
+                else:
+                    upstream_orders[arc_id] = strahler_stream_order(arc_id,
+                                                                    down_node,
+                                                                  nodes_per_arc,
+                                                                  arcs_per_node,
+                                                                  stream_orders)
+
+        max_order = 0
+        max_order_count = 0
+        up_orders = upstream_orders.values()
+        up_orders.sort(reverse=True)
+
+        for order in up_orders:
+            if order > max_order:
+                max_order = order
+                max_order_count += 1
+            elif order == max_order:
+                max_order_count += 1
+
+        if max_order_count > 1:
+            stream_orders[start_arc_id] = max_order + 1
+        else:
+            stream_orders[start_arc_id] = max_order
+
+    return stream_orders[start_arc_id]
+
 def from_Strahler_to_channel_manning(file_bin_strahler,
                                      file_table_strahler_manning, ar_lambda):
     """
