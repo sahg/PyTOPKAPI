@@ -34,6 +34,7 @@ from ConfigParser import SafeConfigParser
 #Python modules
 import numpy as np
 from numpy import ma
+import networkx as nx
 from osgeo import gdal
 
 #External modules from PyTOPKAPI
@@ -205,9 +206,9 @@ def generate_param_file(ini_fname, isolated_cells=False):
                                                      X, Y, cell_down,
                                                      dem[mask == 1])
 
-        # Fixed value for now, use Strahler stream ordering at a later
-        # stage
-        n_c = 0.035
+        n_c = strahler_to_channel_manning(cell_labels,
+                                          channel_network[mask == 1],
+                                          cell_down)
 
     # Write parameter file
     param_table = np.zeros((ncells, nparams))
@@ -405,56 +406,92 @@ def strahler_stream_order(start_arc_id, start_up_node,
 
     return stream_orders[start_arc_id]
 
-def from_Strahler_to_channel_manning(file_bin_strahler,
-                                     file_table_strahler_manning, ar_lambda):
+def strahler_to_channel_manning(cell_labels, channel_network, cell_down):
+    """Calculate the Manning roughness for channel cells
+
+    Computes the Strahler order for the channel in each channel cell
+    and assigns a Manning roughness to each using a table of the
+    correspondance between the Strahler order and the values of
+    Manning roughness, as proposed in Liu and Todini (2002).
+
+    Parameters
+    ----------
+    cell_labels : 1D Numpy ndarray
+        An array of the labels associated with each cell in the
+        catchment
+    channel_network : 1D Numpy ndarray
+        An ordered array with each channel cell indicated by a value
+        of one, zero otherwise.
+    cell_down : 1D Numpy ndarray
+        An ordered array giving the label of the downstream cell in
+        the catchment network. The outlet of the catchment is
+        indicated by a negative number.
+
+    Returns
+    -------
+    n_c : 1D array
+        An array containing the values of the manning coefficient for
+        each channel cell and zero for non-channel cells.
+
     """
-    * Objective:
+    strahler_manning = {1 : 0.050,
+                        2 : 0.040,
+                        3 : 0.035,
+                        4 : 0.030,
+                        5 : 0.030,
+                        6 : 0.025}
 
-      Extraction of the channel mannings for each channel cell within
-      the catchment from the strahler order map
+    # ensure input arrays are integers
+    cell_labels = np.asarray(cell_labels, dtype=np.int)
+    channel_network = np.asarray(channel_network, dtype=np.int)
+    cell_down = np.asarray(cell_down, dtype=np.int)
 
-    * Input
+    # compute strahler order
+    nodes = cell_labels[channel_network == 1]
 
-      - file_bin_strahler is the binary grid file containing the
-        strahler order of the channel cells
+    edges = []
+    for k in cell_labels:
+        if (channel_network[k] == 1) and (cell_down[k] >= 0):
+            edges.append((k, cell_down[k]))
 
-      - file_table_strahler_manning is an ASCII file containing a
-      table of correspondance between the strahler order and the
-      values of manning strickler proposed by Liu and Todini (2002)
+    G = nx.DiGraph()
+    G.add_nodes_from(nodes)
+    G.add_edges_from(edges)
 
-      - ar_lambda is an array (dimension equal to the number of cell)
-        with value 1 for channel cells, 0 otherwise. Cells being
-        ordered from West to East, North to South.
+    # determine the outlet stream arc ID and it's upstream node using
+    # obfuscated list comprehension. Strictly for speed of course ;-)
+    outlet_node = nx.topological_sort(G)[-1]
 
-    * Ouput
+    outlet_info = [(edge_id, edge) for edge_id, edge in enumerate(G.edges())
+           if outlet_node in edge]
 
-      This routine returns a 1D array (ar_n_c), ar_theta_s) containing
-      the values of the manning coefficient for each channel
-      cell. Cells are ordered from West to East, North to South.
+    outlet_edge_id = outlet_info[0][0]
+    outlet_up_node = outlet_info[0][1][0]
 
-    """
+    stream_orders = {}
 
-    #Read the binary grid file of GLCC land use type
-    tab=read_arc_bin(file_bin_strahler)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_strahler=tab[ind]
-    ar_lambda[ar_lambda==1]=ar_strahler
+    nodes_per_arc, arcs_per_node = _make_strahler_dicts(G)
+    strahler_stream_order(outlet_edge_id, outlet_up_node,
+                          nodes_per_arc, arcs_per_node, stream_orders)
 
-    #Read the Table file within a header line
-    tab=pm.read_column_input(file_table_strahler_manning,2)
-    ar_code=tab[:,0]
-    ar_manning=tab[:,1]
+    # assign strahler value of stream arcs to cells
+    strahler_per_node = {}
 
-    ar_n_c=np.array(ar_lambda)
-    for i in ar_code:
-        ind=np.where(ar_n_c==i)
-        #!!!! TO BE CHANGED FOR PARAMETER ADJUSTMENT !!!#
-        ar_n_c[ind]=ar_manning[np.where(ar_code==i)][0]
+    for key in nodes_per_arc.keys():
+        edge = nodes_per_arc[key]
 
-    return ar_n_c
+        strahler_per_node[edge[0]] = stream_orders[key]
+
+        if outlet_node in edge:
+            strahler_per_node[outlet_node] = stream_orders[key]
+
+    # assign manning based on strahler order
+    n_c = np.zeros(cell_labels.size)
+    for node in nx.topological_sort(G):
+        key = strahler_per_node[node]
+        n_c[node] = strahler_manning[key]
+
+    return n_c
 
 def cell_connectivity(flowdir, mask, source='GRASS'):
     """Compute the connectivity between cells in the catchment
