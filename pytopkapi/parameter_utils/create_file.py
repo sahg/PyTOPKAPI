@@ -31,17 +31,12 @@ import sys
 from warnings import warn
 from ConfigParser import SafeConfigParser
 
-#Python modules
 import numpy as np
 from numpy import ma
 import networkx as nx
 from osgeo import gdal
 
-#External modules from PyTOPKAPI
-#Utilities
 from pytopkapi import utils as ut
-#pretreatment: used for subroutines to read the column type files.
-from pytopkapi import pretreatment as pm
 
 def compute_cell_coordinates(mask_fname):
     dset = gdal.Open(mask_fname)
