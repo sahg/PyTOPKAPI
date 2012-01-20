@@ -161,6 +161,11 @@ def generate_param_file(ini_fname, isolated_cells=False):
     flowdir_fname = config.get('raster_files', 'flowdir_fname')
     fdir_source = config.get('raster_files', 'flowdir_source')
 
+    pVs_t0 = config.get('numerical_values', 'pVs_t0')
+    Vo_t0 = config.get('numerical_values', 'Vo_t0')
+    Qc_t0 = config.get('numerical_values', 'Qc_t0')
+    Kc = config.get('numerical_values', 'Kc')
+
     param_fname = config.get('output', 'param_fname')
 
     # Read the input rasters
@@ -222,10 +227,10 @@ def generate_param_file(ini_fname, isolated_cells=False):
     param_table[:,12] = n_o[mask == 1]
     param_table[:,13] = n_c
     param_table[:,14] = cell_down
-    ## param_table[:,15] = pVs_t0
-    ## param_table[:,16] = Vo_t0
-    ## param_table[:,17] = Qc_t0
-    param_table[:,18] = 1 # Kc
+    param_table[:,15] = pVs_t0
+    param_table[:,16] = Vo_t0
+    param_table[:,17] = Qc_t0
+    param_table[:,18] = Kc
     param_table[:,19] = psi_b[mask == 1]
     param_table[:,20] = lamda[mask == 1]
 
