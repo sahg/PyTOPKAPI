@@ -28,205 +28,214 @@ to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 
 """
 import sys
-
-#Python modules
-import numpy as np
-import pylab as pl
-from numpy import ma
+from warnings import warn
 from ConfigParser import SafeConfigParser
-config = SafeConfigParser()
 
-#External modules from PyTOPKAPI
-#Utilities
+import numpy as np
+from numpy import ma
+import networkx as nx
+from osgeo import gdal
+
 from pytopkapi import utils as ut
-#pretreatment: used for subroutines to read the column type files.
-from pytopkapi import pretreatment as pm
 
+def compute_cell_coordinates(mask_fname):
+    dset = gdal.Open(mask_fname)
+    mask = dset.ReadAsArray()
 
-def run(ini_file='create_file.ini'):
-    """
-    * objective:
-    Create a parameter file from the catchment data (GIS maps), in
-      association with the TABLES povided in the litterature.
+    x0, dx, fy, y0, fx, dy = dset.GetGeoTransform()
 
-    * Input:
-      +Binary grid files (from GIS)
+    # Adjust x0 and y0 to give pixel centres. GDAL specifies (x0, y0)
+    # as the top left corner of the top left pixel. PyTOPKAPI expects
+    # pixel centres. At the centre of the first pixel the following
+    # holds: (Xpixel, Yline) == (0.5, 0.5)
+    x0 = x0 + dx/2.0 + fy/2.0
+    y0 = y0 + fx/2.0 + dy/2.0
 
-      - file_bin_streamnet: grid of the streamnet (code: 1 for channel
-        cell, 0 for hillslope cell)
+    Yline, Xpixel = np.nonzero(mask == 1)
 
-      - file_bin_beta: grid of cell slopes in degress.
+    Xgeo = x0 + Xpixel*dx + Yline*fy
+    Ygeo = y0 + Xpixel*fx + Yline*dy
 
-      - file_bin_flowdir: grid of flow directions
+    return Xgeo, Ygeo
 
-      - file_bin_GLCC: grid file containing the GLCC land use/cover
-        codes
+def read_raster(rast_fname, file_format='GTiff'):
+    """Read the data in a raster file
 
-      - file_bin_SIRI: grid of soil properties (code given by SIRI)
+    Parameters
+    ----------
+    rast_fname : string
+        The path to the raster file.
+    file_format : string
+        The file format of the raster file, currently this can only be
+        GeoTIFF ('GTiff' - default).
 
-      - file_bin_WRC90: binary grid file containing the WRC90 soil
-        property codes (Here only three codes are considered
-        (cf. comments): 3 for Loamy Sand, 2 for Sandy Loam, 1 for
-        Clay)
-
-      - file_bin_strahler: grid of strahler order of the channel
-        cells.
-
-      +Tables from litterature for transformaing grids into TOPKAPI
-      physical parameters
-
-      - file_table_GLCC_manning: an ASCII file containing a table of
-                                correspondance between the GLCC land
-                                use/cover codes and the values of
-                                manning's coef proposed in different
-                                references (Chow et al., 1998;
-                                Maidment,1993 - give a range of values
-                                and the MUSIC report)
-
-      - file_table_SIRI_soil: an ASCII file containing a table of
-                              correspondance between the SIRI codes
-                              and the values of a selection of the
-                              soil parameters proposed by SIRI
-                              (Land-type, depth A, depth B, WP A, WP
-                              B, FC A, FC B, Por A, Por B)
-
-      - file_table_WRC90_soil: an ASCII file containing a table of
-                               correspondance between the WRC90 codes
-                               and the values of Ks (permeability) and
-                               theta_r (residual soil moisture) from
-                               Maidment(1993)
-
-      - file_table_strahler_manning: an ASCII file containing a table
-                                     of correspondance between the
-                                     strahler order and the values of
-                                     manning strickler proposed by Liu
-                                     and Todini (2002)
-
-      +Constant parameters
-
-      - Vs_t0: Constant value for the initial soil saturation of each
-        cell.
-
-      - Vc_t0: Constant value for the initial channel water
-
-      - kc: Crop coefficient
-
-    * Output:
-
-      - file_out: parameter file (ASCII column format) containing:
-       label X Y lambda Xc dam tan_beta L Ks Theta_r Theta_s n_o n_c
-       cell_down pVs_t0 Vo_t0 Qc_t0 kc
-
-    * Comment:
-
-     1. !!!!VERY IMPORTANT!!!! The routine refers to several
-     subroutines listed below that must be carefully read before
-     running the programm. This programm is helpfull for creating the
-     parameter file but it is not automated.  Some valuable
-     informations are required inside these subroutines especially for
-     data that are assigned using Tables.  The Tables are indeed
-     simple ASCII files that were created for the special case of the
-     Liebenbergsvlei catchment.  The application to another catchment
-     might require the modification of the Tables and thus the
-     subroutines.  One must refer to the headers of each subroutine
-     for the detailed information.
-
-     2. Note that here, the initial soil moisture value, as well as
-     the initial channel saturation are constant.  Assigning a
-     spatially variable initial soil moisture can be done through the
-     routine 'from_param_to_new_param_catchVsi' in this file.
+    Returns
+    -------
+    data : Numpy ndarray
+        The 2D raster data in a Numpy array. The dtype of the returned
+        array is the same as the data type stored in the raster file.
 
     """
-    ### READ THE PARAMETERS ###
-    config.read(ini_file)
-    print 'Read the file ',ini_file
-    ##~~~~~~ GIS_files ~~~~~~##
-    file_bin_streamnet=config.get('GIS_files','file_bin_streamnet')
-    file_bin_beta=config.get('GIS_files','file_bin_beta')
-    file_bin_beta_channel=config.get('GIS_files','file_bin_beta_channel')
-    file_bin_flowdir=config.get('GIS_files','file_bin_flowdir')
-    file_bin_GLCC=config.get('GIS_files','file_bin_GLCC')
-    file_bin_SIRI=config.get('GIS_files','file_bin_SIRI')
-    file_bin_WRC90=config.get('GIS_files','file_bin_WRC90')
-    file_bin_strahler=config.get('GIS_files','file_bin_strahler')
+    if file_format != 'GTiff':
+        err_str = 'Reading %s files not implemented.' % file_format
+        raise NotImplementedError(err_str)
+    else:
+        dset = gdal.Open(rast_fname)
+        data = dset.ReadAsArray()
 
-    ##~~~~~~ table_files ~~~~~~##
-    file_table_GLCC_manning=config.get('table_files','file_table_GLCC_manning')
-    file_table_SIRI_soil=config.get('table_files','file_table_SIRI_soil')
-    file_table_WRC90_soil=config.get('table_files','file_table_WRC90_soil')
-    file_table_strahler_manning=config.get('table_files','file_table_strahler_manning')
+    return data
 
-    ##~~~~~~ file_out ~~~~~~##
-    file_out=config.get('file_out','file_out')
+def generate_param_file(ini_fname, isolated_cells=False):
+    """Create a PyTOPKAPI parameter file
 
-    ##~~~~~~ numerical_values ~~~~~~##
-    nb_param=config.getfloat('numerical_values','nb_param')
-    pVs_t0=config.getfloat('numerical_values','pVs_t0')
-    Vo_t0=config.getfloat('numerical_values','Vo_t0')
-    Qc_t0=config.getfloat('numerical_values','Qc_t0')
-    kc=config.getfloat('numerical_values','kc')
+    Generates a parameter file from the catchment data provided in a
+    set of georeferenced raster files. The input files may be GeoTIFF
+    or 32-bit raster files with ArcGIS style headers.
 
-    #create path_out if it does'nt exist
-    ut.check_file_exist(file_out)
+    Parameters
+    ----------
+    ini_fname : string
 
-    #~~~~~Paremeters directly read ~~~~~~#
-    #Table of channel cells (1 for channel, 0 otherwise)
-    ar_lambda=from_grid_to_param(file_bin_streamnet)
-    #Table of Dam cells (1 for Dam, 0 otherwise)
-    ar_dam=np.zeros(len(ar_lambda))
-    #beta is given in degres -->tan(beta) is computed
-    ar_tan_beta=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta))
-    ar_tan_beta_channel=np.tan(np.pi/180.*from_grid_to_param(file_bin_beta_channel))
+        The path to an ini-style config file specifying the input data
+        file locations and format. The ini file should contain the
+        following sections and parameters:
 
-    #~~~~~Parameters extracted from GIS and estimated from TABLES~~~~~#
-    ### !!!USER MUST CHECK THESE 4 SUBROUTINES BEFORE RUNNING THE CODE!!! ###
-    ar_n_o=from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning)
-    ar_L,ar_Theta_s=from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil)
-    ar_Theta_r, ar_Ks = from_WRC90_to_soil_properties(file_bin_WRC90,
-                                                      file_table_WRC90_soil)
-    ar_n_c=from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,np.array(ar_lambda))
+        [raster_files]
+        dem_fname = <path to DEM file>
+        mask_fname = <path to catchment mask file>
+        soil_depth_fname = <path to soil depth file>
+        conductivity_fname = <path to saturated conductivity file>
+        hillslope_fname = <path to hill slope file>
+        sat_moisture_content_fname = <path to saturated moisture content file>
+        resid_moisture_content_fname = <path to residual moisture content file>
+        bubbling_pressure_fname = <path to bubbling pressure file>
+        pore_size_dist_fname = <path to pore size index file>
+        overland_manning_fname = <path to overland Manning roughness file>
+        channel_network_fname = <path to channel network file>
+        flowdir_fname = <path to flow direction file>
+        flowdir_source = <source of flowdir file. Can be `GRASS` or `ARCGIS`>
 
-    #~~~~~Parameters computed~~~~~#
-    ar_label=np.arange(len(ar_lambda))
-    ar_coorX,ar_coorY=from_bingrid_to_coordinate(file_bin_streamnet)
-    ar_cell_down=from_flowdir_to_celldown_8D(file_bin_flowdir)
-    ar_Xc=compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down)
+        [output]
+        param_fname = <path to output parameter file>
 
-    #~~~~~ Initial values and crop factor (CONSTANT) ~~~~~~#
-    #Creation of a vector zero
-    ar_tab=ar_label*0.
-    #Constant value for the initial soil moisture (in percent)
-    ar_pVs_t0=ar_tab+pVs_t0
-    #Constant value for the initial overland (in m3)
-    ar_Vo_t0=ar_tab+Vo_t0
-    #Constant value for the initial channel discharge (in m3/s)
-    ar_Qc_t0=ar_tab+Qc_t0
-    #Constant value for the crop coefficient
-    ar_kc=ar_tab+kc
+        [numerical_values]
+        pVs_t0 = <initial percent saturation of soil stores>
+        Vo_t0 = <initial volume of overland stores>
+        Qc_t0 = <initial flow rate in channels>
+        Kc = <crop factor>
 
-    #~~~~~~Write parameter file~~~~~~#
-    tab_param=np.zeros((len(ar_tab),nb_param))
-    tab_param[:,0]=ar_label
-    tab_param[:,1]=ar_coorX
-    tab_param[:,2]=ar_coorY
-    tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_Xc
-    tab_param[:,5]=ar_dam
-    tab_param[:,6]=ar_tan_beta
-    tab_param[:,7]=ar_tan_beta_channel
-    tab_param[:,8]=ar_L
-    tab_param[:,9]=ar_Ks
-    tab_param[:,10]=ar_Theta_r
-    tab_param[:,11]=ar_Theta_s
-    tab_param[:,12]=ar_n_o
-    tab_param[:,13]=ar_n_c
-    tab_param[:,14]=ar_cell_down
-    tab_param[:,15]=ar_pVs_t0
-    tab_param[:,16]=ar_Vo_t0
-    tab_param[:,17]=ar_Qc_t0
-    tab_param[:,18]=ar_kc
+    isolated_cells : bool
+        A flag indicating whether the generated parameter file should
+        consist of a set of isolated and unconnected cells. The
+        default value of `False` generates a parameter file for
+        modelling the catchment as a network of inter-connected cells.
 
-    np.savetxt(file_out, tab_param)
+    Returns
+    -------
+    Nothing
+
+    Notes
+    -----
+
+    Note that the initial soil atore and overland volumes, as well as
+    the initial channel flow are constant for all cells. Spatially
+    varying values can be assigned by directly manipulating the
+    paramter file, or by using the routines in
+    `pytopkapi.parameter_utils.modify_file`.
+
+    """
+    config = SafeConfigParser()
+    config.read(ini_fname)
+
+    dem_fname = config.get('raster_files', 'dem_fname')
+    mask_fname = config.get('raster_files', 'mask_fname')
+    soil_depth_fname = config.get('raster_files', 'soil_depth_fname')
+    conductivity_fname = config.get('raster_files', 'conductivity_fname')
+    hillslope_fname = config.get('raster_files', 'hillslope_fname')
+    theta_sat_fname = config.get('raster_files', 'sat_moisture_content_fname')
+    theta_r_fname = config.get('raster_files', 'resid_moisture_content_fname')
+    psi_b_fname = config.get('raster_files', 'bubbling_pressure_fname')
+    lamda_fname = config.get('raster_files', 'pore_size_dist_fname')
+    n_o_fname = config.get('raster_files', 'overland_manning_fname')
+    network_fname = config.get('raster_files', 'channel_network_fname')
+    flowdir_fname = config.get('raster_files', 'flowdir_fname')
+    fdir_source = config.get('raster_files', 'flowdir_source')
+
+    pVs_t0 = config.get('numerical_values', 'pVs_t0')
+    Vo_t0 = config.get('numerical_values', 'Vo_t0')
+    Qc_t0 = config.get('numerical_values', 'Qc_t0')
+    Kc = config.get('numerical_values', 'Kc')
+
+    param_fname = config.get('output', 'param_fname')
+
+    # Read the input rasters
+    dem = read_raster(dem_fname)
+    mask = read_raster(mask_fname)
+    hillslope = read_raster(hillslope_fname)
+    depth = read_raster(soil_depth_fname)
+    theta_sat = read_raster(theta_sat_fname)
+    theta_r = read_raster(theta_r_fname)
+    conductivity = read_raster(conductivity_fname)
+    psi_b = read_raster(psi_b_fname)
+    lamda = read_raster(lamda_fname)
+    n_o = read_raster(n_o_fname)
+    channel_network = read_raster(network_fname)
+    flowdir = read_raster(flowdir_fname)
+
+    # Calculate parameters
+    ncells = mask[mask == 1].size
+    nparams = 21
+    cell_labels = np.arange(ncells)
+    tan_beta = np.tan((np.pi/180.0)*hillslope)
+    X, Y = compute_cell_coordinates(mask_fname)
+
+    channel_network[channel_network < 255] = 1
+    channel_network[channel_network == 255] = 0
+
+    if isolated_cells == True:
+        cell_down = -999
+        channel_length = 0
+        n_c = 0
+        tan_beta_channel = 0
+    else:
+        # Calculate the network connections and channel lengths.
+        cell_down = cell_connectivity(flowdir, mask, fdir_source)
+
+        channel_length, tan_beta_channel = channel_properties(cell_labels,
+                                                     channel_network[mask == 1],
+                                                     X, Y, cell_down,
+                                                     dem[mask == 1])
+
+        n_c = strahler_to_channel_manning(cell_labels,
+                                          channel_network[mask == 1],
+                                          cell_down)
+
+    # Write parameter file
+    param_table = np.zeros((ncells, nparams))
+    param_table[:,0] = cell_labels
+    param_table[:,1] = X
+    param_table[:,2] = Y
+    param_table[:,3] = channel_network[mask == 1]
+    param_table[:,4] = channel_length
+    ## param_table[:,5] = dam_locations
+    param_table[:,6] = tan_beta[mask == 1]
+    param_table[:,7] = tan_beta_channel
+    param_table[:,8] = depth[mask == 1]
+    param_table[:,9] = conductivity[mask == 1]
+    param_table[:,10] = theta_r[mask == 1]
+    param_table[:,11] = theta_sat[mask == 1]
+    param_table[:,12] = n_o[mask == 1]
+    param_table[:,13] = n_c
+    param_table[:,14] = cell_down
+    param_table[:,15] = pVs_t0
+    param_table[:,16] = Vo_t0
+    param_table[:,17] = Qc_t0
+    param_table[:,18] = Kc
+    param_table[:,19] = psi_b[mask == 1]
+    param_table[:,20] = lamda[mask == 1]
+
+    format = '%d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
+    np.savetxt(param_fname, param_table, fmt=format)
 
 ##############################################
 ###  SUBROUTINE USED IN "creat_param_file" ###
@@ -294,409 +303,352 @@ def read_headers_arc_bin(bingrid_name):
 
     return li_headers
 
-def arc_bin_plot(bin_name, fig_name, title='Plot'):
-    """Create a plot of the data in a binary file."""
+def _make_strahler_dicts(G):
+    """Prepare dictionaries for the Strahler algorithm"""
+    nodes_per_arc = {}
+    arcs_per_node = {}
 
-    a = read_arc_bin(bin_name)
+    for edge_id, edge in enumerate(G.edges()):
+        nodes_per_arc[edge_id] = edge
 
-    a_mask = ma.masked_where(a < 0, a)
-    pl.imshow(a_mask, interpolation='nearest')
-    pl.colorbar()
-    pl.title(title)
-    pl.savefig(fig_name)
-    pl.close()
+        for node in G.nodes():
+            if node in edge:
+                if node in arcs_per_node:
+                    arcs_per_node[node].append(edge_id)
+                else:
+                    arcs_per_node[node] = [edge_id]
 
-############# OTHER SUBROUTINES ###################
-def from_grid_to_param(file_bin_grid):
+    return nodes_per_arc, arcs_per_node
+
+def strahler_stream_order(start_arc_id, start_up_node,
+                          nodes_per_arc, arcs_per_node, stream_orders):
+    """Calculate the Strahler stream order
+
+    This function recursively computes the Strahler stream order using
+    the algorithm described by Gleyzer et al. (2004). The sequence of
+    stream orders for the starting arc and each upstream arc is
+    returned in the dictionary `stream_orders`. To compute the
+    Strahler order for the entire network, `start_arc_id` should be
+    the arc ID for the stream arc closest to the catchment outlet and
+    `start_up_node` should be the node ID at the upstream end of
+    `start_arc_id`.
+
+    Parameters
+    ----------
+    start_arc_id : int
+        The integer ID of the current stream arc as defined in
+        `nodes_per_arc`.
+    start_up_node : int
+        The integer ID of the upstream node for the current stream
+        arc.
+    nodes_per_arc : dict
+        A dictionary containing an ordered tuple representing the
+        upstream and downstream node IDs for each stream arc
+        ID. e.g. {0 : (upstream_node, downstream_node)}
+    arcs_per_node : dict
+        A dictionary containing a list of the stream arc IDs for
+        stream arcs adjacent to each node in the network.
+    stream_orders : dict
+        A dictionary with the (key, value) pairs representing the
+        stream arc ID and associated Strahler order.
+
+    Returns
+    -------
+    order : int
+        The stream order of the stream arc described by
+        `start_arc_id`.
+
+    References
+    ----------
+    Alexander Gleyzer, Michael Denisyuk, Alon Rimmer and Yigal
+    Salingar, 2004. A Fast Recursive GIS Algorithm for Computing
+    Strahler Stream Order in Braided and Nonbraided Networks. Journal
+    of the American Water Resources Association (JAWRA) 40(4):937-946.
+
     """
-    * Objective
-    Directly extract the values at the cell locations from the grid
-    * Input:
-    GIS binary grid
-    * Output
-    A 1D array with nb_cell values. Cells are ordered from West to East, North to South.
+    if len(arcs_per_node[start_up_node]) == 1:
+        stream_orders[start_arc_id] = 1
+    else:
+        upstream_orders = {}
+
+        for arc_id in arcs_per_node[start_up_node]:
+            if arc_id != start_arc_id:
+                up_node, down_node = nodes_per_arc[arc_id]
+                if up_node != start_up_node:
+                    upstream_orders[arc_id] = strahler_stream_order(arc_id,
+                                                                    up_node,
+                                                                  nodes_per_arc,
+                                                                  arcs_per_node,
+                                                                  stream_orders)
+                else:
+                    upstream_orders[arc_id] = strahler_stream_order(arc_id,
+                                                                    down_node,
+                                                                  nodes_per_arc,
+                                                                  arcs_per_node,
+                                                                  stream_orders)
+
+        max_order = 0
+        max_order_count = 0
+        up_orders = upstream_orders.values()
+        up_orders.sort(reverse=True)
+
+        for order in up_orders:
+            if order > max_order:
+                max_order = order
+                max_order_count += 1
+            elif order == max_order:
+                max_order_count += 1
+
+        if max_order_count > 1:
+            stream_orders[start_arc_id] = max_order + 1
+        else:
+            stream_orders[start_arc_id] = max_order
+
+    return stream_orders[start_arc_id]
+
+def strahler_to_channel_manning(cell_labels, channel_network, cell_down):
+    """Calculate the Manning roughness for channel cells
+
+    Computes the Strahler order for the channel in each channel cell
+    and assigns a Manning roughness to each using a table of the
+    correspondance between the Strahler order and the values of
+    Manning roughness, as proposed in Liu and Todini (2002).
+
+    Parameters
+    ----------
+    cell_labels : 1D Numpy ndarray
+        An array of the labels associated with each cell in the
+        catchment
+    channel_network : 1D Numpy ndarray
+        An ordered array with each channel cell indicated by a value
+        of one, zero otherwise.
+    cell_down : 1D Numpy ndarray
+        An ordered array giving the label of the downstream cell in
+        the catchment network. The outlet of the catchment is
+        indicated by a negative number.
+
+    Returns
+    -------
+    n_c : 1D array
+        An array containing the values of the manning coefficient for
+        each channel cell and zero for non-channel cells.
+
     """
-    tab=read_arc_bin(file_bin_grid)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_param=tab[ind]
+    strahler_manning = {1 : 0.050,
+                        2 : 0.040,
+                        3 : 0.035,
+                        4 : 0.030,
+                        5 : 0.030,
+                        6 : 0.025}
 
-    return ar_param
+    # ensure input arrays are integers
+    cell_labels = np.asarray(cell_labels, dtype=np.int)
+    channel_network = np.asarray(channel_network, dtype=np.int)
+    cell_down = np.asarray(cell_down, dtype=np.int)
 
-def from_GLCC_to_manning(file_bin_GLCC,file_table_GLCC_manning):
+    # compute strahler order
+    nodes = cell_labels[channel_network == 1]
+
+    edges = []
+    for k in cell_labels:
+        if (channel_network[k] == 1) and (cell_down[k] >= 0):
+            edges.append((k, cell_down[k]))
+
+    G = nx.DiGraph()
+    G.add_nodes_from(nodes)
+    G.add_edges_from(edges)
+
+    # determine the outlet stream arc ID and it's upstream node using
+    # obfuscated list comprehension. Strictly for speed of course ;-)
+    outlet_node = nx.topological_sort(G)[-1]
+
+    outlet_info = [(edge_id, edge) for edge_id, edge in enumerate(G.edges())
+           if outlet_node in edge]
+
+    outlet_edge_id = outlet_info[0][0]
+    outlet_up_node = outlet_info[0][1][0]
+
+    stream_orders = {}
+
+    nodes_per_arc, arcs_per_node = _make_strahler_dicts(G)
+    strahler_stream_order(outlet_edge_id, outlet_up_node,
+                          nodes_per_arc, arcs_per_node, stream_orders)
+
+    # assign strahler value of stream arcs to cells
+    strahler_per_node = {}
+
+    for key in nodes_per_arc.keys():
+        edge = nodes_per_arc[key]
+
+        strahler_per_node[edge[0]] = stream_orders[key]
+
+        if outlet_node in edge:
+            strahler_per_node[outlet_node] = stream_orders[key]
+
+    # assign manning based on strahler order
+    n_c = np.zeros(cell_labels.size)
+    for node in nx.topological_sort(G):
+        key = strahler_per_node[node]
+        n_c[node] = strahler_manning[key]
+
+    return n_c
+
+def cell_connectivity(flowdir, mask, source='GRASS'):
+    """Compute the connectivity between cells in the catchment
+
+    Associate each cell in the catchment with the label of it's
+    downstream neighbour. This defines the directed network of
+    connections between the cells which make up a catchment in the
+    model.
+
+    Parameters
+    ----------
+    flowdir : Numpy ndarray
+        8D flow direction codes as defined by your favourite GIS
+        toolbox.
+    mask : Numpy ndarray
+        A 2D array with the same shape as `flowdir`. Cells which
+        comprise the catchment should be marked by a value of 1.
+    source : string
+        A string describing the source of the flow direction
+        codes. Current options are 'ArcGIS' or 'GRASS' (default)
+
+    Returns
+    -------
+    cell_down : Numpy ndarray
+        An ordered array containing the label of the immediate
+        downstream cell for each cell in the catchment network. A 1D
+        array with length equal to the number of cells. The catchment
+        outlet is indiacted by a value of -999.
+
     """
-    * Objective:
-      Estimation of the overland manning's coefficient for each catchment cell from the GLCC land cover/use map
-    * Input
-      - file_bin_GLCC is the binary grid file containing the GLCC land use/cover codes
-      - file_table_GLCC_manning is an ASCII file containing a table of correspondance between the GLCC land use/cover codes
-      and the values of manning's coef proposed in different references (Chow et al., 1998; Maidment,1993 - give a range of values and the MUSIC report)
-    * Ouput
-      This routine returns a 1D array (ar_n_o) containing the values of the Manning's coefficient for each cell. Cells are ordered from West to East, North to South.
-    * Comment:
-      This routine has to be used carefully since the code is dependant to:
-       1. the format of the Table (file_table_GLCC_manning)
-       2. the choice of the user to use a given reference
-    """
-    #Read the binary grid file of GLCC land use type
-    tab=read_arc_bin(file_bin_GLCC)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_GLCC=tab[ind]
+    # Specify flow direction code from GRASS GIS r.watershed or ArcGIS
+    # Hydrology toolbox flow-direction tool
+    if source == 'GRASS':
+        ddict = {1 : (-1,  1),
+                 2 : (-1,  0),
+                 3 : (-1, -1),
+                 4 : ( 0, -1),
+                 5 : ( 1, -1),
+                 6 : ( 1,  0),
+                 7 : ( 1,  1),
+                 8 : ( 0,  1)}
+    elif source == 'ArcGIS':
+        ddict = {128 : (-1,  1),
+                 64  : (-1,  0),
+                 32  : (-1, -1),
+                 16  : ( 0, -1),
+                 8   : ( 1, -1),
+                 4   : ( 1,  0),
+                 2   : ( 1,  1),
+                 1   : ( 0,  1)}
+    else:
+        raise ValueError('Unknown flow direction scheme: %s' % source)
 
-    #Read the Table file within a header line
-    tab=pm.read_column_input(file_table_GLCC_manning,5)
-    ar_code=tab[:,0]
-    ar_n_chow=tab[:,1]
-    ar_n_maidment_inf=tab[:,2]
-    ar_n_maidment_sup=tab[:,3]
-    ar_n_music=tab[:,4]
+    ncells = mask[mask == 1].size
+    int_min = np.iinfo(np.int).min
+    cell_id = np.ones(mask.shape, dtype=np.int)*int_min
+    cell_id[mask == 1] = np.arange(ncells)
 
-    ar_n_o=np.array(ar_GLCC)
-    for i in ar_code:
-        ind=np.where(ar_GLCC==i)
-        #!!!! TO BE CHANGED ACCORDING TO USER CHOICE !!!#
-        if i>1:
-            ar_n_o[ind]=ar_n_chow[np.where(ar_code==i)][0]
-        if i==1:
-            ar_n_o[ind]=ar_n_music[np.where(ar_code==i)][0]
+    cell_down = np.ones(ncells, dtype=np.int)*int_min
 
-    return ar_n_o
-
-def from_SIRI_to_soil_properties(file_bin_SIRI,file_table_SIRI_soil):
-    """
-    * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or humidity at saturation) for each catchment cell from the SIRI map
-    * Input
-      - file_bin_SIRI is the binary grid file containing the SIRI soil property codes
-      - file_table_SIRI_soil is an ASCII file containing a table of correspondance between the SIRI codes
-      and the values of a selection of the soil parameters proposed by SIRI (Land-type, depth A, depth B, WP A, WP B, FC A, FC B, Por A, Por B)
-    * Ouput
-      This routine returns two 1D array (ar_L, ar_theta_s) containing respectively the values of L and theta_s for each cell. Cells are ordered from West to East, North to South.
-    * Comment:
-      This routine has to be used carefully since the code is dependant to:
-       1. the format of the Table (file_table_SIRI_soil)
-       2. the choice of the user to use only one soil layer A, or combining the two soil layer A+B characteristics provided by SIRI.
-       Here L=LA+LB and Theta_S=average(theta_sA,theta_sB)
-    """
-    #Read the binary grid file of GLCC land use type
-    tab=read_arc_bin(file_bin_SIRI)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_SIRI=tab[ind]
-
-    #Read the Table file within a header line
-    tab=pm.read_column_input(file_table_SIRI_soil,9)
-    ar_code=tab[:,0]
-    ar_depthA=tab[:,1]
-    ar_depthB=tab[:,2]
-    ar_porA=tab[:,7]
-    ar_porB=tab[:,8]
-
-    ar_L=np.array(ar_SIRI)
-    ar_theta_s=np.array(ar_SIRI)
-    for i in ar_code:
-        ind=np.where(ar_L==i)
-        #!!!! TO BE CHANGED ACCORDING TO USER CHOICE !!!#
-        ar_L[ind]=ar_depthA[np.where(ar_code==i)][0]+ar_depthB[np.where(ar_code==i)][0]
-        ar_theta_s[ind]=0.5*(ar_porA[np.where(ar_code==i)][0]+ar_porB[np.where(ar_code==i)][0])
-
-    return ar_L, ar_theta_s
-
-def from_WRC90_to_soil_properties(file_bin_WRC90, file_table_WRC90_soil):
-    """
-    * Objective:
-      Extraction of the parameters L (soil depth) and theta_s (porosity or
-      humidity at saturation) for each catchment cell from the SIRI map
-    * Input
-      - file_bin_WRC90 is the binary grid file containing the WRC90 soil
-        property codes (Here only three 3 for Loamy Sand, 2 for Sandy Loam,
-        1 for Clay)
-      - file_table_WRC90_soil is an ASCII file containing a table of
-        correspondance between the WRC90 codes and the values of Ks
-        (permeability) and theta_r (residual soil moisture)
-    * Ouput
-      This routine returns two 1D array (ar_theta_r, ar_theta_s) containing
-      respectively the values of Ks and theta_r for each cell. Cells are
-      ordered from West to East, North to South.
-    """
-    #Read the binary grid file of GLCC land use type
-    tab=read_arc_bin(file_bin_WRC90)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_WRC90=tab[ind]
-
-    #Read the Table file within a header line
-    tab=pm.read_column_input(file_table_WRC90_soil,9)
-    ar_code=tab[:,0]
-    ar_theta_r_moy=tab[:,3]
-    ar_theta_r_ect=tab[:,4]
-    ar_conduct=tab[:,8]
-
-    ar_theta_r=np.array(ar_WRC90)
-    ar_Ks=np.array(ar_WRC90)
-    for i in ar_code:
-        ind=np.where(ar_WRC90==i)
-        #!!!! TO BE CHANGED FOR PARAMETER ADJUSTMENT !!!#
-        ar_theta_r[ind]=ar_theta_r_moy[np.where(ar_code==i)][0]
-        ar_Ks[ind]=ar_conduct[np.where(ar_code==i)][0]
-
-    return ar_theta_r, ar_Ks
-
-def from_Strahler_to_channel_manning(file_bin_strahler,file_table_strahler_manning,ar_lambda):
-    """
-    * objective:
-      Extraction of the channel mannings for each channel cell within the catchment from the strahler order map
-    * Input
-      - file_bin_strahler is the binary grid file containing the strahler order of the channel cells
-      - file_table_strahler_manning is an ASCII file containing a table of correspondance between the strahler order
-      and the values of manning strickler proposed by Liu and Todini (2002)
-      - ar_lambda is an array (dimension equal to the number of cell) with value 1 for channel cells, 0 otherwise. Cells being ordered from West to East, North to South.
-    * Ouput
-      This routine returns a 1D array (ar_n_c), ar_theta_s) containing the values of the manning coefficient for each channel cell. Cells are ordered from West to East, North to South.
-    """
-
-    #Read the binary grid file of GLCC land use type
-    tab=read_arc_bin(file_bin_strahler)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    ar_strahler=tab[ind]
-    ar_lambda[ar_lambda==1]=ar_strahler
-
-    #Read the Table file within a header line
-    tab=pm.read_column_input(file_table_strahler_manning,2)
-    ar_code=tab[:,0]
-    ar_manning=tab[:,1]
-
-    ar_n_c=np.array(ar_lambda)
-    for i in ar_code:
-        ind=np.where(ar_n_c==i)
-        #!!!! TO BE CHANGED FOR PARAMETER ADJUSTMENT !!!#
-        ar_n_c[ind]=ar_manning[np.where(ar_code==i)][0]
-
-    return ar_n_c
-
-
-def from_flowdir_to_celldown_4D(file_bin_flowdir):
-    """
-    * objective:
-      Associate to each cell the label of the celldown (outcell) according to the 4D flow directions:
-    * Input
-      - file_bin_flowdir: 4D flow direction binary file (from GIS) with codes: 1 right, 16 left, 64 up, 4 down
-    * Output
-      - ar_cell_down: an array (dimension equal to the number of cell) containing the label of the outcells.
-    * Commment
-     Some errors can occur in the direction files that should be detected by the routine. A manual correction is required if it does happen.
-    """
-
-    tab_flowdir=read_arc_bin(file_bin_flowdir)
-    tab_label=from_bingrid_to_label(file_bin_flowdir)
-    nrows=np.shape(tab_label)[0]
-    ncols=np.shape(tab_label)[1]
-    ar_cell_down=np.zeros(np.shape(np.where(tab_label>=0))[1])-99
-    n=0
-    num=0
-    outlet=0
+    nrows, ncols = mask.shape
     for i in range(nrows):
         for j in range(ncols):
-            flow=tab_flowdir[i,j]
-            OK=0
-            if tab_label[i,j] >= 0:
-                num=num+1
-                if flow==1:
-                    x=i
-                    y=j+1
-                elif flow==16:
-                    x=i
-                    y=j-1
-                elif flow==64:
-                    x=i-1
-                    y=j
-                elif flow==4:
-                    x=i+1
-                    y=j
-                else:
-                    print 'ERROR'
-                if tab_label[x,y]>=0:
-                    ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                else:
-                    if outlet==0:
-                        ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                        outlet=1
-                    else:
-                        n=n+1
-                        #Print the data to detect where the errors are (manual correction to be done...)
-                        print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
-    return ar_cell_down
+            fdir = flowdir[i, j]
 
-def from_flowdir_to_celldown_8D(file_bin_flowdir):
+            if fdir in ddict.keys():
+                r, c = ddict[fdir]
+                m, n = i+r, j+c
+
+                # To-do: Handle case where (m, n) is outside the array
+                # bounds
+                cell_down[cell_id[i, j]] = cell_id[m, n]
+
+    if cell_down[cell_down == int_min].size > 1:
+        warn_txt = """There are %d catchment cells without a downstream link.
+Check the validity of the flow-direction raster."""  \
+        % cell_down[cell_down == int_min].size
+
+        warn(warn_txt)
+
+    cell_down[cell_down == int_min] = -999
+
+    return cell_down
+
+def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
+    """Compute the length and slope of the channels
+
+    Cells draining diagonally have a different channel length from
+    cells draining North, South, East or West. This function computes
+    the channel length as a function of the drainage direction (based
+    on the catchment's cell connectivity). The slope is calculated as
+    the height difference over the length, in a downstream direction
+    (i.e. negative slopes indicate an inconsistency in the input DEM).
+
+    Parameters
+    ----------
+    cell_labels : 1D Numpy ndarray
+        An array of the labels associated with each cell in the
+        catchment
+    channel_network : 1D Numpy ndarray
+        An ordered array with each channel cell indicated by a value
+        of one, zero otherwise.
+    X : 1D Numpy ndarray
+        An ordered array of the X coordinate of the centre of each
+        cell.
+    Y : 1D Numpy ndarray
+        An ordered array of the Y coordinate of the centre of each
+        cell.
+    cell_down : 1D Numpy ndarray
+        An ordered array giving the label of the downstream cell in
+        the catchment network. The outlet of the catchment is
+        indicated by a negative number.
+    dem : 1D Numpy ndarray
+        An ordered array of cell elevations.
+
+    Returns
+    -------
+    Xc : 1D Numpy ndarray
+        An array containing the length of the channel in each channel
+        cell, zero otherwise.
+    tan_beta_channel : 1D Numpy ndarray
+        An array containing the slope of the channel in each channel
+        cell, zero otherwise.
+
     """
-    * objective:
-      Associate to each cell the label of the celldown (outcell) according to the 4D flow directions:
-    * Input
-      - file_bin_flowdir: 8D flow direction binary file (from GIS) with codes: 1 E, 16 W, 64 N, 4 S, 32 NW, 128 NE, 2 SE, 8 SW.
-    * Output
-      - ar_cell_down: an array (dimension equal to the number of cell) containing the label of the outcells.
-    * Commment
-     Some errors can occur in the direction files that should be detected by the routine. A manual correction is required if it does happen.
-    """
+    # Ensure input arrays are numpy arrays of the correct dtype.
+    cell_labels = np.asarray(cell_labels, dtype=np.int)
+    channel_network = np.asarray(channel_network, dtype=np.int)
+    X = np.asarray(X, dtype=np.float)
+    Y = np.asarray(Y, dtype=np.float)
+    cell_down = np.asarray(cell_down, dtype=np.int)
+    dem = np.asarray(dem, dtype=np.float)
 
-    tab_flowdir=read_arc_bin(file_bin_flowdir)
-    tab_label=from_bingrid_to_label(file_bin_flowdir)
-    nrows=np.shape(tab_label)[0]
-    ncols=np.shape(tab_label)[1]
-    ar_cell_down=np.zeros(np.shape(np.where(tab_label>=0))[1])-99
-    n=0
-    num=0
-    outlet=0
-    for i in range(nrows):
-        for j in range(ncols):
-            flow=tab_flowdir[i,j]
-            OK=0
-            if tab_label[i,j] >= 0:
-                num=num+1
-                if flow==1:
-                    x=i
-                    y=j+1
-                elif flow==16:
-                    x=i
-                    y=j-1
-                elif flow==64:
-                    x=i-1
-                    y=j
-                elif flow==4:
-                    x=i+1
-                    y=j
-                elif flow==32:
-                    x=i-1
-                    y=j-1
-                elif flow==128:
-                    x=i-1
-                    y=j+1
-                elif flow==2:
-                    x=i+1
-                    y=j+1
-                elif flow==8:
-                    x=i+1
-                    y=j-1
-                else:
-                    print 'ERROR'
-                if tab_label[x,y]>=0:
-                    ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                else:
-                    if outlet==0:
-                        ar_cell_down[tab_label[i,j]]=tab_label[x,y]
-                        outlet=1
-                    else:
-                        n=n+1
-                        #Print the data to detect where the errors are (manual correction to be done...)
-                        print n,num, flow,i,j,tab_label[i,j],x,y,tab_label[x,y]
-    return ar_cell_down
+    Xc = np.zeros(cell_labels.shape, dtype=np.float)
+    tan_beta_channel = np.zeros(cell_labels.shape, dtype=np.float)
 
+    for i in cell_labels[channel_network == 1]:
+        indx = cell_down[i]
+        if indx >= 0:
+            # Channel cells upstream of the catchment outlet.
+            Xcell = X[i]
+            Ycell = Y[i]
 
-def from_bingrid_to_label(file_bin_grid,write_file=False):
-    """
-    * Objective
-      Replace values of the grid by the label of the cells.
-      The label are assigned from 0 to nb_cell, from West to East, North to South.
-    * Input
-      file_bin_grid: A binary grid file (whatever it is).
-    * Output
-      tab: a 1D array with nb_cell components.
-    """
-    tab=read_arc_bin(file_bin_grid)
-    nrows=np.shape(tab)[0]
-    ncols=np.shape(tab)[1]
-    tab=np.reshape(tab,ncols*nrows)
-    ind=np.where(tab>-99)
-    tab_label=np.arange(len(tab[ind]))
-    for i in tab_label:
-        tab[ind[0][i]]=i
-    tab=np.reshape(tab,(nrows,ncols))
-    tab=tab.astype('int32')
+            Xcell_down = X[cell_labels == indx]
+            Ycell_down = Y[cell_labels == indx]
 
-    if write_file:
-        f = file('c:/Theo/liebenbergsvlei/topkapi_model/parameters/label.dat', 'w')
-        np.savetxt(f, tab)
-        f.close()
+            Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
+            tan_beta_channel[i] = (dem[i]
+                                   - dem[cell_labels == indx][0])/Xc[i]
 
-    return tab
+    # Assign sensible values to the catchment outlet cell, since it
+    # has no downstream neighbour.
+    outlet_indx = np.nonzero(cell_down < 0)
+    cond = (channel_network == 1) & (cell_down == outlet_indx[0][0])
+    upstream_indx = cell_labels[cond][0]
 
-def from_bingrid_to_coordinate(file_bin_grid):
-    """
-    * Objective
-    Compute the coordinates of the cells relatively to
-    the low-left corner from any binary grid file
-    * Input
-      file_bin_grid: A binary grid file (whatever it is).
-    * Output
-      ar_coorX,ar_coorY: two 1D array with nb_cell components.
-    """
-    li_headers=read_headers_arc_bin(file_bin_grid)
-    ncols = li_headers[0] # fixed for UM grid
-    nrows = li_headers[1] # fixed for UM grid
-    xmin = li_headers[2]
-    ymin = li_headers[3]
-    cellsize= li_headers[4]
+    Xc[outlet_indx] = Xc[upstream_indx]
+    tan_beta_channel[outlet_indx] = tan_beta_channel[upstream_indx]
 
-    ar_line_coorX=xmin+np.arange(ncols)*cellsize
-    ar_line_coorY=ymin+np.arange(nrows)*cellsize
-    ar_line_coorY=ar_line_coorY[::-1]
-
-    mat_coorX=np.zeros((nrows,ncols))
-    mat_coorY=np.zeros((nrows,ncols))
-    for i in range(int(nrows)):
-        mat_coorX[i,:]=ar_line_coorX
-    for j in range(int(ncols)):
-        mat_coorY[:,j]=ar_line_coorY
-
-    tab=read_arc_bin(file_bin_grid)
-    ind=np.where(tab>-99.)
-
-    ar_coorX=mat_coorX[ind]
-    ar_coorY=mat_coorY[ind]
-
-    return ar_coorX,ar_coorY
-
-
-def compute_Xchannel(ar_label,ar_lambda,ar_coorX,ar_coorY,ar_cell_down):
-    ar_Xc=np.array(ar_lambda,float)
-
-    for i in range(len(ar_label)):
-        if ar_cell_down[i]>=0:
-            cell_down=ar_cell_down[i]
-            Xcell=ar_coorX[i]
-            Ycell=ar_coorY[i]
-#            print np.where(ar_label==cell_down),np.where(ar_label==cell_down)[0]
-            Xcell_down=ar_coorX[np.where(ar_label==cell_down)[0][0]]
-            Ycell_down=ar_coorY[np.where(ar_label==cell_down)[0][0]]
-#            print ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
-            ar_Xc[i]=ut.distance(Xcell,Ycell,Xcell_down,Ycell_down)
-
-    ind_outlet=np.where(ar_cell_down<0)
-    ar_Xc[ind_outlet]=min(ar_Xc)
-
-    return ar_Xc
-
-
-def matrix_plot(matrix, fig_name, title='GRID Plot'):
-    """Create a plot of the data in a GRIB1 file."""
-
-    a=matrix
-
-    a_mask = ma.masked_where(a < 0, a)
-    pl.imshow(a_mask, interpolation='nearest')
-    pl.colorbar()
-    pl.title(title)
-    pl.savefig(fig_name)
-    pl.close()
+    return Xc, tan_beta_channel

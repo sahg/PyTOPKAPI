@@ -29,6 +29,23 @@ import pytopkapi.pretreatment as pm
 ####################################
 
 def zero_slope_management(ini_file='zero_slope_management.ini'):
+    """Fix zero slopes
+
+    Correct the cell and channel slopes to avoid situations with zero
+    slopes. Water cannot drain downstream in these cases and the ODE's
+    fail.
+
+    Parameters
+    ----------
+    ini_file : string
+        The name and full path to an ini file containing the required
+        configuration.
+
+    Returns
+    -------
+    Nothing
+
+    """
 
     ##================================##
     ##  Read the input file (*.ini)   ##
@@ -48,10 +65,11 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     ##============================##
     print 'Pretreatment of input data'
     #~~~~Read Cell parameters file
-    ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
-    ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
-    ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
-        =pm.read_cell_parameters(file_cell_param)
+    ar_cell_label, ar_coorx, ar_coory, \
+    ar_lambda, ar_Xc, ar_dam, ar_tan_beta, \
+    ar_tan_beta_channel, ar_L, ar_Ks, ar_theta_r, \
+    ar_theta_s, ar_n_o, ar_n_c, ar_cell_down, ar_pVs_t0, ar_Vo_t0, \
+    ar_Qc_t0, ar_kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell=len(ar_cell_label)
@@ -72,7 +90,9 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
 
         down_cell=ar_cell_down[cell]
 
-        #~~~~ Extract the arrays of (i) all cells in the path (ar_label_path) (ii) all corresponding slopes (ar_slope_path)
+        # Extract the arrays of (i) all cells in the path
+        # (ar_label_path) (ii) all corresponding slopes
+        # (ar_slope_path)
         while down_cell>-1:
             li_label_path.append(down_cell)
             li_slope_path.append(ar_tan_beta[down_cell])
@@ -80,9 +100,11 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         ar_label_path=np.array(li_label_path)
         ar_slope_path=np.array(li_slope_path)
 
-        #~~~~ Go into the slope vector to detect the series of zero slopes
-        #The method first consists of creating an array containing the index of begining and end of zero series
-        #Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
+        # Go into the slope vector to detect the series of zero slopes
+        # The method first consists of creating an array containing
+        # the index of begining and end of zero series
+
+        # Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
         #--> ar_ind_start=array([2,5,7])
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
@@ -154,7 +176,9 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
 
         down_cell=ar_cell_down[cell]
 
-        #~~~~ Extract the arrays of (i) all cells in the path (ar_label_path) (ii) all corresponding slopes (ar_slope_path)
+        # Extract the arrays of (i) all cells in the path
+        # (ar_label_path) (ii) all corresponding slopes
+        # (ar_slope_path)
         while down_cell>-1:
             li_label_path.append(down_cell)
             li_slope_path.append(ar_tan_beta_channel[down_cell])
@@ -162,9 +186,11 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         ar_label_path=np.array(li_label_path)
         ar_slope_path=np.array(li_slope_path)
 
-        #~~~~ Go into the slope vector to detect the series of zero slopes
-        #The method first consists of creating an array containing the index of begining and end of zero series
-        #Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
+        # Go into the slope vector to detect the series of zero slopes
+        # The method first consists of creating an array containing
+        # the index of begining and end of zero series
+
+        # Example: ar_slope_path=np.array([1, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0])
         #--> ar_ind_start=array([2,5,7])
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
@@ -197,21 +223,22 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
             print 'problem index'
             stop
 
-        #Then the slope are changed according to the defined index arrays
+        # Then the slope are changed according to the defined index
+        # arrays
         if len(ar_ind_start)>0:
             print 'Number of sections with zero slopes:',len(ar_ind_start)
         for i in np.arange(len(ar_ind_start)):
-            #Compute the length of the zero path
+            # Compute the length of the zero path
             if ar_ind_end[i]!=-1:
                 length_path=ar_ind_end[i]-ar_ind_start[i]
             else:
                 length_path=len(ar_slope_path)-ar_ind_start[i]
-            #Compute the corresponding slope
+            # Compute the corresponding slope
             slope=1./(length_path*X)
-            #Replace the values of slope in the initial ar_tan_beta_channel
-            #select the cell labels
+            # Replace the values of slope in the initial
+            # ar_tan_beta_channel select the cell labels
             ar_label_cell_zero=ar_label_path[ar_ind_start[i]:ar_ind_end[i]]
-            #select the cell index (if different from the label)
+            # Select the cell index (if different from the label)
             ar_ind_cell_zero=np.array(ar_label_cell_zero,int)
             n=-1
             for label in ar_label_cell_zero:
@@ -219,34 +246,35 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
                 ind=np.where(ar_cell_label==label)[0][0]
                 ar_ind_cell_zero[n]=ind
 
-            #Change the values
+            # Change the values
             ar_tan_beta_channel[ar_ind_cell_zero]=slope
 
+    # Write parameter file
+    param_table = np.zeros((len(ar_cell_label),nb_param))
+    param_table[:,0] = ar_cell_label
+    param_table[:,1] = ar_coorx
+    param_table[:,2] = ar_coory
+    param_table[:,3] = ar_lambda
+    param_table[:,4] = ar_Xc
+    param_table[:,5] = ar_dam
+    param_table[:,6] = ar_tan_beta
+    param_table[:,7] = ar_tan_beta_channel
+    param_table[:,8] = ar_L
+    param_table[:,9] = ar_Ks
+    param_table[:,10] = ar_theta_r
+    param_table[:,11] = ar_theta_s
+    param_table[:,12] = ar_n_o
+    param_table[:,13] = ar_n_c
+    param_table[:,14] = ar_cell_down
+    param_table[:,15] = ar_pVs_t0
+    param_table[:,16] = ar_Vo_t0
+    param_table[:,17] = ar_Qc_t0
+    param_table[:,18] = ar_kc
+    param_table[:,19] = psi_b
+    param_table[:,20] = lamda
 
-
-    #~~~~~~Write parameter file~~~~~~#
-    tab_param=np.zeros((len(ar_cell_label),nb_param))
-    tab_param[:,0]=ar_cell_label
-    tab_param[:,1]=ar_coorx
-    tab_param[:,2]=ar_coory
-    tab_param[:,3]=ar_lambda
-    tab_param[:,4]=ar_Xc
-    tab_param[:,5]=ar_dam
-    tab_param[:,6]=ar_tan_beta
-    tab_param[:,7]=ar_tan_beta_channel
-    tab_param[:,8]=ar_L
-    tab_param[:,9]=ar_Ks
-    tab_param[:,10]=ar_theta_r
-    tab_param[:,11]=ar_theta_s
-    tab_param[:,12]=ar_n_o
-    tab_param[:,13]=ar_n_c
-    tab_param[:,14]=ar_cell_down
-    tab_param[:,15]=ar_pVs_t0
-    tab_param[:,16]=ar_Vo_t0
-    tab_param[:,17]=ar_Qc_t0
-    tab_param[:,18]=ar_kc
-
-    np.savetxt(file_cell_param_out, tab_param)
+    format = '%d %f %f %d %f %d %f %f %f %f %f %f %f %f %d %f %f %f %f %f %f'
+    np.savetxt(file_cell_param_out, param_table, fmt=format)
 
 
 def subcatch(ini_file='subcatch.ini'):
