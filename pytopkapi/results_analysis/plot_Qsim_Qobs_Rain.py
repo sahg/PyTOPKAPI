@@ -60,20 +60,20 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     lines = []
     tab_leg = []
     if Qobs:
-        lines.append(ax.plot(ar_date, ar_Qobs,
-                             color=tab_col[-1],
-                             linestyle=tab_style[-1], linewidth=tab_width[-1]))
+        lines += ax.plot(ar_date, ar_Qobs,
+                         color=tab_col[-1],
+                         linestyle=tab_style[-1], linewidth=tab_width[-1])
         tab_leg.append(('Observation'))
         tab_leg = tab_leg[::-1]
 
-    lines.append(ax.plot(ar_date, ar_Qsim,
-                         color=tab_col[0],
-                         linestyle=tab_style[0], linewidth=tab_width[0]))
+    lines += ax.plot(ar_date, ar_Qsim,
+                     color=tab_col[0],
+                     linestyle=tab_style[0], linewidth=tab_width[0])
     tab_leg.append('Model')
 
     if nash:
         nash_value = ut.Nash(ar_Qsim,ar_Qobs)
-        lines.append(ax.plot(ar_date[0:1], ar_Qsim[0:1], 'w:'))
+        lines += ax.plot(ar_date[0:1], ar_Qsim[0:1], 'w:')
         tab_leg.append(('Eff = '+str(nash_value)[0:5]))
 
     ax.set_xlim(ar_date[0], ar_date[-1])
