@@ -1,6 +1,8 @@
 """ soil_moisture_maps.py
 Draw the maps of soil moisture from the outputs of the TOPKAPI simulations
 """
+import os
+
 import numpy as np
 import pylab as pl
 import numpy.ma as M
@@ -76,17 +78,17 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
 
     #Assign the variables
     if variable==1:
-        im_out=path_out+'field_Vs_'
+        im_out=os.path.join(path_out, 'field_Vs_')
         tab=ndar_Vs
     elif variable==2:
-        im_out=path_out+'field_Vo_'
+        im_out=os.path.join(path_out, 'field_Vo_')
         tab=ndar_Vo
     elif variable==3:
-        im_out=path_out+'field_Vo_bin_'
+        im_out=os.path.join(path_out, 'field_Vo_bin_')
         tab=ndar_Vo
         tab[tab>0]=1.
     elif variable==4:
-        im_out=path_out+'field_SWI_'
+        im_out=os.path.join(path_out, 'field_SSI_')
         tab=ndar_Vs/ar_Vsm*100.
 
     # Plot the maps
