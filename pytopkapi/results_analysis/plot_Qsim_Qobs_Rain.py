@@ -1,18 +1,15 @@
-#General module importation
-import numpy as np
-import scipy as sp
-import pylab as pl
 import datetime as dt
-from matplotlib.dates import drange,date2num,num2date,YearLocator, MonthLocator,DayLocator, HourLocator,DateFormatter
-import tables as h5
 from ConfigParser import SafeConfigParser
-config = SafeConfigParser()
 
-#Personnal module importation
+import numpy as np
+import tables as h5
+import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
+
 import pytopkapi.utils as ut
 
 def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
-    
+    config = SafeConfigParser()
     config.read(ini_file)
     print 'Read the file ',ini_file
 
@@ -20,20 +17,16 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     file_Qobs=config.get('files','file_Qobs')
     file_rain=config.get('files','file_rain')
     image_out=config.get('files','image_out')
-    
+
     group_name=config.get('groups','group_name')
 
     Qobs=config.getboolean('flags','Qobs')
     Pobs=config.getboolean('flags','Pobs')
     nash=config.getboolean('flags','nash')
-            
-    tab_leg=['Model']
-    #tab_col=['k','0.5']
+
     tab_col=['k','r']
     tab_style=['-','-']
-    #tab_width=['1','2']
     tab_width=['1','1']
-    #color_P='0.5'
     color_P='b'
     transparency_P=0.5#(0 for invisible)
 
@@ -42,12 +35,10 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 
     #Read the obs
     #Qobs
-    ar_date,ar_Qobs=read_delta_flow(file_Qobs)
-    date1=dt.datetime(ar_date[0,0],ar_date[0,1],ar_date[0,2],ar_date[0,3],ar_date[0,4])
-    date1prim=dt.datetime(ar_date[1,0],ar_date[1,1],ar_date[1,2],ar_date[1,3],ar_date[1,4])
-    date2=dt.datetime(ar_date[-1,0],ar_date[-1,1],ar_date[-1,2],ar_date[-1,3],ar_date[-1,4])
-    delta=date1prim-date1
-    X= drange(date1, date2+delta, delta)
+    ar_date, ar_Qobs = read_observed_flow(file_Qobs)
+
+    delta = date2num(ar_date[1]) - date2num(ar_date[0])
+
     #Rain
     if Pobs:
         h5file_in=h5.openFile(file_rain,mode='r')
@@ -63,95 +54,75 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     ndar_Qc_out=ut.read_one_array_hdf(file_h5,'/Channel/','Qc_out')
     ar_Qsim=ndar_Qc_out[1:,0]
 
-
     ##Graph
-    pl.clf()
-    #Set up the date axes
-    lim_day0=3;lim_day1=61;lim_day2=3*365
-    ax=pl.subplot(111)
+    fig, ax = plt.subplots()
 
-    d=num2date(X[-1])-num2date(X[0])
-    time_length=d.days
-    years    = YearLocator()
-    months   = MonthLocator()
-    days     = DayLocator()
-    ax.xaxis.set_major_locator(months)
-    Fmt = DateFormatter("%m/%y")
-    ax.xaxis.set_major_formatter(Fmt)
-    labels = ax.get_xticklabels()
-    #pl.setp(labels,'rotation', 90)
-    if time_length>lim_day1 and time_length<lim_day2:
-        ax.xaxis.set_major_locator(months)
-        Fmt = DateFormatter("%m/%y")
-        ax.xaxis.set_major_formatter(Fmt)
-        labels = ax.get_xticklabels()
-        #pl.setp(labels,'rotation', 90)
-    elif time_length>=lim_day2:
-        ax.xaxis.set_major_locator(years)
-        ax.xaxis.set_minor_locator(months)
-        Fmt = DateFormatter("%m/%y")
-        ax.xaxis.set_major_formatter(Fmt)
-        labels = ax.get_xticklabels()
-        #pl.setp(labels,'rotation', 90)
-    elif time_length>lim_day0 and time_length<lim_day1:
-        ax.xaxis.set_major_locator(months)
-        ax.xaxis.set_minor_locator(days)
-        Fmt = DateFormatter("%d/%m/%y")
-        ax.xaxis.set_major_formatter(Fmt)
-        #pl.setp(labels,'rotation', 90)
-    else:
-        ax.xaxis.set_major_locator(hours)
-        ax.xaxis.set_minor_locator(hours)
-        Fmt = DateFormatter("%H")
-        ax.xaxis.set_major_formatter(Fmt)
-
-    #plot the graph
+    lines = []
+    tab_leg = []
     if Qobs:
-        pl.plot(X,ar_Qobs,color=tab_col[-1],linestyle=tab_style[-1],linewidth=tab_width[-1])
+        lines += ax.plot(ar_date, ar_Qobs,
+                         color=tab_col[-1],
+                         linestyle=tab_style[-1], linewidth=tab_width[-1])
         tab_leg.append(('Observation'))
-        tab_leg=tab_leg[::-1]
-        
+        tab_leg = tab_leg[::-1]
 
-    pl.plot(X,ar_Qsim,color=tab_col[0],linestyle=tab_style[0],linewidth=tab_width[0])
+    lines += ax.plot(ar_date, ar_Qsim,
+                     color=tab_col[0],
+                     linestyle=tab_style[0], linewidth=tab_width[0])
+    tab_leg.append('Model')
 
     if nash:
-        nash_value=ut.Nash(ar_Qsim,ar_Qobs)
-        pl.plot(X[0:1],ar_Qsim[0:1],'w:')
-        tab_leg.append(('Eff= '+str(nash_value)[0:5]))
-            
-    pl.xlim(X[0],X[-1])
+        nash_value = ut.Nash(ar_Qsim,ar_Qobs)
+        lines += ax.plot(ar_date[0:1], ar_Qsim[0:1], 'w:')
+        tab_leg.append(('Eff = '+str(nash_value)[0:5]))
+
+    ax.set_xlim(ar_date[0], ar_date[-1])
     ytitle=r'$Q \  (m^3/s)$'
-    pl.ylabel(ytitle,fontsize=18)
-    pl.title(group_name)
-    pl.legend(tab_leg,'center')
-    leg = pl.gca().get_legend()
-    leg.draw_frame(False)
-    ltext  = leg.get_texts()
-    pl.setp(ltext, fontsize=14)
+    ax.set_ylabel(ytitle, fontsize=18)
+    ax.set_title(group_name)
 
+    ax2 = ax.twinx()
 
-    ax2 = pl.twinx()
-    ax2.yaxis.tick_right()
-    #Plot the rain first
-    pl.ylabel(r'$Rainfall \  (mm)$',fontsize=18,color=color_P)
-    #pl.plot(X,ar_rain,'b-')
-    X_fill=np.concatenate((X[0:1],X,X[-1:]))
-    rain_fill=np.concatenate((sp.zeros(1),ar_rain,sp.zeros(1)))
-    p=pl.fill(X_fill,rain_fill,facecolor=color_P,edgecolor=color_P,alpha=transparency_P)
-    pl.ylim(max(ar_rain)*2,min(ar_rain))
-    pl.xlim(X[0],X[-1])
+    ax2.set_ylabel(r'$Rainfall \ (mm)$', fontsize=18, color=color_P)
+    ax2.bar(ar_date, ar_rain, width=delta,
+            facecolor='blue', edgecolor='blue', alpha=transparency_P)
+    ax2.set_ylim(max(ar_rain)*2, min(ar_rain))
 
-    pl.savefig(image_out)
+    ax2.legend(lines, tab_leg, loc='upper right', fancybox=True)
+    leg = ax2.get_legend()
+    leg.get_frame().set_alpha(0.75)
 
+    # rotate and align the tick labels so they look better,
+    # unfortunately autofmt_xdate doesn't work with twinx due to a bug
+    # in matplotlib <= 1.0.0 so we do it manually
+    ## fig.autofmt_xdate()
 
-#SUBROUTINE
-#``````````````````````````````````````````   
-def read_delta_flow(file_name):
-    import scipy.io as io
+    bottom=0.2
+    rotation=30
+    ha='right'
 
-    tab=np.loadtxt(file_name)
-    ar_date=np.array(tab[:,0:-1], np.int32) # date components are integer numbers
-    ar_Q=tab[:,-1]
-    return ar_date,ar_Q
+    for ax in fig.get_axes():
+        if hasattr(ax, 'is_last_row') and ax.is_last_row():
+            for label in ax.get_xticklabels():
+                label.set_ha(ha)
+                label.set_rotation(rotation)
+        else:
+            for label in ax.get_xticklabels():
+                label.set_visible(False)
+            ax.set_xlabel('')
 
+    fig.subplots_adjust(bottom=bottom)
 
+    fig.savefig(image_out)
+    plt.show()
+
+def read_observed_flow(file_name):
+    """Read the observed flow from a data file.
+
+    """
+    date = np.loadtxt(file_name, dtype=np.int, usecols=(0, 1, 2, 3, 4))
+    dates = [dt.datetime(yr, mon, dy, hr, mn) for yr, mon, dy, hr, mn in date]
+
+    Q = np.loadtxt(file_name, usecols=(5,))
+
+    return dates, Q

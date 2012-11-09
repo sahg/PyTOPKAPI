@@ -1,0 +1,223 @@
+#!/usr/bin/python
+
+"""Script to extract PyTOPKAPI catchment parameters from GRASS
+
+A helper script to generate catchment parameters required to generate
+a PyTOPKAPI parameter file, using the tools in the
+pytopkapi.parameter_utils sub-package. This scripts requires a GRASS
+GIS location, which contains raster files at the required modelling
+resolution, and a vector file describing the catchment boundary.
+
+A set of GeoTIFFs is automatically generated, which will be suitable
+for conversion to a PyTOPKAPI parameter file. Some manaul tweaking of
+the catchment boundary file may be required in order to get the script
+to run to completion (depending on the properties of the DEM at the
+required model resolution). In many cases, however such intervention
+should not be required.
+
+"""
+import os
+import sys
+from ConfigParser import SafeConfigParser
+
+import numpy as np
+import grass.script as grass
+
+# Read configuration file
+ini_file = sys.argv[1]
+config = SafeConfigParser()
+config.read(ini_file)
+
+catch_id = config.get('parameters', 'catchment_id')
+buffer_range = config.get('parameters', 'buffer_range')
+
+catch_shp = config.get('GIS_layers', 'catchment_boundary')
+dem_lyr = config.get('GIS_layers', 'DEM')
+surface_slope = config.get('GIS_layers', 'surface_slope')
+manning_overland = config.get('GIS_layers', 'manning_overland')
+soil_depth = config.get('GIS_layers', 'soil_depth')
+sat_moisture_content = config.get('GIS_layers', 'sat_moisture_content')
+residual_moisture_content = config.get('GIS_layers',
+                                       'residual_moisture_content')
+hydraulic_conductivity = config.get('GIS_layers', 'hydraulic_conductivity')
+pore_size_index = config.get('GIS_layers', 'pore_size_index')
+bubbling_pressure = config.get('GIS_layers', 'bubbling_pressure')
+
+# Make sure the region is set correctly
+grass.run_command('g.region', rast=dem_lyr)
+
+# Create initial catchment mask
+grass.run_command('v.buffer',
+                  flags = '-o',
+                  input = catch_shp,
+                  output = '%s_buffer_py' % catch_id,
+                  distance='%s' % buffer_range)
+
+grass.run_command('v.to.rast',
+                  flags = '-o',
+                  input = '%s_buffer_py' % catch_id,
+                  out = '%s_mask_py' % catch_id,
+                  use = 'val')
+
+# Use mask to extract catchment from larger DEM
+grass.run_command('r.mask', input='%s_mask_py' % catch_id)
+grass.mapcalc('%s_dem=%s' % (catch_id, dem_lyr), overwrite=True)
+grass.run_command('r.mask', flags='r')
+
+# Reset the region to match the initial catchment mask
+grass.run_command('g.region',
+                  zoom = '%s_mask_py' % catch_id,
+                  align = '%s_mask_py' % catch_id)
+
+# Fill sinks in the DEM. In many cases this requires two runs to
+# remove all sinks, therefore do two runs by default.
+grass.run_command('r.fill.dir',
+                  flags = '-o',
+                  input = '%s_dem' % catch_id,
+                  elevation = '%s_filled_dem_v1' % catch_id,
+                  direction = '%s_filled_dir_v1' % catch_id)
+
+grass.run_command('r.fill.dir',
+                  flags = '-o',
+                  input = '%s_filled_dem_v1' % catch_id,
+                  elevation = '%s_filled_dem_v2' % catch_id,
+                  direction = '%s_filled_dir_v2' % catch_id)
+
+# Obtain the catchment properties from the filled DEM
+grass.run_command('r.watershed',
+                  flags = '-o',
+                  elevation = '%s_filled_dem_v2' % catch_id,
+                  drainage = '%s_dir' % catch_id,
+                  stream = '%s_str' % catch_id,
+                  threshold=250)
+
+# Thin the stream raster and convert to vector for visualization
+# purposes
+grass.run_command('r.thin',
+                  flags = '-o',
+                  input = '%s_str' % catch_id,
+                  out = '%s_str_thin' % catch_id)
+
+grass.run_command('r.to.vect',
+                  flags = '-o',
+                  input = '%s_str_thin' % catch_id,
+                  out = '%s_streams' % catch_id,
+                  feature = 'line')
+
+# Find the stream outlet point and delineate the catchment using
+# upstream cells
+grass.run_command('v.patch',
+                  flags = '-o',
+                  input = '%s_streams,%s' % (catch_id, catch_shp),
+                  out = '%s_streams_catch' % catch_id)
+
+grass.run_command('v.clean',
+                  flags = '-o',
+                  input = '%s_streams_catch' % catch_id,
+                  out = '%s_streams_catch_clean' % catch_id,
+                  tool = 'break',
+                  error = '%s_catch_outlet' % catch_id)
+
+grass.run_command('v.out.ascii',
+                  flags = '-o',
+                  input = '%s_catch_outlet' % catch_id,
+                  out = '%s_catch_outlet.txt' % catch_id,
+                  format = 'point',
+                  fs = 'space')
+
+easting, northing = np.loadtxt('%s_catch_outlet.txt' % catch_id)
+os.remove('%s_catch_outlet.txt' % catch_id)
+
+grass.run_command('r.water.outlet',
+                  flags = '-o',
+                  drain = '%s_dir' % catch_id,
+                  east = easting,
+                  north = northing,
+                  basin = '%s_catch_mask' % catch_id)
+
+grass.run_command('r.null',
+                  map = '%s_catch_mask' % catch_id,
+                  setnull = '0')
+
+# Use new mask to extract catchment information from regional rasters
+# or catchment buffer
+grass.run_command('r.mask', input='%s_catch_mask' % catch_id)
+grass.mapcalc('%s_dem=%s_filled_dem_v2' % (catch_id, catch_id), overwrite=True)
+grass.mapcalc('%s_slope=%s' % (catch_id, surface_slope), overwrite=True)
+grass.mapcalc('%s_n_overland=%s' % (catch_id, manning_overland), overwrite=True)
+grass.mapcalc('%s_soil_depth=%s' % (catch_id, soil_depth), overwrite=True)
+grass.mapcalc('%s_sat_moisture_content=%s' \
+              % (catch_id, sat_moisture_content), overwrite=True)
+grass.mapcalc('%s_residual_moisture_content=%s' \
+              % (catch_id, residual_moisture_content), overwrite=True)
+grass.mapcalc('%s_hydraulic_conductivity=%s' \
+              % (catch_id, hydraulic_conductivity), overwrite=True)
+grass.mapcalc('%s_pore_size=%s' % (catch_id, pore_size_index), overwrite=True)
+grass.mapcalc('%s_bubbling_pressure=%s' \
+              % (catch_id, bubbling_pressure), overwrite=True)
+grass.mapcalc('%s_dir=%s_dir' % (catch_id, catch_id), overwrite=True)
+grass.mapcalc('%s_str=%s_str' % (catch_id, catch_id), overwrite=True)
+grass.run_command('r.mask', flags='r')
+
+# Output results to GTiff for use by the PyTOPKAPI parameter file
+# generation tools
+grass.run_command('r.out.gdal',
+                  type='Int16',
+                  input='%s_dir' % catch_id,
+                  format='GTiff',
+                  output='%s-flow-dir.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_catch_mask' % catch_id,
+                  format='GTiff',
+                  output='%s-mask.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_dem' % catch_id,
+                  format='GTiff',
+                  output='%s-dem.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_str' % catch_id,
+                  format='GTiff',
+                  output='%s-channel-network.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_n_overland' % catch_id,
+                  format='GTiff',
+                  output='%s-manning-overland.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_soil_depth' % catch_id,
+                  format='GTiff',
+                  output='%s-soil-depth.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_sat_moisture_content' % catch_id,
+                  format='GTiff',
+                  output='%s-sat-moisture-content.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_residual_moisture_content' % catch_id,
+                  format='GTiff',
+                  output='%s-residual-moisture-content.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_hydraulic_conductivity' % catch_id,
+                  format='GTiff',
+                  output='%s-hydraulic-conductivity.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_pore_size' % catch_id,
+                  format='GTiff',
+                  output='%s-pore-size.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_bubbling_pressure' % catch_id,
+                  format='GTiff',
+                  output='%s-bubbling-pressure.tif' % catch_id)
+
+grass.run_command('r.out.gdal',
+                  input='%s_slope' % catch_id,
+                  format='GTiff',
+                  output='%s-slope.tif' % catch_id)

@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% set title = 'Overview' %}
+{% block body %}
+  <p>
+    PyTOPKAPI is
+    a <a href="http://www.opensource.org/licenses/bsd-license.html">BSD
+    licensed</a> Python library implementing the TOPKAPI Hydrological
+    model (Liu and Todini, 2002). The model is a physically-based and
+    fully distributed hydrological model, which has already been
+    successfully applied in several countries around the world (Liu
+    and Todini, 2002; Bartholomes and Todini, 2005; Liu et al., 2005;
+    Martina et al., 2006; Vischel et al., 2008, Sinclair and Pegram,
+    2010).
+  </p>
+
+  <p>
+	The main strengths of the TOPKAPI model are:
+  </p>
+
+  <ul>
+	<li>The physical basis of the equations,</li>
+	<li>the fine-scale representation of the spatial catchment
+	features,</li>
+	<li>the parsimonious parametrisation linked to field/catchment
+	information,</li>
+	<li>the good computation time performance,</li>
+	<li>the modularity of the processes,</li>
+	<li>the ease of use.</li>
+  </ul>
+
+  <p>
+	These and the good results obtained in modelling the river
+	discharges of Liebenbergsvlei catchment, make the TOPKAPI model a
+	promising tool for hydrological modelling of catchments in South
+	Africa and around the world.
+  </p>
+
+  <div class="admonition note">
+
+	<p class="first admonition-title">Note</p>
+	<p class="last">
+	  PyTOPKAPI is under active development and the public interface
+	  (API) is not yet considered stable. However, the model is
+	  already usable and we would welcome feedback from users and
+	  collaborators as we work to stabilize the API and make the model
+	  more robust.
+	</p>
+  </div>
+
+  <div class="section" id="get-started">
+	<h1>Get Started<a class="headerlink" href="#get-started"
+	title="Permalink to this headline">¶</a></h1>
+	<ul>
+	  <li><a href="{{pathto("contents")}}">Read the PyTOPKAPI
+	  Documentation</a></li>
+	  <li><a href="{{pathto("install")}}">Find out how to Download and
+	  install PyTOPKAPI</a></li>
+	  <li><a href="{{pathto("contact")}}">Join the Mailing
+	  list</a></li>
+	  <li><a href="{{pathto("bugs")}}">Report Bugs</a></li>
+	  <li><a href="{{pathto("developer")}}">Help with Model
+	  Development and Documentation</a></li>
+	</ul>
+  </div>
+
+{% endblock %}

@@ -1,7 +1,6 @@
-from TOPKAPI import pretreatment as pm
-from TOPKAPI import utils as ut
+from pytopkapi import pretreatment as pm
+from pytopkapi import utils as ut
 import numpy as np
-import scipy as sp
 
 def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max_val=0.):
 
@@ -9,25 +8,25 @@ def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max
     import matplotlib.numerix.ma as M
 
     #max_val=max(ar_field)
-    
+
     xmin=min(ar_coorx);xmax=max(ar_coorx)
     ymin=min(ar_coory);ymax=max(ar_coory)
     step=X
     nx=(xmax-xmin)/step+1
     ny=(ymax-ymin)/step+1
-    
+
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
-    
-    ar_map=sp.ones((ny,nx))*-99.9
+
+    ar_map=np.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
-    
+
     if flip==1:
         ar_map=np.flipud(ar_map)
-        
+
     ar_map2 = M.masked_where(ar_map <0, ar_map)
 
-        
+
     ut.check_file_exist(image_out)
 
     pl.clf()
@@ -42,25 +41,25 @@ def field_map2(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,ma
     import matplotlib.numerix.ma as M
 
     #max_val=max(ar_field)
-    
+
     xmin=min(ar_coorx);xmax=max(ar_coorx)
     ymin=min(ar_coory);ymax=max(ar_coory)
     step=X
     nx=(xmax-xmin)/step+1
     ny=(ymax-ymin)/step+1
-    
+
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
-    
-    ar_map=sp.ones((ny,nx))*-99.9
+
+    ar_map=np.ones((ny,nx))*-99.9
     ar_map[ar_indy,ar_indx]=ar_field
-    
+
     if flip==1:
         ar_map=np.flipud(ar_map)
-        
+
     ar_map2=ar_map
 
-        
+
     ut.check_file_exist(image_out)
 
     pl.clf()
@@ -150,5 +149,3 @@ field_map(ar_pVs_t0,ar_coorx,ar_coory,X,image_out,'Initial soil moisture %',max_
 #label
 image_out=path_out+'field_label.png'
 field_map(ar_cell_label,ar_coorx,ar_coory,X,image_out,'Cell label',max_val=max(ar_cell_label))
-
-    

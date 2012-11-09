@@ -1,5 +1,8 @@
-""" model.py
-Main program of the TOPKAPI model.
+"""Core logic of PyTOPKAPI.
+
+The `run` function in this module contains the logic to run a TOPKAPI
+simulation based on the parameters specified in an INI file.
+
 """
 
 #General module importation
@@ -8,17 +11,18 @@ from ConfigParser import SafeConfigParser
 
 import numpy as np
 import tables as h5
-import scipy.io as io
 
 #Personnal module importation
+import pytopkapi
 import utils as ut
 import pretreatment as pm
 import fluxes as fl
 import ode as om
 import evap as em
+from infiltration import green_ampt_cum_infiltration
 
 def run(ini_file='TOPKAPI.ini'):
-    """Run the model defined by ini_file.
+    """Run the model with the set-up defined by `ini_file`.
 
     """
 
@@ -126,7 +130,8 @@ def run(ini_file='TOPKAPI.ini'):
     ar_theta_r, ar_theta_s, \
     ar_n_o0, ar_n_c0, \
     ar_cell_down, ar_pVs_t0, \
-    ar_Vo_t0, ar_Qc_t0, ar_kc = pm.read_cell_parameters(file_cell_param)
+    ar_Vo_t0, ar_Qc_t0, \
+    ar_kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell = len(ar_cell_label)
@@ -232,6 +237,11 @@ def run(ini_file='TOPKAPI.ini'):
     ## HDF5 output file definition ##
     ##=============================##
     h5file = h5.openFile(file_out, mode=fmode, title='TOPKAPI_out')
+
+    root = h5file.getNode('/')
+    root._v_attrs.pytopkapi_version = pytopkapi.__version__
+    root._v_attrs.pytopkapi_git_revision = pytopkapi.__git_revision__
+
     atom = h5.Float32Atom()
     h5filter = h5.Filters(9)# maximum compression
 
@@ -330,6 +340,8 @@ def run(ini_file='TOPKAPI.ini'):
         E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
+    eff_theta = ar_theta_s - ar_theta_r
+
     ##===========================##
     ##     Core of the Model     ##
     ##===========================##
@@ -340,6 +352,11 @@ def run(ini_file='TOPKAPI.ini'):
     ## Loop on time
     for t in range(nb_time_step):
         print t+1, '/', nb_time_step
+
+        eff_sat = ar_Vs0/ar_Vsm
+
+        # estimate soil suction head using Brookes and Corey (1964)
+        psi = psi_b/np.power(eff_sat, 1.0/lamda)
 
         ## Loop on cells
         n=-1
@@ -353,11 +370,22 @@ def run(ini_file='TOPKAPI.ini'):
             ## ======================== ##
             ## No interception for the moment
 
+            ## ======================== ##
+            ## ===== INFILTRATION ===== ##
+            ## ======================== ##
+            rain_rate = ndar_rain[t, cell]/Dt
+
+            infiltration_depth = green_ampt_cum_infiltration(rain_rate,
+                                                             psi[cell],
+                                                             eff_theta[cell],
+                                                             eff_sat[cell],
+                                                             ar_Ks[cell], Dt)
+
             ## ====================== ##
             ## ===== SOIL STORE ===== ##
             ## ====================== ##
             #~~~~ Computation of soil input
-            ar_a_s[cell] = fl.input_soil(ndar_rain[t, cell],
+            ar_a_s[cell] = fl.input_soil(infiltration_depth,
                                          Dt, X,
                                          ar_Q_to_next_cell,
                                          li_cell_up[cell])
@@ -385,13 +413,15 @@ def run(ini_file='TOPKAPI.ini'):
             ## ===== OVERLAND STORE ===== ##
             ## ========================== ##
             #~~~~ Computation of overland input
-            if Vs_prim > ar_Vsm[cell]:
-                ar_a_o[cell] = max(0.,
-                                   ar_a_s[cell]
-                                   - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt
-                                   + ar_Qs_out[cell]))
-            else:
-                ar_a_o[cell] = 0.
+            rain_excess = ndar_rain[t, cell] - infiltration_depth
+            # convert mm to m^3/s
+            rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
+
+            ar_a_o[cell] = max(0,
+                               ar_a_s[cell] \
+                               - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
+                                  + ar_Qs_out[cell]) \
+                               + rain_excess)
 
             #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 

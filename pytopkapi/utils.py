@@ -1,7 +1,42 @@
 import os
 import os.path
+from subprocess import Popen, PIPE
+
 import tables as h5
 import numpy as np
+
+# System utility functions
+def exec_command(cmd_args):
+    """Execute a shell command in a subprocess
+
+    Convenience wrapper around subprocess to execute a shell command
+    and pass back stdout, stderr, and the return code. This function
+    waits for the subprocess to complete, before returning.
+
+    Usage example:
+    >>> stdout, stderr, retcode = exec_command(['ls', '-lhot'])
+
+    Parameters
+    ----------
+    cmd_args : list of strings
+        The args to pass to subprocess. The first arg is the program
+        name.
+
+    Returns
+    -------
+    stdout : string
+        The contents of stdout produced by the shell command
+    stderr : string
+        The contents of stderr produced by the shell command
+    retcode : int
+        The return code produced by the shell command
+
+    """
+    proc = Popen(cmd_args, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = proc.communicate()
+    proc.wait()
+
+    return stdout, stderr, proc.returncode
 
 ########################
 ##   For graphics     ##
@@ -160,7 +195,7 @@ def distance(x1,y1,x2,y2):
 def find_cell_coordinates(ar_cell_label, Xoutlet, Youtlet,
                           ar_coorx, ar_coory, ar_lambda, channel=True):
     """Find the label of the cell closest to (Xoutlet, Youtlet).
-    
+
     Find the label of the model cell containing the specified location. The
     co-ordinates of the location must be given in the same co-ordinate system
     as that specifying the model catchment.
