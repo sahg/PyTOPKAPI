@@ -1,5 +1,5 @@
 __all__ = ['extract_ssi', 'extract_ssi_to_file',
-           'extract_Q_channel', 'extract_Q_down']
+           'extract_Q_channel', 'extract_Q_down', 'extract_overland_volume']
 
 from datetime import timedelta
 from ConfigParser import SafeConfigParser
@@ -80,6 +80,37 @@ def extract_Q_channel(control_fname):
     Qc = np.ma.masked_where(cond, Qc)
 
     return Qc
+
+def extract_overland_volume(control_fname):
+    """Extract the volumes in the overland stores.
+
+    Read a PyTOPKAPI simulation file and return the combined overland
+    and store volumes in a Numpy array.
+
+    Parameters
+    ----------
+    control_fname : string
+        The file name of a PyTOPKAPI simulation control file. The name
+        should contain the full path relative to the current directory
+        (or the root of the file system).
+
+    Returns
+    -------
+    Vo : Numpy array
+        A Numpy array containing the simulated storage volume in the
+        overland store of each cell.
+
+    """
+    config = SafeConfigParser()
+    config.read(control_fname)
+
+    sim_fname = config.get('output_files', 'file_out')
+
+    tkpi_file = h5py.File(sim_fname)
+    Vo = tkpi_file['/Overland/V_o'][...]
+    tkpi_file.close()
+
+    return Vo
 
 def extract_ssi(control_fname):
     """Extract SSI from a PyTOPKAPI simulation file.
