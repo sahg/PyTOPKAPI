@@ -89,8 +89,9 @@ def generate_param_file(ini_fname, isolated_cells=False):
     """Create a PyTOPKAPI parameter file
 
     Generates a parameter file from the catchment data provided in a
-    set of georeferenced raster files. The input files may be GeoTIFF
-    or 32-bit raster files with ArcGIS style headers.
+    set of georeferenced raster files. The input files are currently
+    limited to GeoTIFF. Support for 32-bit raster files with ArcGIS
+    style headers is planned.
 
     Parameters
     ----------
