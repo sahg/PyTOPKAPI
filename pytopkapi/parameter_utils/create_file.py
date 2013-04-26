@@ -523,6 +523,7 @@ def cell_connectivity(flowdir, mask, source='GRASS'):
         outlet is indiacted by a value of -999.
 
     """
+    sentinel_value = -999
     # Specify flow direction code from GRASS GIS r.watershed or ArcGIS
     # Hydrology toolbox flow-direction tool
     if source == 'GRASS':
@@ -553,6 +554,7 @@ def cell_connectivity(flowdir, mask, source='GRASS'):
 
     cell_down = np.ones(ncells, dtype=np.int)*int_min
 
+    outlet_found = False
     nrows, ncols = mask.shape
     for i in range(nrows):
         for j in range(ncols):
@@ -562,9 +564,33 @@ def cell_connectivity(flowdir, mask, source='GRASS'):
                 r, c = ddict[fdir]
                 m, n = i+r, j+c
 
-                # To-do: Handle case where (m, n) is outside the array
-                # bounds
-                cell_down[cell_id[i, j]] = cell_id[m, n]
+                # If the raster is closely cropped to the catchment
+                # boundary, (m, n) computed for the catchment outlet
+                # will fall outside the array bounds.
+
+                if (m < 0) or (m > nrows-1) or \
+                   (n < 0) or (n > ncols-1):
+                    if outlet_found:
+                        error_txt = """More than one catchment outlet detected.
+Check that the flow direction raster and catchment mask are compatible.
+
+First outlet detected at:
+cell_id = %s
+row = %s
+col = %s
+
+Second outlet detected at:
+cell_id = %s
+row = %s
+col = %s""" % (outlet_loc[0], outlet_loc[1], outlet_loc[2], cell_id[i, j], i, j)
+                        raise ValueError(error_txt)
+                    else:
+                        outlet_found = True
+                        outlet_loc = (cell_id[i, j], i, j)
+
+                        cell_down[cell_id[i, j]] = sentinel_value
+                else:
+                    cell_down[cell_id[i, j]] = cell_id[m, n]
 
     if cell_down[cell_down == int_min].size > 1:
         warn_txt = """There are %d catchment cells without a downstream link.
@@ -573,7 +599,13 @@ Check the validity of the flow-direction raster."""  \
 
         warn(warn_txt)
 
-    cell_down[cell_down == int_min] = -999
+    # Handle case where outlet isn't at the raster boundary.
+    cell_down[cell_down == int_min] = sentinel_value
+    if cell_down[cell_down == sentinel_value].size > 1:
+        error_txt = """More than one catchment outlet detected.
+Check that the flow direction raster and catchment mask are compatible.
+"""
+        raise ValueError(error_txt)
 
     return cell_down
 
