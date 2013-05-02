@@ -1,0 +1,3 @@
+The package can be tested by running `nosetests` from this
+directory. This will test the code of the current source tree (*not*
+the installed version of PyTOPKAPI).
