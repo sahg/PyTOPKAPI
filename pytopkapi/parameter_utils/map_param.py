@@ -5,7 +5,7 @@ import numpy as np
 def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max_val=0.):
 
     import pylab as pl
-    import matplotlib.numerix.ma as M
+    import numpy.ma as M
 
     #max_val=max(ar_field)
 
@@ -38,7 +38,7 @@ def field_map(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max
 def field_map2(ar_field,ar_coorx,ar_coory,X,image_out,title,flip=0,min_val=0.,max_val=0.):
 
     import pylab as pl
-    import matplotlib.numerix.ma as M
+    import numpy.ma as M
 
     #max_val=max(ar_field)
 
