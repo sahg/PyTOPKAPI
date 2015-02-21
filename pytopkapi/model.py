@@ -9,6 +9,7 @@ simulation based on the parameters specified in an INI file.
 import os.path
 from ConfigParser import SafeConfigParser
 
+import h5py
 import numpy as np
 import tables as h5
 
@@ -191,17 +192,12 @@ def run(ini_file='TOPKAPI.ini'):
     #Matrix of soil,overland and channel store at the begining of the time step
     if append_output and not first_run:
         print 'Initialize from file'
-        # read from file
-        h5file_in = h5.openFile(file_out, mode='r')
 
-        node = h5file_in.getNode('/Soil/V_s')
-        ar_Vs0 = node.read()[-1, :]
+        h5file_in = h5py.File(file_out)
 
-        node = h5file_in.getNode('/Overland/V_o')
-        ar_Vo0 = node.read()[-1, :]
-
-        node = h5file_in.getNode('/Channel/V_c')
-        ar_Vc0 = node.read()[-1, :]
+        ar_Vs0 = h5file_in['/Soil/V_s'][-1, :]
+        ar_Vc0 = h5file_in['/Channel/V_c'][-1, :]
+        ar_Vo0 = h5file_in['/Overland/V_o'][-1, :]
 
         h5file_in.close()
     else:
