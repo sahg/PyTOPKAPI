@@ -587,11 +587,11 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
                               ar_A_drained)
 
     #Read the soil volume file
-    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'/Soil/','V_s'))
+    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'Soil','V_s'))
     #Read the overland volume file
-    ndar_Vo=np.array(ut.read_one_array_hdf(file_h5,'/Overland/','V_o'))
+    ndar_Vo=np.array(ut.read_one_array_hdf(file_h5,'Overland','V_o'))
     #Read the channel dischargefile
-    ndar_Qc=np.array(ut.read_one_array_hdf(file_h5,'/Channel/','Qc_out'))
+    ndar_Qc=np.array(ut.read_one_array_hdf(file_h5,'Channel','Qc_out'))
 
     ar_Vs=ndar_Vs[time_step,:]
     ar_pVs_t0=ar_Vs/ar_Vsm*100.
@@ -685,7 +685,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
                               ar_A_drained)
 
     #Read the soil volume file
-    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'/Soil/','V_s'))
+    ndar_Vs=np.array(ut.read_one_array_hdf(file_h5,'Soil','V_s'))
 
     #Read the file of catchment saturation rates
     ndar_Vs_sat=ndar_Vs/ar_Vsm*100.

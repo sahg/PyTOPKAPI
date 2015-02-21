@@ -51,7 +51,7 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 
     #Read the simulated data Q
     file_h5=file_Qsim
-    ndar_Qc_out=ut.read_one_array_hdf(file_h5,'/Channel/','Qc_out')
+    ndar_Qc_out=ut.read_one_array_hdf(file_h5,'Channel','Qc_out')
     ar_Qsim=ndar_Qc_out[1:,0]
 
     ##Graph

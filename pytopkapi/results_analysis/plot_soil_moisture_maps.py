@@ -74,7 +74,7 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
                               ar_A_drained)
 
     #Read of data from the outputs of TOPKAPI in hdf5 format
-    ndar_Vs=np.array(ut.read_one_array_hdf(file_sim,'/Soil/','V_s'))
+    ndar_Vs=np.array(ut.read_one_array_hdf(file_sim,'Soil','V_s'))
 
     #Assign the variables
     if variable==1:

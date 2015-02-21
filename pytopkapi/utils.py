@@ -2,7 +2,7 @@ import os
 import os.path
 from subprocess import Popen, PIPE
 
-import tables as h5
+import h5py
 import numpy as np
 
 # System utility functions
@@ -97,11 +97,17 @@ def check_folder_exist(folder_name):
         print folder_name, 'has been created'
         os.mkdir(folder_name)
 
-def read_one_array_hdf(file_h5,group,name):
-    h5file_in=h5.openFile(file_h5,mode='r')
-    node = h5file_in.getNode(group+name)
-    array=node.read()
+def read_one_array_hdf(file_h5, group, name):
+    """Read a single array from a PyTOPKAPI simulation file.
+
+    """
+    h5file_in = h5py.File(file_h5)
+
+    dset_string = '/%s/%s' % (group, name)
+    array = h5file_in[dset_string][...]
+
     h5file_in.close()
+
     return array
 
 ##############################
