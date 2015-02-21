@@ -2,21 +2,26 @@ import os
 
 from ConfigParser import SafeConfigParser
 
-import tables as h5
+import h5py
 import numpy as np
 
 import pytopkapi
 
 old_settings = None # global variable for numpy error settings
 
+def read_hdf5_array(fname, dset_string):
+    h5file = h5py.File(fname)
+    array = h5file[dset_string][...]
+    h5file.close()
+
+    return array
+
 def compute_precip_volume(precip_fname, group_name, X):
     """Compute the volume of precipitation over the catchment.
 
     """
-    h5file = h5.openFile(precip_fname)
-    node = h5file.getNode('/'+group_name, 'rainfall')
-    data = node.read()
-    h5file.close()
+    dset_string = '/%s/rainfall' % group_name
+    data = read_hdf5_array(precip_fname, dset_string)
 
     depth = data.sum()/1000.0 # convert mm --> m
 
@@ -25,10 +30,8 @@ def compute_precip_volume(precip_fname, group_name, X):
     return precip_vol
 
 def compute_evapot_volume(result_fname, X):
-    h5file = h5.openFile(result_fname)
-    node = h5file.getNode('/', 'ET_out')
-    data = node.read()
-    h5file.close()
+    dset_string = '/ET_out'
+    data = read_hdf5_array(result_fname, dset_string)
 
     depth = data.sum()/1000.0 # convert mm --> m
 
@@ -43,10 +46,8 @@ def compute_evap_volume(result_fname, channel_indices):
     reported as a volume in the TOPKAPI results file.
 
     """
-    h5file = h5.openFile(result_fname)
-    node = h5file.getNode('/'+'Channel', 'Ec_out')
-    data = node.read()[:, channel_indices]
-#    data = node.read()
+    h5file = h5py.File(result_fname)
+    data = h5file['/Channel/Ec_out'][:, channel_indices]
     h5file.close()
 
     return data.sum()
@@ -58,26 +59,23 @@ def compute_storage(result_fname):
     the simulation period.
 
     """
-    h5file = h5.openFile(result_fname)
+    h5file = h5py.File(result_fname)
 
     # soil stores
-    node = h5file.getNode('/'+'Soil', 'V_s')
-    initial = node.read()[0, :]
-    final = node.read()[-1, :]
+    initial = h5file['/Soil/V_s'][0, :]
+    final = h5file['/Soil/V_s'][-1, :]
     initial_storage = initial.sum()
     final_storage = final.sum()
 
     # overland stores
-    node = h5file.getNode('/'+'Overland', 'V_o')
-    initial = node.read()[0, :]
-    final = node.read()[-1, :]
+    initial = h5file['/Overland/V_o'][0, :]
+    final = h5file['/Overland/V_o'][-1, :]
     initial_storage += initial.sum()
     final_storage += final.sum()
 
     # channel stores
-    node = h5file.getNode('/'+'Channel', 'V_c')
-    initial = node.read()[0, :]
-    final = node.read()[-1, :]
+    initial = h5file['/Channel/V_c'][0, :]
+    final = h5file['/Channel/V_c'][-1, :]
     initial_storage += initial.sum()
     final_storage += final.sum()
 
@@ -86,10 +84,10 @@ def compute_storage(result_fname):
     return initial_storage, final_storage
 
 def compute_channel_runoff(result_fname, delta_t, cell_id):
-    h5file = h5.openFile(result_fname)
+    h5file = h5py.File(result_fname)
 
-    node = h5file.getNode('/'+'Channel', 'Qc_out')
-    flows = node.read()[1:, cell_id]
+    dset = h5file['/Channel/Qc_out']
+    flows = dset[1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -97,10 +95,10 @@ def compute_channel_runoff(result_fname, delta_t, cell_id):
     return runoff_vol
 
 def compute_overland_runoff(result_fname, delta_t, cell_id):
-    h5file = h5.openFile(result_fname)
+    h5file = h5py.File(result_fname)
 
-    node = h5file.getNode('/'+'Overland', 'Qo_out')
-    flows = node.read()[1:, cell_id]
+    dset = h5file['/Overland/Qo_out']
+    flows = dset[1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -108,10 +106,9 @@ def compute_overland_runoff(result_fname, delta_t, cell_id):
     return runoff_vol
 
 def compute_soil_drainage(result_fname, delta_t, cell_id):
-    h5file = h5.openFile(result_fname)
+    h5file = h5py.File(result_fname)
 
-    node = h5file.getNode('/'+'Soil', 'Qs_out')
-    flows = node.read()[1:, cell_id]
+    flows = h5file['/Soil/Qs_out'][1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
@@ -119,10 +116,9 @@ def compute_soil_drainage(result_fname, delta_t, cell_id):
     return runoff_vol
 
 def compute_down_drainage(result_fname, delta_t, cell_id):
-    h5file = h5.openFile(result_fname)
+    h5file = h5py.File(result_fname)
 
-    node = h5file.getNode('/Q_down')
-    flows = node.read()[1:, cell_id]
+    flows = h5file['/Q_down'][1:, cell_id]
     runoff_vol = flows.sum() * delta_t
 
     h5file.close()
