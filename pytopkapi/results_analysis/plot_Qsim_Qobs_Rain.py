@@ -1,8 +1,8 @@
 import datetime as dt
 from ConfigParser import SafeConfigParser
 
+import h5py
 import numpy as np
-import tables as h5
 import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 
@@ -41,17 +41,18 @@ def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
 
     #Rain
     if Pobs:
-        h5file_in=h5.openFile(file_rain,mode='r')
-        group='/'+group_name+'/'
-        node = h5file_in.getNode(group+'rainfall')
-        ndar_rain=node.read()
-        h5file_in.close()
+        h5file = h5py.File(file_rain)
+
+        dset_string = '/%s/rainfall' % group_name
+        ndar_rain = h5file[dset_string][...]
+
+        h5file.close()
         #Compute the mean catchment rainfall
         ar_rain=np.average(ndar_rain,axis=1)
 
     #Read the simulated data Q
     file_h5=file_Qsim
-    ndar_Qc_out=ut.read_one_array_hdf(file_h5,'/Channel/','Qc_out')
+    ndar_Qc_out=ut.read_one_array_hdf(file_h5,'Channel','Qc_out')
     ar_Qsim=ndar_Qc_out[1:,0]
 
     ##Graph
