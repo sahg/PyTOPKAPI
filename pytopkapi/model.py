@@ -314,7 +314,7 @@ def run(ini_file='TOPKAPI.ini'):
     if '/Q_down' not in h5file:
         array_Q_down = h5file.createEArray('/', 'Q_down',
                                            atom, shape=(0,nb_cell),
-                                           title='m3', filters=h5filter,
+                                           title='m3/s', filters=h5filter,
                                            expectedrows=nb_time_step)
     else:
         array_Q_down = h5file.getNode('/Q_down')
