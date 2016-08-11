@@ -22,7 +22,7 @@ def generate_version_py(filename):
             s = subprocess.Popen(["git", "rev-parse", "HEAD"],
                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             out = s.communicate()[0]
-            GIT_REVISION = out.strip()
+            GIT_REVISION = out.strip().decode('ascii')
         elif os.path.exists(dev_version_py):
             # should be a source distribution, use existing dev
             # version file
