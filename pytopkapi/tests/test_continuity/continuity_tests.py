@@ -139,34 +139,34 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
     result_fname = config.get('output_files', 'file_out')
 
     # write model version
-    print 'PyTOPKAPI version = %s' % pytopkapi.__version__
+    print('PyTOPKAPI version = %s' % pytopkapi.__version__)
 
     # compute the terms in the continuity eqn.
     initial_storage, final_storage = compute_storage(result_fname)
-    print 'Initial storage = ', initial_storage
-    print 'Final storage = ', final_storage
+    print('Initial storage = ', initial_storage)
+    print('Final storage = ', final_storage)
 
     precip_vol = compute_precip_volume(precip_fname, group_name, X)
-    print 'Precipitation = ', precip_vol
+    print('Precipitation = ', precip_vol)
 
     evapo_vol = compute_evapot_volume(result_fname, X)
-    print 'Evapotranspiration = ', evapo_vol
+    print('Evapotranspiration = ', evapo_vol)
 
     open_water_evap_vol = compute_evap_volume(result_fname, channel_indices)
-    print 'Channel evaporation = ', open_water_evap_vol
+    print('Channel evaporation = ', open_water_evap_vol)
 
     channel_runoff_vol = compute_channel_runoff(result_fname, delta_t, cell_id)
-    print 'Channel runoff (outlet) = ', channel_runoff_vol
+    print('Channel runoff (outlet) = ', channel_runoff_vol)
 
     overland_runoff_vol = compute_overland_runoff(result_fname,
                                                   delta_t, cell_id)
-    print 'Overland runoff (outlet) = ', overland_runoff_vol
+    print('Overland runoff (outlet) = ', overland_runoff_vol)
 
     soil_drainage_vol = compute_soil_drainage(result_fname, delta_t, cell_id)
-    print 'Soil drainage (outlet) = ', soil_drainage_vol
+    print('Soil drainage (outlet) = ', soil_drainage_vol)
 
     down_drainage_vol = compute_down_drainage(result_fname, delta_t, cell_id)
-    print 'Non-channel drainage (outlet) = ', down_drainage_vol
+    print('Non-channel drainage (outlet) = ', down_drainage_vol)
 
     input = precip_vol
     output = evapo_vol \
@@ -183,9 +183,9 @@ def continuity_error(ini_fname, delta_t, cell_id, X, channel_indices):
         precip_error = None
     stor_error = abs((error/initial_storage)*100.0)
 
-    print 'Continuity error = ', error
-    print 'Error as % precip. = ', precip_error
-    print 'Error as % initial storage = ', stor_error
+    print('Continuity error = ', error)
+    print('Error as % precip. = ', precip_error)
+    print('Error as % initial storage = ', stor_error)
 
     os.remove(result_fname)
 

@@ -51,7 +51,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     ##  Read the input file (*.ini)   ##
     ##================================##
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
     ##~~~~~~~~~~~ input files ~~~~~~~~~~~##
     #Param
     file_cell_param=config.get('input_files','file_cell_param')
@@ -63,7 +63,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     ##============================##
     ## Pretreatment of input data ##
     ##============================##
-    print 'Pretreatment of input data'
+    print('Pretreatment of input data')
     #~~~~Read Cell parameters file
     ar_cell_label, ar_coorx, ar_coory, \
     ar_lambda, ar_Xc, ar_dam, ar_tan_beta, \
@@ -76,13 +76,13 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
     #~~~~Computation of cell order
     ar_label_sort=pm.sort_cell(ar_cell_label,ar_cell_down)
 
-    print 'Treatment of cell slopes'
+    print('Treatment of cell slopes')
     #Adjust the outlet slope if equal to zero
     if ar_tan_beta[ar_label_sort[-1]]==0:
         ar_tan_beta[ar_label_sort[-1]]=1./X
 
     for cell1 in ar_label_sort:
-        print cell1
+        print(cell1)
         cell=np.where(ar_cell_label==cell1)[0][0]
 
         li_label_path=[cell]
@@ -109,7 +109,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
         li_ind_end=[]
-        #print len(ar_slope_path), np.where(ar_slope_path==0.)
+        #print(len(ar_slope_path), np.where(ar_slope_path==0.))
         for i in np.arange(len(ar_slope_path)):
             if i==0:
                 if ar_slope_path[i]==0.:
@@ -127,19 +127,19 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
-            print 'problem length'
-            print 'ar_ind_start:',len(ar_ind_start),'ar_ind_end:',len(ar_ind_end)
-            print ar_ind_start
-            print ar_ind_end
+            print('problem length')
+            print('ar_ind_start:',len(ar_ind_start),'ar_ind_end:',len(ar_ind_end))
+            print(ar_ind_start)
+            print(ar_ind_end)
             stop
         a=ar_ind_end-ar_ind_start
         if len(np.where(a<0)[0])!=0:
-            print 'problem index'
+            print('problem index')
             stop
 
         #Then the slope are changed according to the defined index arrays
         if len(ar_ind_start)>0:
-            print 'Number of sections with zero slopes:',len(ar_ind_start)
+            print('Number of sections with zero slopes:',len(ar_ind_start))
         for i in np.arange(len(ar_ind_start)):
             #Compute the length of the zero path
             if ar_ind_end[i]!=-1:
@@ -162,13 +162,13 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
             #Change the values
             ar_tan_beta[ar_ind_cell_zero]=slope
 
-    print 'Treatment of channel slopes'
+    print('Treatment of channel slopes')
     #Adjust the outlet slope if equal to zero
     if ar_tan_beta_channel[ar_label_sort[-1]]==0:
         ar_tan_beta_channel[ar_label_sort[-1]]=1./X
 
     for cell1 in ar_label_sort:
-        print cell1
+        print(cell1)
         cell=np.where(ar_cell_label==cell1)[0][0]
 
         li_label_path=[cell]
@@ -195,7 +195,7 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         #--> ar_ind_end=array([4,6,-1])
         li_ind_start=[]
         li_ind_end=[]
-        #print len(ar_slope_path), np.where(ar_slope_path==0.)
+        #print(len(ar_slope_path), np.where(ar_slope_path==0.))
         for i in np.arange(len(ar_slope_path)):
             if i==0:
                 if ar_slope_path[i]==0.:
@@ -213,20 +213,20 @@ def zero_slope_management(ini_file='zero_slope_management.ini'):
         ar_ind_start=np.array(li_ind_start,int)
         ar_ind_end=np.array(li_ind_end,int)
         if len(ar_ind_start)-len(ar_ind_end)!=0:
-            print 'problem length'
-            print 'ar_ind_start:',len(ar_ind_start),'ar_ind_end:',len(ar_ind_end)
-            print ar_ind_start
-            print ar_ind_end
+            print('problem length')
+            print('ar_ind_start:',len(ar_ind_start),'ar_ind_end:',len(ar_ind_end))
+            print(ar_ind_start)
+            print(ar_ind_end)
             stop
         a=ar_ind_end-ar_ind_start
         if len(np.where(a<0)[0])!=0:
-            print 'problem index'
+            print('problem index')
             stop
 
         # Then the slope are changed according to the defined index
         # arrays
         if len(ar_ind_start)>0:
-            print 'Number of sections with zero slopes:',len(ar_ind_start)
+            print('Number of sections with zero slopes:',len(ar_ind_start))
         for i in np.arange(len(ar_ind_start)):
             # Compute the length of the zero path
             if ar_ind_end[i]!=-1:
@@ -310,7 +310,7 @@ def subcatch(ini_file='subcatch.ini'):
 
     """
     config.read(ini_file)
-    print 'Read the file ', ini_file
+    print('Read the file ', ini_file)
 
     file_in = config.get('file_in', 'file_in')
 
@@ -325,23 +325,23 @@ def subcatch(ini_file='subcatch.ini'):
     X = config.getfloat('flags', 'X')
 
     #Reading of parameter file
-    print 'Reading parameter file'
+    print('Reading parameter file')
     ar_cell_label, ar_coorx, ar_coory, ar_lambda, ar_Xc, ar_dam, ar_tan_beta, \
     ar_tan_beta_channel, ar_L, ar_Ks, ar_theta_r, ar_theta_s, ar_n_o, ar_n_c, \
     ar_cell_down, ar_pVs_t0, ar_Vo_t0, ar_Qc_t0, ar_kc \
     = pm.read_cell_parameters(file_in)
 
     #Search for the cell close to the coordinates
-    print 'Search for the outlet cell'
+    print('Search for the outlet cell')
     cell_outlet = find_cell_coordinates(ar_cell_label, Xoutlet,
                                         Youtlet, ar_coorx, ar_coory, ar_lambda)
 
     #Search for the catchment cells
-    print 'Search for the catchment cells'
+    print('Search for the catchment cells')
     subcatch_label = all_up_cell(cell_outlet, ar_cell_down, ar_cell_label)
 
     #Select the subcatchmnent parameters
-    print 'Select the subcatchmnent parameters'
+    print('Select the subcatchmnent parameters')
     tab_param = np.zeros((len(subcatch_label),nb_param))
     new_label = np.arange(len(subcatch_label))
 
@@ -395,7 +395,7 @@ def new_param(ini_file='new_param.ini'):
     """
     ### READ THE INI FILE ###
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
     ##~~~~~~ file_in ~~~~~~##
     file_in=config.get('file_in','file_in')
     ##~~~~~~ file_out ~~~~~~##
@@ -416,7 +416,7 @@ def new_param(ini_file='new_param.ini'):
     nb_param=config.getfloat('flags','nb_param')
 
     #Reading of parameter file
-    print 'Reading parameter file'
+    print('Reading parameter file')
     ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
@@ -425,26 +425,26 @@ def new_param(ini_file='new_param.ini'):
     #~~~~~~Change in parameters~~~~~~#
     #Multiplying factors for L, Ks, n_o and n_c
     if fac_L!=1.:
-        print 'Change L'
+        print('Change L')
         ar_L=ar_L*fac_L
     if fac_Ks!=1.:
-        print 'Change Ks'
+        print('Change Ks')
         ar_Ks=ar_Ks*fac_Ks
     if fac_n_o!=1.:
-        print 'Change n_o'
+        print('Change n_o')
         ar_n_o=ar_n_o*fac_n_o
     if fac_n_c!=1.:
-        print 'Change n_c'
+        print('Change n_c')
         ar_n_c=ar_n_c*fac_n_c
     #New values for pVs_t0, Vo_t0 and Qc_t0
     if new_pVs_t0!=ar_pVs_t0[0]:
-        print 'Change pVs_t0'
+        print('Change pVs_t0')
         ar_pVs_t0=ar_pVs_t0*0.+new_pVs_t0
     if new_Vo_t0!=ar_Vo_t0[0]:
-        print 'Change pVs_t0'
+        print('Change pVs_t0')
         ar_Vo_t0=ar_Vo_t0*0.+new_Vo_t0
     if new_Qc_t0!=ar_Qc_t0[0]:
-        print 'Change pVc_t0'
+        print('Change pVc_t0')
         ar_Qc_t0=ar_Qc_t0*0.+new_Qc_t0
 
     #~~~~~~Write parameter file~~~~~~#
@@ -480,7 +480,7 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     """
     ### READ THE INI FILE ###
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
     ##~~~~~~ file_in ~~~~~~##
     file_in=config.get('file_in','file_in')
     ##~~~~~~ file_out ~~~~~~##
@@ -494,13 +494,13 @@ def connect_external_flow(ini_file='connect_external_flow.ini'):
     nb_param=config.getfloat('flags','nb_param')
 
     #Reading of parameter file
-    print 'Reading parameter file'
+    print('Reading parameter file')
     ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_Xc,ar_dam,ar_tan_beta,ar_tan_beta_channel,ar_L,ar_Ks,\
     ar_theta_r,ar_theta_s,ar_n_o,ar_n_c,\
     ar_cell_down,ar_pVs_t0,ar_Vo_t0,ar_Qc_t0,ar_kc\
     =pm.read_cell_parameters(file_in)
 
-    print 'Connect external flows to the network'
+    print('Connect external flows to the network')
     ar_lambda,ar_n_c=link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_n_c,Xext_flow,Yext_flow)
 
     #~~~~~~Write parameter file~~~~~~#
@@ -535,7 +535,7 @@ def initial_pVs_Vo_Qc_from_simu(ini_file='initial_pVs_Vo_Qc_from_simu.ini'):
      """
     ### READ THE INI FILE ###
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
 
     ##~~~~~~ file_in ~~~~~~##
     file_in=config.get('file_in','file_in')
@@ -632,7 +632,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
 
     ### READ THE INI FILE ###
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
 
     ##~~~~~~ file_in ~~~~~~##
     file_in=config.get('file_in','file_in')
@@ -654,7 +654,7 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
 
     #--Read and compute the parameters to have the values of parameter and ar_Vsm
     #~~~~Read Global parameters file
-    print 'Pretreatment of input data'
+    print('Pretreatment of input data')
     #~~~~Read Global parameters file
     X,Dt,alpha_s,alpha_o,alpha_c,A_thres,W_min,W_max\
       =pm.read_global_parameters(file_in_global)
@@ -696,10 +696,10 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
     #Look for the rate closest to the expected mean value
     if mean_pVs_t0<tab_rate_sort[0]:
         ind=0
-        print 'mean_pVs_t0 expected:', mean_pVs_t0,'effective:',tab_rate_sort[0]
+        print('mean_pVs_t0 expected:', mean_pVs_t0,'effective:',tab_rate_sort[0])
     elif mean_pVs_t0>tab_rate_sort[-1]:
         ind=-1
-        print 'mean_pVs_t0 expected:', mean_pVs_t0,' effective',tab_rate_sort[-1]
+        print('mean_pVs_t0 expected:', mean_pVs_t0,' effective',tab_rate_sort[-1])
     else:
         loop=True
         i=-1
@@ -708,13 +708,13 @@ def mean_simuVsi(ini_file='mean_simuVsi.ini'):
             if mean_pVs_t0>=tab_rate_sort[i] and mean_pVs_t0<tab_rate_sort[i+1]:
                 ind=i
                 loop=False
-                print 'mean_pVs_t0 expected:', mean_pVs_t0,' effective:',tab_rate_sort[i]
+                print('mean_pVs_t0 expected:', mean_pVs_t0,' effective:',tab_rate_sort[i])
 
     ind_end=indice_sort[ind]
-    print ind,ind_end
+    print(ind,ind_end)
     ar_Vs=ndar_Vs[ind_end,:]
     ar_Vsi=ar_Vs/ar_Vsm*100.
-    print ar_Vsi
+    print(ar_Vsi)
     ar_pVs_t0=ar_Vsi
 
     #~~~~~~Write parameter file~~~~~~#
@@ -813,14 +813,14 @@ def link_channel_cell(ar_cell_label,ar_coorx,ar_coory,ar_lambda,ar_cell_down,ar_
             last_ind=ind
         else:
             cc=cc+1
-            print 'Cell',cell,'has been conected to the channel network via cell',ar_cell_down[ind]
+            print('Cell',cell,'has been conected to the channel network via cell',ar_cell_down[ind])
             li_ind.append(ind)
             ar_lambda[ind]=1.
             cell=ar_cell_down[ind]
     for i in li_ind:
         ar_n_c[i]=ar_n_c[last_ind]
     if cc==0.:
-        print 'External flows already connected'
+        print('External flows already connected')
     return ar_lambda,ar_n_c
 
 #####################################

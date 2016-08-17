@@ -67,7 +67,7 @@ def string(integer,len_str_out):
     str_int=str(integer)
     len_int=len(str_int)
     if len_str_out-len_int<0:
-        print '****ERROR: length of string too short'
+        print('****ERROR: length of string too short')
         str_out=''
     else:
         str_out=(len_str_out-len_int)*str_zero+str_int
@@ -89,12 +89,12 @@ def from_float_array_to_string_array(ar_float,unique=False):
 def check_file_exist(filename):
     path_name, file_name = os.path.split(filename)
     if not os.path.exists(path_name) and path_name != '':
-        print path_name, 'has been created'
+        print(path_name, 'has been created')
         os.makedirs(path_name)
 
 def check_folder_exist(folder_name):
     if not os.path.exists(folder_name):
-        print folder_name, 'has been created'
+        print(folder_name, 'has been created')
         os.mkdir(folder_name)
 
 def read_one_array_hdf(file_h5, group, name):
@@ -254,6 +254,6 @@ def find_cell_coordinates(ar_cell_label, Xoutlet, Youtlet,
 
 
     if cell_outlet<0:
-        print "Wrong coordinates"
+        print("Wrong coordinates")
         stop
     return cell_outlet

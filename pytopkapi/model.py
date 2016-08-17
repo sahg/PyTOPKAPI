@@ -32,7 +32,7 @@ def run(ini_file='TOPKAPI.ini'):
     ##================================##
     config = SafeConfigParser()
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
 
     ##~~~~~~ Numerical_options ~~~~~~##
     solve_s = config.getfloat('numerical_options', 'solve_s')
@@ -84,7 +84,7 @@ def run(ini_file='TOPKAPI.ini'):
     ##============================##
     ##   Read the forcing data    ##
     ##============================##
-    print 'Read the forcing data'
+    print('Read the forcing data')
 
     #~~~~Rainfall
     h5file_in = h5.openFile(file_rain,mode='r')
@@ -115,7 +115,7 @@ def run(ini_file='TOPKAPI.ini'):
     ##============================##
     ## Pretreatment of input data ##
     ##============================##
-    print 'Pretreatment of input data'
+    print('Pretreatment of input data')
 
     #~~~~Read Global parameters file
     X, Dt, alpha_s, \
@@ -152,10 +152,10 @@ def run(ini_file='TOPKAPI.ini'):
     ar_n_o = ar_n_o0*fac_n_o
     ar_n_c = ar_n_c0*fac_n_c
 
-    print 'Max L=', max(ar_L)
-    print 'Max Ks=', max(ar_Ks)
-    print 'Max n_o=', max(ar_n_o)
-    print 'Max n_c=', max(ar_n_c)
+    print('Max L=', max(ar_L))
+    print('Max Ks=', max(ar_Ks))
+    print('Max n_o=', max(ar_n_o))
+    print('Max n_c=', max(ar_n_c))
 
     #~~~~Computation of model parameters from physical parameters
     ar_Vsm, ar_b_s, ar_b_o, \
@@ -176,9 +176,9 @@ def run(ini_file='TOPKAPI.ini'):
                                                       ar_coory,
                                                       ar_lambda)
 
-        print 'external flows will be taken into account for cell no',\
+        print('external flows will be taken into account for cell no',\
             cell_external_flow, ' coordinates ('\
-            ,Xexternal_flow,',',Yexternal_flow,')'
+            ,Xexternal_flow,',',Yexternal_flow,')')
 
     #~~~~Number of simulation time steps
     nb_time_step = len(ndar_rain[:,0])
@@ -191,7 +191,7 @@ def run(ini_file='TOPKAPI.ini'):
     ## Initialisation of the reservoirs
     #Matrix of soil,overland and channel store at the begining of the time step
     if append_output and not first_run:
-        print 'Initialize from file'
+        print('Initialize from file')
 
         h5file_in = h5py.File(file_out)
 
@@ -201,7 +201,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         h5file_in.close()
     else:
-        print 'Initialize from parms'
+        print('Initialize from parms')
         ar_Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
         ar_Vo0 = ar_Vo_t0
         ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
@@ -341,13 +341,13 @@ def run(ini_file='TOPKAPI.ini'):
     ##===========================##
     ##     Core of the Model     ##
     ##===========================##
-    print '** NB_CELL=',nb_cell
-    print '** NB_TIME_STEP=',nb_time_step
-    print '--> SIMULATIONS <--'
+    print('** NB_CELL=',nb_cell)
+    print('** NB_TIME_STEP=',nb_time_step)
+    print('--> SIMULATIONS <--')
 
     ## Loop on time
     for t in range(nb_time_step):
-        print t+1, '/', nb_time_step
+        print(t+1, '/', nb_time_step)
 
         eff_sat = ar_Vs0/ar_Vsm
 
@@ -401,8 +401,8 @@ def run(ini_file='TOPKAPI.ini'):
                                                            ar_b_s[cell],
                                                            alpha_s, Dt)
             if ar_Qs_out[cell] < 0:
-                print 'Problem Soil:output greater than input....'
-                print 'n=', n, 'label=', cell
+                print('Problem Soil:output greater than input....')
+                print('n=', n, 'label=', cell)
                 stop
 
             ## ========================== ##
@@ -430,8 +430,8 @@ def run(ini_file='TOPKAPI.ini'):
                                                 ar_a_o[cell], Dt)
 
             if ar_Qo_out[cell] < 0:
-                print 'Problem Overland:output greater than input....'
-                print 'n=', n, 'label=', cell
+                print('Problem Overland:output greater than input....')
+                print('n=', n, 'label=', cell)
                 stop
 
             ## ============================= ##
@@ -454,7 +454,7 @@ def run(ini_file='TOPKAPI.ini'):
                 if ar_cell_down[cell] >= 0 \
                    and ar_lambda[ar_cell_down[cell]] == 0:
 
-                    print 'Problem: the present cell has a channel but not the cell down...'
+                    print('Problem: the present cell has a channel but not the cell down...')
                     Stop
 
                 #~~~~ Computation of channel input
@@ -479,11 +479,11 @@ def run(ini_file='TOPKAPI.ini'):
                                                     ar_a_c[cell], Dt)
 
                 if ar_Qc_out[cell] < 0:
-                    print 'Problem Channel: output greater than input....'
+                    print('Problem Channel: output greater than input....')
                     stop
                 if str(ar_Qc_out[cell]).count('N') > 0:
-                    print ar_Qc_out[cell]
-                    print 'Problem Channel: Non authorized operand....'
+                    print(ar_Qc_out[cell])
+                    print('Problem Channel: Non authorized operand....')
                     stop
 
             else:
@@ -538,5 +538,5 @@ def run(ini_file='TOPKAPI.ini'):
 
     h5file.close()
 
-    print ' '
-    print '***** THE END *****'
+    print(' ')
+    print('***** THE END *****')

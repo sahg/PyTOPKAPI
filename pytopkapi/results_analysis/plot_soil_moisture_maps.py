@@ -17,7 +17,7 @@ config = SafeConfigParser()
 def run(ini_file='plot_soil_moisture_maps.ini'):
 
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
 
     file_global_param=config.get('files','file_global_param')
     file_cell_param=config.get('files','file_cell_param')
@@ -93,7 +93,7 @@ def run(ini_file='plot_soil_moisture_maps.ini'):
 
     # Plot the maps
     for t in np.arange(int(t1),int(t2+1)):
-        print 'Map time-step ', t
+        print('Map time-step ', t)
         image_out=im_out+ut.string(t,len(str(t2)))+'.png'
         field_map_ndar(tab,t,ar_coorx,ar_coory,X,image_out,variable)
 
