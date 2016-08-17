@@ -31,7 +31,7 @@ from shutil import copyfile
 
 #Python modules
 import numpy as np
-from ConfigParser import SafeConfigParser
+from configParser import SafeConfigParser
 config = SafeConfigParser()
 
 #External modules from pytopkapi
