@@ -7,7 +7,7 @@ simulation based on the parameters specified in an INI file.
 
 #General module importation
 import os.path
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import h5py
 import numpy as np
@@ -15,12 +15,12 @@ import tables as h5
 
 #Personnal module importation
 import pytopkapi
-import utils as ut
-import pretreatment as pm
-import fluxes as fl
-import ode as om
-import evap as em
-from infiltration import green_ampt_cum_infiltration
+from . import utils as ut
+from . import pretreatment as pm
+from . import fluxes as fl
+from . import ode as om
+from . import evap as em
+from .infiltration import green_ampt_cum_infiltration
 
 def run(ini_file='TOPKAPI.ini'):
     """Run the model with the set-up defined by `ini_file`.

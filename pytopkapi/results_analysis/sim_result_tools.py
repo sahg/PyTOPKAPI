@@ -4,7 +4,7 @@ __all__ = ['extract_ssi', 'extract_ssi_to_file',
            'extract_overland_volume', 'extract_overland_volume_to_file']
 
 from datetime import timedelta
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import h5py
 import numpy as np

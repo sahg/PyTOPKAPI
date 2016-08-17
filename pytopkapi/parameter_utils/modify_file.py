@@ -16,7 +16,7 @@ import numpy as np
 import pylab as pl
 from numpy import ma
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 config = SafeConfigParser()
 
 #External modules
@@ -793,7 +793,7 @@ def find_cell_coordinates(ar_cell_label, Xtarget, Ytarget,
     if cell_outlet < 0:
         err = 'Invalid outlet coordinates specified: X=%f, Y=%f' \
               % (Xtarget, Ytarget)
-        raise ValueError, err
+        raise ValueError(err)
 
     return cell_outlet
 

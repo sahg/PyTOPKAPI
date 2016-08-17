@@ -10,7 +10,7 @@ import numpy.ma as M
 import pytopkapi.pretreatment as pm
 import pytopkapi.utils as ut
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 config = SafeConfigParser()
 
 

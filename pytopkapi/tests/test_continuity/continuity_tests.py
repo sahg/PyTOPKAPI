@@ -1,6 +1,6 @@
 import os
 
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import h5py
 import numpy as np
