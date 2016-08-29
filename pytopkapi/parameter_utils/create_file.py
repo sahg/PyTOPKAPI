@@ -390,8 +390,7 @@ def strahler_stream_order(start_arc_id, start_up_node,
 
         max_order = 0
         max_order_count = 0
-        up_orders = upstream_orders.values()
-        up_orders.sort(reverse=True)
+        up_orders = sorted(upstream_orders.values(), reverse=True)
 
         for order in up_orders:
             if order > max_order:
