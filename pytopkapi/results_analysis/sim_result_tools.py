@@ -4,7 +4,7 @@ __all__ = ['extract_ssi', 'extract_ssi_to_file',
            'extract_overland_volume', 'extract_overland_volume_to_file']
 
 from datetime import timedelta
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import h5py
 import numpy as np
@@ -179,7 +179,7 @@ def extract_overland_volume_to_file(sim_fname, param_fname,
 
     curr_dt = start_dt
     for k in range(rows):
-        print curr_dt
+        print(curr_dt)
 
         ov = ma.array(overland_vol[k], mask=soil_depth.mask).compressed()
 
@@ -317,7 +317,7 @@ def extract_ssi_to_file(sim_fname, param_fname,
 
     curr_dt = start_dt
     for k in range(rows):
-        print curr_dt
+        print(curr_dt)
         # ssi = (Vs/cell_vol)*100
         # cell_vol = (theta_s - theta_r)*soil_depth*cell_area
         sv = ma.array(soil_vol[k], mask=soil_depth.mask)
@@ -445,7 +445,7 @@ def extract_eta_to_file(sim_fname, param_fname,
 
     curr_dt = start_dt
     for k in range(rows):
-        print curr_dt
+        print(curr_dt)
 
         et = ma.array(eta[k], mask=soil_depth.mask)
         et = et.compressed()

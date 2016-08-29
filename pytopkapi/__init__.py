@@ -10,13 +10,13 @@ world (Liu and Todini, 2002; Bartholomes and Todini, 2005; Liu et al.,
 """
 
 try:
-    from __dev_version import version as __version__
-    from __dev_version import git_revision as __git_revision__
+    from .__dev_version import version as __version__
+    from .__dev_version import git_revision as __git_revision__
 except ImportError:
-    from __version import version as __version__
-    from __version import git_revision as __git_revision__
+    from .__version import version as __version__
+    from .__version import git_revision as __git_revision__
 
-import model
-from model import *
-import results_analysis
-from results_analysis import *
+from . import model
+from .model import *
+from . import results_analysis
+from .results_analysis import *

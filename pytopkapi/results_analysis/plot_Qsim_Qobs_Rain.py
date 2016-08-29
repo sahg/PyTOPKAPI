@@ -1,5 +1,5 @@
 import datetime as dt
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import h5py
 import numpy as np
@@ -11,7 +11,7 @@ import pytopkapi.utils as ut
 def run(ini_file='plot_Qsim_Qobs_Rain.ini'):
     config = SafeConfigParser()
     config.read(ini_file)
-    print 'Read the file ',ini_file
+    print('Read the file ',ini_file)
 
     file_Qsim=config.get('files','file_Qsim')
     file_Qobs=config.get('files','file_Qobs')

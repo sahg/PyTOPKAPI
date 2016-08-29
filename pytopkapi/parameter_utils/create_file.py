@@ -29,7 +29,7 @@ to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 """
 import sys
 from warnings import warn
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 
 import numpy as np
 from numpy import ma
@@ -390,8 +390,7 @@ def strahler_stream_order(start_arc_id, start_up_node,
 
         max_order = 0
         max_order_count = 0
-        up_orders = upstream_orders.values()
-        up_orders.sort(reverse=True)
+        up_orders = sorted(upstream_orders.values(), reverse=True)
 
         for order in up_orders:
             if order > max_order:

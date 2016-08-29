@@ -31,7 +31,7 @@ from shutil import copyfile
 
 #Python modules
 import numpy as np
-from ConfigParser import SafeConfigParser
+from configParser import SafeConfigParser
 config = SafeConfigParser()
 
 #External modules from pytopkapi
@@ -104,7 +104,7 @@ def from_flowacc_to_stream(file_flowacc_grid,file_stream_grid,threshold_cell):
     total_cell=len(ar_flowacc[ar_flowacc>-1.])
     stream_cell=len(ar_stream[ar_stream==1])
 
-    print 'total_cell=',total_cell,'stream_cell=',stream_cell,'Drainage density=',float(stream_cell)/float(total_cell)
+    print('total_cell=',total_cell,'stream_cell=',stream_cell,'Drainage density=',float(stream_cell)/float(total_cell))
 
     tab_stream=np.reshape(ar_stream,(nrows,ncols))
 
@@ -191,12 +191,12 @@ def compute_slope_8D(file_flowdir, file_DEM,
                         tab_slope_degree[i,j]=0.
                         tab_slope[i,j]=0.
                     if tab_DEM[x,y]>tab_DEM[i,j]:
-                        print 'Problem negative slope cell',tab_label[i,j],direction,tab_label[x,y],tab_DEM[i,j],tab_DEM[x,y]
+                        print('Problem negative slope cell',tab_label[i,j],direction,tab_label[x,y],tab_DEM[i,j],tab_DEM[x,y])
                         tab_slope_degree[i,j]=np.arctan((tab_DEM[i,j]-tab_DEM[x,y])/dist)*180./np.pi
                         tab_slope[i,j]=(tab_DEM[i,j]-tab_DEM[x,y])/dist
                 else:
-                    print 'Problem cell external to the catchment...'
-                    print tab_label[i,j],direction,tab_label[x,y],tab_DEM[i,j],tab_DEM[x,y]
+                    print('Problem cell external to the catchment...')
+                    print(tab_label[i,j],direction,tab_label[x,y],tab_DEM[i,j],tab_DEM[x,y])
 
     np.savetxt(file_slope_degree, tab_slope_degree)
 
@@ -278,15 +278,15 @@ def create_channel_slope_file(file_flowdir, file_DEM, file_slope_degree):
                     if dem[x,y] == dem[i,j]:
                         tab_slope_degree[i,j] = 0.0
                     if dem[x,y] > dem[i,j]:
-                        print 'Negative slope cell', tab_label[i,j], \
+                        print('Negative slope cell', tab_label[i,j], \
                             direction, tab_label[x,y], dem[i,j], dem[x,y]
                         tab_slope_degree[i,j] = np.arctan((dem[i,j]-dem[x,y])
-                                                          /dist) * 180./np.pi
+                                                          /dist) * 180./np.pi)
                 else:
                     tab_slope_degree[i,j] = -9999
-                    print 'Downslope cell external to the catchment...'
-                    print tab_label[i,j], direction, \
-                          tab_label[x,y], dem[i,j], dem[x,y]
+                    print('Downslope cell external to the catchment...')
+                    print(tab_label[i,j], direction, \
+                          tab_label[x,y], dem[i,j], dem[x,y])
 
     # write slope file
     tab_slope_degree.tofile(file_slope_degree)

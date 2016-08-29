@@ -58,9 +58,9 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
     ind=ar_cell_up[ar_cell_up>-90.]
     ar_sel=ar_Q_to_next_cell[ind]
     if ar_sel[ar_sel<0].size!=0:
-        print ''
-        print 'STOP-ERROR: By computing -->Upstream from cell n. ',ind[ar_sel<0],' missing'
-        print ''
+        print('')
+        print('STOP-ERROR: By computing -->Upstream from cell n. ',ind[ar_sel<0],' missing')
+        print('')
         a_s='Error on upstream'
         return a_s
     else:
@@ -118,8 +118,8 @@ def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
         Vs_out = Vs_t1_prim
 
     if Qs_out < 0:
-        print 'a=', a_s, 'Vs_t1_prim=', Vs_t1_prim, 'Vs_t0=', Vs_t0, 'Vsm=', Vsm
-        print 'Qs=', Qs_out
+        print('a=', a_s, 'Vs_t1_prim=', Vs_t1_prim, 'Vs_t0=', Vs_t0, 'Vsm=', Vsm)
+        print('Qs=', Qs_out)
 
     return Qs_out, Vs_out
 

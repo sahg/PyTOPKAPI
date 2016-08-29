@@ -138,7 +138,7 @@ class RKF:
         return Err1
 
     def getnewdelta_t(self, f, x, t, max_delta_t=0):
-##        print 'getnewdelta_t'
+##        print('getnewdelta_t')
         if max_delta_t==0:
             max_delta_t = self.max_step
         if self.delta_t > max_delta_t:
@@ -161,7 +161,7 @@ class RKF:
                 if factor=='already divided':
                     #Avoid to infintively loop by halving then
                     #multiplying by two then halving...
-                    print 'The last time step was kept to avoid overlooping'
+                    print('The last time step was kept to avoid overlooping')
                     done = 1
                 elif self.delta_t*2 > max_delta_t:
                     # do not go over the specified time step
@@ -187,7 +187,7 @@ class RKF:
             # step used and hence the solution should already be computed and
             # put in resultbuffer
             if self.timebuffer!=t+self.delta_t:
-#                print 'WARNING: This was not expected to ever occur!!!!'
+#                print('WARNING: This was not expected to ever occur!!!!')
                 self.getnewdelta_t(f, x, t, delta_t)
             return self.resultbuffer
         else:
