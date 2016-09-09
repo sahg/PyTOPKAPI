@@ -168,7 +168,13 @@ def Qout_computing(V_t0, V_t1_prim, a, Dt):
         (:math:`m^3/s`)
 
     """
-    Qout = a - (V_t1_prim - V_t0)/Dt
+    b = (V_t1_prim - V_t0)/Dt
+
+    if np.isclose(a, b):
+        Qout = 0
+    else:
+        Qout = a - b
+
     return Qout
 
 def Qout_computing2(V_t0,V_t1,b,alpha):
