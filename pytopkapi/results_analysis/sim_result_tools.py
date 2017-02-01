@@ -38,7 +38,7 @@ def extract_Q_down(control_fname):
 
     sim_fname = config.get('output_files', 'file_out')
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     Qdown = tkpi_file['/Q_down'][...]
     tkpi_file.close()
 
@@ -72,7 +72,7 @@ def extract_Q_channel(control_fname):
 
     params = np.loadtxt(param_fname)
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     Qc = tkpi_file['/Channel/Qc_out'][...]
     tkpi_file.close()
 
@@ -108,7 +108,7 @@ def extract_overland_volume(control_fname):
 
     sim_fname = config.get('output_files', 'file_out')
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     Vo = tkpi_file['/Overland/V_o'][...]
     tkpi_file.close()
 
@@ -154,7 +154,7 @@ def extract_overland_volume_to_file(sim_fname, param_fname,
     x = ma.array(x, mask=soil_depth.mask).compressed()
     y = ma.array(y, mask=soil_depth.mask).compressed()
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     result_file = h5py.File(result_fname, 'w')
 
     overland_vol = tkpi_file['/Overland/V_o'][...]
@@ -235,7 +235,7 @@ def extract_ssi(control_fname):
     factor = ma.array(factor, mask=soil_depth.mask)
     div = factor*soil_depth*cell_area
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     soil_vol = tkpi_file['/Soil/V_s'][...]
     tkpi_file.close()
 
@@ -292,7 +292,7 @@ def extract_ssi_to_file(sim_fname, param_fname,
 
     div = factor*soil_depth*cell_area
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     result_file = h5py.File(result_fname, 'w')
 
     soil_vol = tkpi_file['/Soil/V_s'][...]
@@ -370,7 +370,7 @@ def extract_eta(control_fname):
     soil_depth = params[:, 8]
     soil_depth = ma.masked_values(soil_depth, 0.0)
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     eta = tkpi_file['/ET_out'][...]
     tkpi_file.close()
 
@@ -419,7 +419,7 @@ def extract_eta_to_file(sim_fname, param_fname,
     x = ma.array(x, mask=soil_depth.mask).compressed()
     y = ma.array(y, mask=soil_depth.mask).compressed()
 
-    tkpi_file = h5py.File(sim_fname)
+    tkpi_file = h5py.File(sim_fname, 'r')
     result_file = h5py.File(result_fname, 'w')
 
     eta = tkpi_file['/ET_out'][...]
