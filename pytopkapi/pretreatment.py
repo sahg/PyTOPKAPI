@@ -6,6 +6,7 @@ physical parameters
 """
 
 import numpy as np
+import networkx as nx
 
 def read_global_parameters(file_name):
     """Read global model parameters from file.
@@ -187,21 +188,41 @@ def sort_cell(ar_cell_label, ar_cell_down):
         Sorted array of cell labels
 
     """
-    ar_label_sort=np.ones(len(ar_cell_label))*-99.9
-    ar_dist_2_outlet=np.ones(len(ar_cell_label))*-99.9
-    nb_cell=len(ar_cell_label)
-    for cell in range(nb_cell):
-        cell_down=ar_cell_down[cell]
-        dist=0
-        while cell_down > -99:
-            cell_down=ar_cell_down[cell_down]
-            dist=dist+1
-        ar_dist_2_outlet[cell]=dist
-    a=np.argsort(ar_dist_2_outlet)
-    ar_label_sort=a[::-1]
-    ar_label_sort=np.array(ar_label_sort,int)
+    network_dag = _generate_network_dag(ar_cell_label, ar_cell_down)
+
+    ar_label_sort = np.array(nx.topological_sort(network_dag))
 
     return ar_label_sort
+
+def _generate_network_dag(nodes, downstream_nodes):
+    """DAG from list of nodes and downstream nodes.
+
+    Generates a networkx Directed Acyclic Graph (DAG) from a list of
+    cell nodes and their corresponding downstream neighbours.
+
+    Parameters
+    ----------
+    nodes : (N,) int array
+        Integer IDs labelling each cell
+    downstream_nodes : (N,) int array
+        The ID associated with the cell downstream of the current cell
+
+    Returns
+    -------
+    dag : Networkx DiGraph
+        A networkx DiGraph instance describing the catchment topology.
+
+    """
+    edges = []
+    for k in nodes:
+        if downstream_nodes[k] >= 0:
+            edges.append((k, downstream_nodes[k]))
+
+    dag = nx.DiGraph()
+    dag.add_nodes_from(nodes)
+    dag.add_edges_from(edges)
+
+    return dag
 
 def direct_up_cell(ar_cell_label, ar_cell_down, ar_label_sort):
     """Calculate the upstream cells for each cell.
