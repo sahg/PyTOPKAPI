@@ -194,6 +194,32 @@ def sort_cell(ar_cell_label, ar_cell_down):
 
     return ar_label_sort
 
+def compute_node_hierarchy(nodes, downstream_nodes):
+    network_dag = _generate_network_dag(nodes, downstream_nodes)
+
+    dag_copy = nx.copy.deepcopy(network_dag)
+
+    level = 0
+    node_hierarchy = {}
+    while dag_copy.number_of_nodes() > 0:
+        outer = []
+        node_deps = {}
+
+        for node in nx.topological_sort(dag_copy):
+            # get list of nodes leading into this one as dependencies
+            deps = [ n for n in dag_copy.predecessors(node) ]
+            node_deps[node] = deps
+
+            if len(deps) == 0:
+                outer.append(node)
+
+        node_hierarchy[level] = outer
+        level = level+1
+
+        dag_copy.remove_nodes_from(outer)
+
+    return node_hierarchy
+
 def _generate_network_dag(nodes, downstream_nodes):
     """DAG from list of nodes and downstream nodes.
 

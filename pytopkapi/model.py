@@ -138,6 +138,7 @@ def run(ini_file='TOPKAPI.ini'):
     nb_cell = len(ar_cell_label)
 
     #~~~~Computation of cell order
+    node_hierarchy = pm.compute_node_hierarchy(ar_cell_label, ar_cell_down)
     ar_label_sort = pm.sort_cell(ar_cell_label, ar_cell_down)
 
     #~~~~Computation of upcells
@@ -354,14 +355,13 @@ def run(ini_file='TOPKAPI.ini'):
         # estimate soil suction head using Brookes and Corey (1964)
         psi = psi_b/np.power(eff_sat, 1.0/lamda)
 
-        ## Loop on cells
-        n=-1
-        for cell1 in ar_label_sort:
-            cell=np.where(ar_cell_label==cell1)[0][0]
-            n=n+1
+        ## Loop on cell hierarchy
+        for lvl in range(len(node_hierarchy.keys())):
+            for cell1 in node_hierarchy[lvl]:
+                cell=np.where(ar_cell_label==cell1)[0][0]
 
-            if external_flow:
-                _solve_cell(t, cell,
+                if external_flow:
+                    _solve_cell(t, cell,
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
@@ -373,8 +373,8 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Vc0, solve_c, ndar_ETo, ar_ET_channel,
                             external_flow, cell_external_flow,
                             ar_Qexternal_flow)
-            else:
-                _solve_cell(t, cell,
+                else:
+                    _solve_cell(t, cell,
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
