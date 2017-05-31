@@ -360,156 +360,31 @@ def run(ini_file='TOPKAPI.ini'):
             cell=np.where(ar_cell_label==cell1)[0][0]
             n=n+1
 
-
-            ## ======================== ##
-            ## ===== INTERCEPTION ===== ##
-            ## ======================== ##
-            ## No interception for the moment
-
-            ## ======================== ##
-            ## ===== INFILTRATION ===== ##
-            ## ======================== ##
-            rain_rate = ndar_rain[t, cell]/Dt
-
-            infiltration_depth = green_ampt_cum_infiltration(rain_rate,
-                                                             psi[cell],
-                                                             eff_theta[cell],
-                                                             eff_sat[cell],
-                                                             ar_Ks[cell], Dt)
-
-            ## ====================== ##
-            ## ===== SOIL STORE ===== ##
-            ## ====================== ##
-            #~~~~ Computation of soil input
-            ar_a_s[cell] = fl.input_soil(infiltration_depth,
-                                         Dt, X,
-                                         ar_Q_to_next_cell,
-                                         li_cell_up[cell])
-
-            #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
-            # Calculate the volume in the soil store at the end of the
-            # current time-step.
-
-            Vs_prim = om.solve_storage_eq(ar_a_s[cell], ar_b_s[cell],
-                                          alpha_s, ar_Vs0[cell], Dt, solve_s)
-
-            #~~~~ Computation of soil outflow and overland input
-            ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell],
-                                                           Vs_prim,
-                                                           ar_Vsm[cell],
-                                                           ar_a_s[cell],
-                                                           ar_b_s[cell],
-                                                           alpha_s, Dt)
-            if ar_Qs_out[cell] < 0:
-                print('Problem Soil:output greater than input....')
-                print('n=', n, 'label=', cell)
-                stop
-
-            ## ========================== ##
-            ## ===== OVERLAND STORE ===== ##
-            ## ========================== ##
-            #~~~~ Computation of overland input
-            rain_excess = ndar_rain[t, cell] - infiltration_depth
-            # convert mm to m^3/s
-            rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
-
-            ar_a_o[cell] = max(0,
-                               ar_a_s[cell] \
-                               - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
-                                  + ar_Qs_out[cell]) \
-                               + rain_excess)
-
-            #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
-
-            ar_Vo1[cell] = om.solve_storage_eq(ar_a_o[cell],
-                                               ar_b_o[cell], alpha_o,
-                                               ar_Vo0[cell], Dt, solve_o)
-
-            #~~~~ Computation of overland outflows
-            ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell], ar_Vo1[cell],
-                                                ar_a_o[cell], Dt)
-
-            if ar_Qo_out[cell] < 0:
-                print('Problem Overland:output greater than input....')
-                print('n=', n, 'label=', cell)
-                stop
-
-            ## ============================= ##
-            ## ===== FLOW PARTITIONING ===== ##
-            ## ============================= ##
-            # ar_Q_to_channel_sub doesn't get used for anything?
-
-            ar_Q_to_next_cell[cell], \
-            ar_Q_to_channel[cell], \
-            ar_Q_to_channel_sub[cell] = fl.flow_partitioning(ar_lambda[cell],
-                                                             ar_Qs_out[cell],
-                                                             ar_Qo_out[cell],
-                                                             ar_W[cell],
-                                                             X, ar_Xc[cell])
-
-            ## ======================== ##
-            ## ===== CHANNEL STORE ==== ##
-            ## ======================== ##
-            if ar_lambda[cell] == 1:
-                if ar_cell_down[cell] >= 0 \
-                   and ar_lambda[ar_cell_down[cell]] == 0:
-
-                    print('Problem: the present cell has a channel but not the cell down...')
-                    Stop
-
-                #~~~~ Computation of channel input
-                ar_a_c[cell], \
-                ar_Qc_cell_up[cell] = fl.input_channel(ar_Qc_out,
-                                                       ar_Q_to_channel[cell],
-                                                       li_cell_up[cell])
-
-                if external_flow \
-                and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
-                    ar_a_c[cell] = ar_a_c[cell] + ar_Qexternal_flow[t]
-
-                #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
-
-                ar_Vc1[cell] = om.solve_storage_eq(ar_a_c[cell],
-                                                   ar_b_c[cell], alpha_c,
-                                                   ar_Vc0[cell], Dt, solve_c)
-
-                #~~~~ Computation of channel outflows
-                ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],
-                                                    ar_Vc1[cell],
-                                                    ar_a_c[cell], Dt)
-
-                if ar_Qc_out[cell] < 0:
-                    print('Problem Channel: output greater than input....')
-                    stop
-                if str(ar_Qc_out[cell]).count('N') > 0:
-                    print(ar_Qc_out[cell])
-                    print('Problem Channel: Non authorized operand....')
-                    stop
-
+            if external_flow:
+                _solve_cell(t, cell,
+                            Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                            ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
+                            alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
+                            ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
+                            ndar_ETr, ar_ETa, ar_cell_down, ar_b_c, alpha_c,
+                            ar_Vc0, solve_c, ndar_ETo, ar_ET_channel,
+                            external_flow, cell_external_flow,
+                            ar_Qexternal_flow)
             else:
-                ar_a_c[cell] = 0.
-                ar_Vc1[cell] = 0.
-                ar_Qc_out[cell] = 0.
-
-
-            ## ============================== ##
-            ## ===== EVAPOTRANSPIRATION ===== ##
-            ## ============================== ##
-            #~~~~~ From soil
-            ar_ETa[cell], \
-            ar_Vs1[cell], \
-            ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell],
-                                                   ar_Vs1[cell],
-                                                   ar_Vsm[cell],
-                                                   ar_kc[cell],
-                                                   ndar_ETr[t, cell], X)
-
-            #~~~~~ Evaporation from channel
-            if ar_lambda[cell] == 1:
-                ar_ET_channel[cell], \
-                ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell],
-                                                 ndar_ETo[t, cell],
-                                                 ar_W[cell], ar_Xc[cell])
+                _solve_cell(t, cell,
+                            Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                            ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
+                            alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
+                            ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
+                            ndar_ETr, ar_ETa, ar_cell_down, ar_b_c, alpha_c,
+                            ar_Vc0, solve_c, ndar_ETo, ar_ET_channel,
+                            external_flow)
 
         ####===================================####
         #### Affectation of new vector values  ####
@@ -540,3 +415,157 @@ def run(ini_file='TOPKAPI.ini'):
 
     print(' ')
     print('***** THE END *****')
+
+def _solve_cell(t, cell,
+                Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s, alpha_s, ar_Vs0,
+                solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_a_o, ar_b_o, alpha_o,
+                ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
+                ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ndar_ETr, ar_ETa,
+                ar_cell_down,ar_b_c, alpha_c, ar_Vc0, solve_c, ndar_ETo,
+                ar_ET_channel, external_flow, cell_external_flow=None,
+                ar_Qexternal_flow=None):
+    """Core calculations for a model cell.
+
+    """
+    ## ======================== ##
+    ## ===== INTERCEPTION ===== ##
+    ## ======================== ##
+    ## No interception for the moment
+
+    ## ======================== ##
+    ## ===== INFILTRATION ===== ##
+    ## ======================== ##
+    rain_rate = ndar_rain[t, cell]/Dt
+
+    infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi[cell],
+                                                     eff_theta[cell],
+                                                     eff_sat[cell],
+                                                     ar_Ks[cell], Dt)
+
+    ## ====================== ##
+    ## ===== SOIL STORE ===== ##
+    ## ====================== ##
+    #~~~~ Computation of soil input
+    ar_a_s[cell] = fl.input_soil(infiltration_depth, Dt,
+                                 X, ar_Q_to_next_cell, li_cell_up[cell])
+
+    #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
+    # Calculate the volume in the soil store at the end of the
+    # current time-step.
+
+    Vs_prim = om.solve_storage_eq(ar_a_s[cell], ar_b_s[cell],
+                                  alpha_s, ar_Vs0[cell], Dt, solve_s)
+
+    #~~~~ Computation of soil outflow and overland input
+    ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell], Vs_prim,
+                                                   ar_Vsm[cell], ar_a_s[cell],
+                                                   ar_b_s[cell], alpha_s, Dt)
+
+    if ar_Qs_out[cell] < 0:
+        print('Problem Soil:output greater than input....')
+        print('n=', n, 'label=', cell)
+        stop
+
+    ## ========================== ##
+    ## ===== OVERLAND STORE ===== ##
+    ## ========================== ##
+    #~~~~ Computation of overland input
+    rain_excess = ndar_rain[t, cell] - infiltration_depth
+    # convert mm to m^3/s
+    rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
+
+    ar_a_o[cell] = max(0,
+                       ar_a_s[cell] \
+                       - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
+                       + ar_Qs_out[cell]) \
+                       + rain_excess)
+
+    #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
+
+    ar_Vo1[cell] = om.solve_storage_eq(ar_a_o[cell], ar_b_o[cell],
+                                       alpha_o, ar_Vo0[cell], Dt, solve_o)
+
+    #~~~~ Computation of overland outflows
+    ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell],
+                                        ar_Vo1[cell], ar_a_o[cell], Dt)
+
+    if ar_Qo_out[cell] < 0:
+        print('Problem Overland:output greater than input....')
+        print('n=', n, 'label=', cell)
+        stop
+
+    ## ============================= ##
+    ## ===== FLOW PARTITIONING ===== ##
+    ## ============================= ##
+    # ar_Q_to_channel_sub doesn't get used for anything?
+
+    ar_Q_to_next_cell[cell], \
+    ar_Q_to_channel[cell], \
+    ar_Q_to_channel_sub[cell] = fl.flow_partitioning(ar_lambda[cell],
+                                                     ar_Qs_out[cell],
+                                                     ar_Qo_out[cell],
+                                                     ar_W[cell], X, ar_Xc[cell])
+
+    ## ======================== ##
+    ## ===== CHANNEL STORE ==== ##
+    ## ======================== ##
+    if ar_lambda[cell] == 1:
+        if ar_cell_down[cell] >= 0 \
+        and ar_lambda[ar_cell_down[cell]] == 0:
+
+            print('Problem: the present cell has a channel but not the cell down...')
+            Stop
+
+        #~~~~ Computation of channel input
+        ar_a_c[cell], \
+        ar_Qc_cell_up[cell] = fl.input_channel(ar_Qc_out,
+                                               ar_Q_to_channel[cell],
+                                               li_cell_up[cell])
+
+        #TO DO: Handle external flows properly. Vars not passed into
+        #this function currently.
+        if external_flow \
+          and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
+            ar_a_c[cell] = ar_a_c[cell] + ar_Qexternal_flow[t]
+
+        #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
+
+        ar_Vc1[cell] = om.solve_storage_eq(ar_a_c[cell], ar_b_c[cell],
+                                           alpha_c, ar_Vc0[cell], Dt, solve_c)
+
+        #~~~~ Computation of channel outflows
+        ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],
+                                            ar_Vc1[cell], ar_a_c[cell], Dt)
+
+        if ar_Qc_out[cell] < 0:
+            print('Problem Channel: output greater than input....')
+            stop
+        if str(ar_Qc_out[cell]).count('N') > 0:
+            print(ar_Qc_out[cell])
+            print('Problem Channel: Non authorized operand....')
+            stop
+
+    else:
+        ar_a_c[cell] = 0.
+        ar_Vc1[cell] = 0.
+        ar_Qc_out[cell] = 0.
+
+
+    ## ============================== ##
+    ## ===== EVAPOTRANSPIRATION ===== ##
+    ## ============================== ##
+    #~~~~~ From soil
+    ar_ETa[cell], \
+    ar_Vs1[cell], \
+    ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], ar_Vs1[cell],
+                                           ar_Vsm[cell], ar_kc[cell],
+                                           ndar_ETr[t, cell], X)
+
+    #~~~~~ Evaporation from channel
+    if ar_lambda[cell] == 1:
+        ar_ET_channel[cell], \
+        ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell],
+                                         ndar_ETo[t, cell],
+                                         ar_W[cell], ar_Xc[cell])
