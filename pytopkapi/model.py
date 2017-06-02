@@ -219,7 +219,6 @@ def run(ini_file='TOPKAPI.ini'):
     ar_Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
-    ar_a_s = np.ones(nb_cell)*-99.9
     ar_a_o = np.ones(nb_cell)*-99.9
     ar_a_c = np.ones(nb_cell)*-99.9
     ar_Q_to_next_cell = np.ones(nb_cell)*-99.9
@@ -363,7 +362,7 @@ def run(ini_file='TOPKAPI.ini'):
                 if external_flow:
                     _solve_cell(t, cell,
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
-                            ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
+                            ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
@@ -376,7 +375,7 @@ def run(ini_file='TOPKAPI.ini'):
                 else:
                     _solve_cell(t, cell,
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
-                            ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s,
+                            ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
@@ -418,7 +417,7 @@ def run(ini_file='TOPKAPI.ini'):
 
 def _solve_cell(t, cell,
                 Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
-                ar_Q_to_next_cell, li_cell_up, ar_a_s, ar_b_s, alpha_s, ar_Vs0,
+                ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_a_o, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
@@ -448,19 +447,19 @@ def _solve_cell(t, cell,
     ## ===== SOIL STORE ===== ##
     ## ====================== ##
     #~~~~ Computation of soil input
-    ar_a_s[cell] = fl.input_soil(infiltration_depth, Dt,
+    a_s = fl.input_soil(infiltration_depth, Dt,
                                  X, ar_Q_to_next_cell, li_cell_up[cell])
 
     #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
     # Calculate the volume in the soil store at the end of the
     # current time-step.
 
-    Vs_prim = om.solve_storage_eq(ar_a_s[cell], ar_b_s[cell],
+    Vs_prim = om.solve_storage_eq(a_s, ar_b_s[cell],
                                   alpha_s, ar_Vs0[cell], Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
     ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell], Vs_prim,
-                                                   ar_Vsm[cell], ar_a_s[cell],
+                                                   ar_Vsm[cell], a_s,
                                                    ar_b_s[cell], alpha_s, Dt)
 
     if ar_Qs_out[cell] < 0:
@@ -477,7 +476,7 @@ def _solve_cell(t, cell,
     rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
 
     ar_a_o[cell] = max(0,
-                       ar_a_s[cell] \
+                       a_s \
                        - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
                        + ar_Qs_out[cell]) \
                        + rain_excess)
