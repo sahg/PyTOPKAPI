@@ -90,7 +90,7 @@ def run(ini_file='TOPKAPI.ini'):
     h5file_in = h5.open_file(file_rain,mode='r')
     group = '/'+group_name+'/'
     node = h5file_in.get_node(group+'rainfall')
-    ndar_rain = node.read()
+    rain_depth = node.read()
     h5file_in.close()
 
     #~~~~ETr - Reference crop ET
@@ -182,7 +182,7 @@ def run(ini_file='TOPKAPI.ini'):
             ,Xexternal_flow,',',Yexternal_flow,')')
 
     #~~~~Number of simulation time steps
-    nb_time_step = len(ndar_rain[:,0])
+    nb_time_step = len(rain_depth[:,0])
 
 
     ##=============================##
@@ -359,7 +359,7 @@ def run(ini_file='TOPKAPI.ini'):
 
                 if external_flow:
                     _solve_cell(t, cell,
-                            Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                            Dt, rain_depth, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -372,7 +372,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Qexternal_flow)
                 else:
                     _solve_cell(t, cell,
-                            Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                            Dt, rain_depth, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -414,7 +414,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('***** THE END *****')
 
 def _solve_cell(t, cell,
-                Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
+                Dt, rain_depth, psi, eff_theta, eff_sat, ar_Ks, X,
                 ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
@@ -434,7 +434,7 @@ def _solve_cell(t, cell,
     ## ======================== ##
     ## ===== INFILTRATION ===== ##
     ## ======================== ##
-    rain_rate = ndar_rain[t, cell]/Dt
+    rain_rate = rain_depth[t, cell]/Dt
 
     infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi[cell],
                                                      eff_theta[cell],
@@ -469,7 +469,7 @@ def _solve_cell(t, cell,
     ## ===== OVERLAND STORE ===== ##
     ## ========================== ##
     #~~~~ Computation of overland input
-    rain_excess = ndar_rain[t, cell] - infiltration_depth
+    rain_excess = rain_depth[t, cell] - infiltration_depth
     # convert mm to m^3/s
     rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
 
