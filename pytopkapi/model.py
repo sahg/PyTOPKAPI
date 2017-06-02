@@ -219,7 +219,6 @@ def run(ini_file='TOPKAPI.ini'):
     ar_Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
-    ar_a_c = np.ones(nb_cell)*-99.9
     ar_Q_to_next_cell = np.ones(nb_cell)*-99.9
     ar_Q_to_channel = np.ones(nb_cell)*-99.9
     ar_Q_to_channel_sub = np.zeros(nb_cell)
@@ -365,7 +364,7 @@ def run(ini_file='TOPKAPI.ini'):
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
-                            ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                            ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ndar_ETr, ar_ETa, ar_cell_down, ar_b_c, alpha_c,
                             ar_Vc0, solve_c, ndar_ETo, ar_ET_channel,
@@ -378,7 +377,7 @@ def run(ini_file='TOPKAPI.ini'):
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
-                            ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                            ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ndar_ETr, ar_ETa, ar_cell_down, ar_b_c, alpha_c,
                             ar_Vc0, solve_c, ndar_ETo, ar_ET_channel,
@@ -419,7 +418,7 @@ def _solve_cell(t, cell,
                 ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
-                ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
+                ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ndar_ETr, ar_ETa,
                 ar_cell_down,ar_b_c, alpha_c, ar_Vc0, solve_c, ndar_ETo,
                 ar_ET_channel, external_flow, cell_external_flow=None,
@@ -517,7 +516,7 @@ def _solve_cell(t, cell,
             Stop
 
         #~~~~ Computation of channel input
-        ar_a_c[cell], \
+        a_c, \
         ar_Qc_cell_up[cell] = fl.input_channel(ar_Qc_out,
                                                ar_Q_to_channel[cell],
                                                li_cell_up[cell])
@@ -526,16 +525,16 @@ def _solve_cell(t, cell,
         #this function currently.
         if external_flow \
           and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
-            ar_a_c[cell] = ar_a_c[cell] + ar_Qexternal_flow[t]
+            a_c = a_c + ar_Qexternal_flow[t]
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
-        ar_Vc1[cell] = om.solve_storage_eq(ar_a_c[cell], ar_b_c[cell],
+        ar_Vc1[cell] = om.solve_storage_eq(a_c, ar_b_c[cell],
                                            alpha_c, ar_Vc0[cell], Dt, solve_c)
 
         #~~~~ Computation of channel outflows
         ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],
-                                            ar_Vc1[cell], ar_a_c[cell], Dt)
+                                            ar_Vc1[cell], a_c, Dt)
 
         if ar_Qc_out[cell] < 0:
             print('Problem Channel: output greater than input....')
@@ -546,7 +545,7 @@ def _solve_cell(t, cell,
             stop
 
     else:
-        ar_a_c[cell] = 0.
+        a_c = 0.
         ar_Vc1[cell] = 0.
         ar_Qc_out[cell] = 0.
 
