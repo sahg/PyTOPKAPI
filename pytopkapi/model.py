@@ -109,7 +109,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     #~~~~external_flow flows
     if external_flow:
-        ar_Qexternal_flow = np.loadtxt(file_Qexternal_flow)[:, 5]
+        external_flow_records = np.loadtxt(file_Qexternal_flow)[:, 5]
 
 
     ##============================##
@@ -369,7 +369,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, ar_b_c, alpha_c,
                             ar_Vc0, solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow, cell_external_flow,
-                            ar_Qexternal_flow)
+                            external_flow_records[t])
                 else:
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi, eff_theta, eff_sat, ar_Ks, X,
@@ -421,8 +421,8 @@ def _solve_cell(cell,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
                 ar_cell_down,ar_b_c, alpha_c, ar_Vc0, solve_c, ET0,
-                ar_ET_channel, external_flow, cell_external_flow=None,
-                ar_Qexternal_flow=None):
+                ar_ET_channel, external_flow_flag, cell_external_flow=None,
+                external_flow=None):
     """Core calculations for a model cell.
 
     """
@@ -523,9 +523,9 @@ def _solve_cell(cell,
 
         #TO DO: Handle external flows properly. Vars not passed into
         #this function currently.
-        if external_flow \
+        if external_flow_flag \
           and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
-            a_c = a_c + ar_Qexternal_flow[t]
+            a_c = a_c + external_flow
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
