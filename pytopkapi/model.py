@@ -219,7 +219,6 @@ def run(ini_file='TOPKAPI.ini'):
     ar_Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
-    ar_a_o = np.ones(nb_cell)*-99.9
     ar_a_c = np.ones(nb_cell)*-99.9
     ar_Q_to_next_cell = np.ones(nb_cell)*-99.9
     ar_Q_to_channel = np.ones(nb_cell)*-99.9
@@ -364,7 +363,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
-                            ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -377,7 +376,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
-                            ar_a_o, ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -418,7 +417,7 @@ def run(ini_file='TOPKAPI.ini'):
 def _solve_cell(t, cell,
                 Dt, ndar_rain, psi, eff_theta, eff_sat, ar_Ks, X,
                 ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
-                solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_a_o, ar_b_o, alpha_o,
+                solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out, ar_a_c,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ndar_ETr, ar_ETa,
@@ -475,7 +474,7 @@ def _solve_cell(t, cell,
     # convert mm to m^3/s
     rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
 
-    ar_a_o[cell] = max(0,
+    a_o = max(0,
                        a_s \
                        - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
                        + ar_Qs_out[cell]) \
@@ -483,12 +482,12 @@ def _solve_cell(t, cell,
 
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
-    ar_Vo1[cell] = om.solve_storage_eq(ar_a_o[cell], ar_b_o[cell],
+    ar_Vo1[cell] = om.solve_storage_eq(a_o, ar_b_o[cell],
                                        alpha_o, ar_Vo0[cell], Dt, solve_o)
 
     #~~~~ Computation of overland outflows
     ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell],
-                                        ar_Vo1[cell], ar_a_o[cell], Dt)
+                                        ar_Vo1[cell], a_o, Dt)
 
     if ar_Qo_out[cell] < 0:
         print('Problem Overland:output greater than input....')
