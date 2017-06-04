@@ -160,7 +160,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     #~~~~Computation of model parameters from physical parameters
     Vsm, b_s, b_o, \
-    ar_W, b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
+    W, b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
                                          ar_lambda, ar_tan_beta,
@@ -205,7 +205,7 @@ def run(ini_file='TOPKAPI.ini'):
         print('Initialize from parms')
         Vs0 = fl.initial_volume_soil(ar_pVs_t0, Vsm)
         Vo0 = ar_Vo_t0
-        Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
+        Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
@@ -330,7 +330,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
 
-        E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc
+        E_vol = ar_ET_channel*1e-3 * W * ar_Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
     eff_theta = ar_theta_s - ar_theta_r
@@ -363,7 +363,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
-                            ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
+                            ar_Qo_out, ar_lambda, W[cell], ar_Xc, ar_Q_to_channel,
                             ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
@@ -376,7 +376,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
-                            ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
+                            ar_Qo_out, ar_lambda, W[cell], ar_Xc, ar_Q_to_channel,
                             ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
@@ -405,7 +405,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_ET_out.append(ar_ETa.reshape((1,nb_cell)))
 
-        E_vol = ar_ET_channel*1e-3 * ar_W * ar_Xc
+        E_vol = ar_ET_channel*1e-3 * W * ar_Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
     h5file.close()
@@ -417,7 +417,7 @@ def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
                 solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
-                Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
+                Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, W, ar_Xc,
                 ar_Q_to_channel, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
@@ -499,7 +499,7 @@ def _solve_cell(cell,
     ar_Q_to_channel[cell]  = fl.flow_partitioning(ar_lambda[cell],
                                                      ar_Qs_out[cell],
                                                      ar_Qo_out[cell],
-                                                     ar_W[cell], X, ar_Xc[cell])
+                                                     W, X, ar_Xc[cell])
 
     ## ======================== ##
     ## ===== CHANNEL STORE ==== ##
@@ -561,4 +561,4 @@ def _solve_cell(cell,
         ar_ET_channel[cell], \
         ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell],
                                          ET0,
-                                         ar_W[cell], ar_Xc[cell])
+                                         W, ar_Xc[cell])
