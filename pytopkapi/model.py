@@ -197,7 +197,7 @@ def run(ini_file='TOPKAPI.ini'):
         h5file_in = h5py.File(file_out)
 
         Vs0 = h5file_in['/Soil/V_s'][-1, :]
-        ar_Vc0 = h5file_in['/Channel/V_c'][-1, :]
+        Vc0 = h5file_in['/Channel/V_c'][-1, :]
         Vo0 = h5file_in['/Overland/V_o'][-1, :]
 
         h5file_in.close()
@@ -205,7 +205,7 @@ def run(ini_file='TOPKAPI.ini'):
         print('Initialize from parms')
         Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
         Vo0 = ar_Vo_t0
-        ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
+        Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
@@ -321,7 +321,7 @@ def run(ini_file='TOPKAPI.ini'):
         #Write the initial values into the output file
         array_Vs.append(Vs0.reshape((1,nb_cell)))
         array_Vo.append(Vo0.reshape((1,nb_cell)))
-        array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
+        array_Vc.append(Vc0.reshape((1,nb_cell)))
 
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell)))
@@ -368,7 +368,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, ar_b_c, alpha_c,
-                            ar_Vc0, solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                            Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow, cell_external_flow,
                             external_flow_records[t])
                 else:
@@ -381,7 +381,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, ar_b_c, alpha_c,
-                            ar_Vc0, solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                            Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow)
 
         ####===================================####
@@ -389,7 +389,7 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         Vs0 = np.array(ar_Vs1)
         Vo0 = np.array(ar_Vo1)
-        ar_Vc0 = np.array(ar_Vc1)
+        Vc0 = np.array(ar_Vc1)
 
         ####===================================####
         #### Results writing at each time step ####
@@ -421,7 +421,7 @@ def _solve_cell(cell,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
-                ar_cell_down,ar_b_c, alpha_c, ar_Vc0, solve_c, ET0,
+                ar_cell_down,ar_b_c, alpha_c, Vc0, solve_c, ET0,
                 ar_ET_channel, external_flow_flag, cell_external_flow=None,
                 external_flow=None):
     """Core calculations for a model cell.
@@ -529,10 +529,10 @@ def _solve_cell(cell,
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
         ar_Vc1[cell] = om.solve_storage_eq(a_c, ar_b_c[cell],
-                                           alpha_c, ar_Vc0[cell], Dt, solve_c)
+                                           alpha_c, Vc0, Dt, solve_c)
 
         #~~~~ Computation of channel outflows
-        ar_Qc_out[cell] = fl.Qout_computing(ar_Vc0[cell],
+        ar_Qc_out[cell] = fl.Qout_computing(Vc0,
                                             ar_Vc1[cell], a_c, Dt)
 
         if ar_Qc_out[cell] < 0:
