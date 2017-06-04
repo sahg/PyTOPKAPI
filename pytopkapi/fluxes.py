@@ -226,20 +226,16 @@ def flow_partitioning(Lambda, Qs_out, Qo_out, W, X, Xc):
     Q_to_channel : scalar
         Combined outflow from soil and overland to the channel store
         (:math:`m^3/s`)
-    Q_to_channel_sub : scalar
-        Outflow from soil store to the channel store (:math:`m^3/s`)
 
     """
     if Lambda != 0: #ToDo: check for invalid values of Lambda.
         Q_to_next_cell = (1-Lambda*W*X/(X**2))*(Qs_out+Qo_out)
         Q_to_channel = (Lambda*W*X/(X**2))*(Qs_out+Qo_out)
-        Q_to_channel_sub = (Lambda*W*X/(X**2))*(Qs_out)
     else:
         Q_to_next_cell = (Qs_out+Qo_out)
         Q_to_channel = 0.
-        Q_to_channel_sub = 0.
 
-    return Q_to_next_cell, Q_to_channel, Q_to_channel_sub
+    return Q_to_next_cell, Q_to_channel
 
 def input_channel(ar_Qc_out, Q_to_channel, ar_cell_up):
     """Compute the total inflow to the channel of a channel cell.

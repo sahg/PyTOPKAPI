@@ -221,7 +221,6 @@ def run(ini_file='TOPKAPI.ini'):
     ## Intermediate variables
     ar_Q_to_next_cell = np.ones(nb_cell)*-99.9
     ar_Q_to_channel = np.ones(nb_cell)*-99.9
-    ar_Q_to_channel_sub = np.zeros(nb_cell)
     ar_Qc_cell_up = np.zeros(nb_cell)
     ar_ETa = np.zeros(nb_cell)
     ar_ET_channel = np.zeros(nb_cell)
@@ -365,7 +364,7 @@ def run(ini_file='TOPKAPI.ini'):
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
-                            ar_Q_to_channel_sub, ar_Qc_out,
+                            ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
@@ -378,7 +377,7 @@ def run(ini_file='TOPKAPI.ini'):
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
-                            ar_Q_to_channel_sub, ar_Qc_out,
+                            ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
@@ -419,7 +418,7 @@ def _solve_cell(cell,
                 ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
                 solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
-                ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
+                ar_Q_to_channel, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 ar_ET_channel, external_flow_flag, cell_external_flow=None,
@@ -495,11 +494,9 @@ def _solve_cell(cell,
     ## ============================= ##
     ## ===== FLOW PARTITIONING ===== ##
     ## ============================= ##
-    # ar_Q_to_channel_sub doesn't get used for anything?
 
     ar_Q_to_next_cell[cell], \
-    ar_Q_to_channel[cell], \
-    ar_Q_to_channel_sub[cell] = fl.flow_partitioning(ar_lambda[cell],
+    ar_Q_to_channel[cell]  = fl.flow_partitioning(ar_lambda[cell],
                                                      ar_Qs_out[cell],
                                                      ar_Qo_out[cell],
                                                      ar_W[cell], X, ar_Xc[cell])
