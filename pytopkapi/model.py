@@ -159,7 +159,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('Max n_c=', max(ar_n_c))
 
     #~~~~Computation of model parameters from physical parameters
-    Vsm, b_s, ar_b_o, \
+    Vsm, b_s, b_o, \
     ar_W, ar_b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
@@ -363,7 +363,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
-                            ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
+                            b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -376,7 +376,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
-                            ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
+                            b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -417,7 +417,7 @@ def run(ini_file='TOPKAPI.ini'):
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
-                solve_s, Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
+                solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
@@ -480,7 +480,7 @@ def _solve_cell(cell,
 
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
-    ar_Vo1[cell] = om.solve_storage_eq(a_o, ar_b_o[cell],
+    ar_Vo1[cell] = om.solve_storage_eq(a_o, b_o,
                                        alpha_o, Vo0, Dt, solve_o)
 
     #~~~~ Computation of overland outflows
