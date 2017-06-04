@@ -198,13 +198,13 @@ def run(ini_file='TOPKAPI.ini'):
 
         Vs0 = h5file_in['/Soil/V_s'][-1, :]
         ar_Vc0 = h5file_in['/Channel/V_c'][-1, :]
-        ar_Vo0 = h5file_in['/Overland/V_o'][-1, :]
+        Vo0 = h5file_in['/Overland/V_o'][-1, :]
 
         h5file_in.close()
     else:
         print('Initialize from parms')
         Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
-        ar_Vo0 = ar_Vo_t0
+        Vo0 = ar_Vo_t0
         ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
     ## Computed variables
@@ -320,7 +320,7 @@ def run(ini_file='TOPKAPI.ini'):
     if append_output is False or first_run is True:
         #Write the initial values into the output file
         array_Vs.append(Vs0.reshape((1,nb_cell)))
-        array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
+        array_Vo.append(Vo0.reshape((1,nb_cell)))
         array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
 
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
@@ -363,7 +363,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
-                            ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -376,7 +376,7 @@ def run(ini_file='TOPKAPI.ini'):
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
-                            ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
+                            ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
@@ -388,7 +388,7 @@ def run(ini_file='TOPKAPI.ini'):
         #### Affectation of new vector values  ####
         ####===================================####
         Vs0 = np.array(ar_Vs1)
-        ar_Vo0 = np.array(ar_Vo1)
+        Vo0 = np.array(ar_Vo1)
         ar_Vc0 = np.array(ar_Vc1)
 
         ####===================================####
@@ -418,7 +418,7 @@ def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
-                ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
+                Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
                 ar_cell_down,ar_b_c, alpha_c, ar_Vc0, solve_c, ET0,
@@ -481,10 +481,10 @@ def _solve_cell(cell,
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
     ar_Vo1[cell] = om.solve_storage_eq(a_o, ar_b_o[cell],
-                                       alpha_o, ar_Vo0[cell], Dt, solve_o)
+                                       alpha_o, Vo0, Dt, solve_o)
 
     #~~~~ Computation of overland outflows
-    ar_Qo_out[cell] = fl.Qout_computing(ar_Vo0[cell],
+    ar_Qo_out[cell] = fl.Qout_computing(Vo0,
                                         ar_Vo1[cell], a_o, Dt)
 
     if ar_Qo_out[cell] < 0:
