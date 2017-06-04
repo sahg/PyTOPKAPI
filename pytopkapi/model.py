@@ -160,7 +160,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     #~~~~Computation of model parameters from physical parameters
     Vsm, b_s, b_o, \
-    ar_W, ar_b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
+    ar_W, b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
                                          ar_lambda, ar_tan_beta,
@@ -367,7 +367,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
-                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, ar_b_c, alpha_c,
+                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow, cell_external_flow,
                             external_flow_records[t])
@@ -380,7 +380,7 @@ def run(ini_file='TOPKAPI.ini'):
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
                             ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
-                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, ar_b_c, alpha_c,
+                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow)
 
@@ -421,7 +421,7 @@ def _solve_cell(cell,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
-                ar_cell_down,ar_b_c, alpha_c, Vc0, solve_c, ET0,
+                ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 ar_ET_channel, external_flow_flag, cell_external_flow=None,
                 external_flow=None):
     """Core calculations for a model cell.
@@ -528,7 +528,7 @@ def _solve_cell(cell,
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
-        ar_Vc1[cell] = om.solve_storage_eq(a_c, ar_b_c[cell],
+        ar_Vc1[cell] = om.solve_storage_eq(a_c, b_c,
                                            alpha_c, Vc0, Dt, solve_c)
 
         #~~~~ Computation of channel outflows
