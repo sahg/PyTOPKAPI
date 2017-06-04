@@ -159,7 +159,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('Max n_c=', max(ar_n_c))
 
     #~~~~Computation of model parameters from physical parameters
-    ar_Vsm, ar_b_s, ar_b_o, \
+    ar_Vsm, b_s, ar_b_o, \
     ar_W, ar_b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
@@ -357,10 +357,11 @@ def run(ini_file='TOPKAPI.ini'):
             for cell1 in node_hierarchy[lvl]:
                 cell=np.where(ar_cell_label==cell1)[0][0]
 
+
                 if external_flow:
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                            ar_Q_to_next_cell, li_cell_up, ar_b_s,
+                            ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
@@ -373,7 +374,7 @@ def run(ini_file='TOPKAPI.ini'):
                 else:
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
-                            ar_Q_to_next_cell, li_cell_up, ar_b_s,
+                            ar_Q_to_next_cell, li_cell_up, b_s[cell],
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
@@ -415,7 +416,7 @@ def run(ini_file='TOPKAPI.ini'):
 
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
+                ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, ar_Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
@@ -437,9 +438,7 @@ def _solve_cell(cell,
     rain_rate = rain_depth/Dt
 
     infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi,
-                                                     eff_theta,
-                                                     eff_sat,
-                                                     Ks, Dt)
+                                                     eff_theta, eff_sat, Ks, Dt)
 
     ## ====================== ##
     ## ===== SOIL STORE ===== ##
@@ -452,13 +451,13 @@ def _solve_cell(cell,
     # Calculate the volume in the soil store at the end of the
     # current time-step.
 
-    Vs_prim = om.solve_storage_eq(a_s, ar_b_s[cell],
+    Vs_prim = om.solve_storage_eq(a_s, b_s,
                                   alpha_s, ar_Vs0[cell], Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
     ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell], Vs_prim,
                                                    ar_Vsm[cell], a_s,
-                                                   ar_b_s[cell], alpha_s, Dt)
+                                                   b_s, alpha_s, Dt)
 
     if ar_Qs_out[cell] < 0:
         print('Problem Soil:output greater than input....')
