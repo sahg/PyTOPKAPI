@@ -159,7 +159,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('Max n_c=', max(ar_n_c))
 
     #~~~~Computation of model parameters from physical parameters
-    ar_Vsm, b_s, ar_b_o, \
+    Vsm, b_s, ar_b_o, \
     ar_W, ar_b_c = pm.compute_cell_param(X, ar_Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
@@ -203,7 +203,7 @@ def run(ini_file='TOPKAPI.ini'):
         h5file_in.close()
     else:
         print('Initialize from parms')
-        Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
+        Vs0 = fl.initial_volume_soil(ar_pVs_t0, Vsm)
         Vo0 = ar_Vo_t0
         Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
@@ -347,7 +347,7 @@ def run(ini_file='TOPKAPI.ini'):
     for t in range(nb_time_step):
         print(t+1, '/', nb_time_step)
 
-        eff_sat = Vs0/ar_Vsm
+        eff_sat = Vs0/Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)
         psi = psi_b/np.power(eff_sat, 1.0/lamda)
@@ -362,7 +362,7 @@ def run(ini_file='TOPKAPI.ini'):
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
@@ -375,7 +375,7 @@ def run(ini_file='TOPKAPI.ini'):
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
@@ -417,7 +417,7 @@ def run(ini_file='TOPKAPI.ini'):
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
-                solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
+                solve_s, Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
@@ -456,7 +456,7 @@ def _solve_cell(cell,
 
     #~~~~ Computation of soil outflow and overland input
     ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(Vs0, Vs_prim,
-                                                   ar_Vsm[cell], a_s,
+                                                   Vsm, a_s,
                                                    b_s, alpha_s, Dt)
 
     if ar_Qs_out[cell] < 0:
@@ -556,7 +556,7 @@ def _solve_cell(cell,
     ar_ETa[cell], \
     ar_Vs1[cell], \
     ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], ar_Vs1[cell],
-                                           ar_Vsm[cell], ar_kc[cell],
+                                           Vsm, ar_kc[cell],
                                            ETr, X)
 
     #~~~~~ Evaporation from channel
