@@ -359,7 +359,7 @@ def run(ini_file='TOPKAPI.ini'):
 
                 if external_flow:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi, eff_theta, eff_sat,ar_Ks, X,
+                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta, eff_sat,ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -372,7 +372,7 @@ def run(ini_file='TOPKAPI.ini'):
                             external_flow_records[t])
                 else:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi, eff_theta, eff_sat, ar_Ks, X,
+                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta, eff_sat, ar_Ks, X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -436,7 +436,7 @@ def _solve_cell(cell,
     ## ======================== ##
     rain_rate = rain_depth/Dt
 
-    infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi[cell],
+    infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi,
                                                      eff_theta[cell],
                                                      eff_sat[cell],
                                                      ar_Ks[cell], Dt)
