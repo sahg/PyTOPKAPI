@@ -127,7 +127,7 @@ def run(ini_file='TOPKAPI.ini'):
     ar_coory, ar_lambda, \
     ar_Xc, ar_dam, \
     ar_tan_beta, ar_tan_beta_channel, \
-    ar_L0, ar_Ks0, \
+    ar_L0, Ks0, \
     ar_theta_r, ar_theta_s, \
     ar_n_o0, ar_n_c0, \
     ar_cell_down, ar_pVs_t0, \
@@ -149,12 +149,12 @@ def run(ini_file='TOPKAPI.ini'):
 
     #~~~~Apply calibration factors to the parameter values
     ar_L = ar_L0*fac_L
-    ar_Ks = ar_Ks0*fac_Ks
+    Ks = Ks0*fac_Ks
     ar_n_o = ar_n_o0*fac_n_o
     ar_n_c = ar_n_c0*fac_n_c
 
     print('Max L=', max(ar_L))
-    print('Max Ks=', max(ar_Ks))
+    print('Max Ks=', max(Ks))
     print('Max n_o=', max(ar_n_o))
     print('Max n_c=', max(ar_n_c))
 
@@ -165,7 +165,7 @@ def run(ini_file='TOPKAPI.ini'):
                                          A_thres, W_max, W_min,
                                          ar_lambda, ar_tan_beta,
                                          ar_tan_beta_channel, ar_L,
-                                         ar_Ks, ar_theta_r, ar_theta_s,
+                                         Ks, ar_theta_r, ar_theta_s,
                                          ar_n_o, ar_n_c, ar_A_drained)
 
     #~~~~Look for the cell of external_flow tunnel
@@ -359,7 +359,7 @@ def run(ini_file='TOPKAPI.ini'):
 
                 if external_flow:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],ar_Ks, X,
+                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -372,7 +372,7 @@ def run(ini_file='TOPKAPI.ini'):
                             external_flow_records[t])
                 else:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], ar_Ks, X,
+                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, ar_b_s,
                             alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
@@ -414,7 +414,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('***** THE END *****')
 
 def _solve_cell(cell,
-                Dt, rain_depth, psi, eff_theta, eff_sat, ar_Ks, X,
+                Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, ar_b_s, alpha_s, ar_Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
@@ -439,7 +439,7 @@ def _solve_cell(cell,
     infiltration_depth = green_ampt_cum_infiltration(rain_rate, psi,
                                                      eff_theta,
                                                      eff_sat,
-                                                     ar_Ks[cell], Dt)
+                                                     Ks, Dt)
 
     ## ====================== ##
     ## ===== SOIL STORE ===== ##
