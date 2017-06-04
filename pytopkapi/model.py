@@ -132,7 +132,7 @@ def run(ini_file='TOPKAPI.ini'):
     ar_n_o0, ar_n_c0, \
     ar_cell_down, ar_pVs_t0, \
     ar_Vo_t0, ar_Qc_t0, \
-    ar_kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
+    kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell = len(ar_cell_label)
@@ -365,7 +365,7 @@ def run(ini_file='TOPKAPI.ini'):
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                             ar_Qc_out,
-                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
+                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc[cell],
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow, cell_external_flow,
@@ -378,7 +378,7 @@ def run(ini_file='TOPKAPI.ini'):
                             b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                             ar_Qc_out,
-                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc,
+                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc[cell],
                             ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
                             Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
                             external_flow)
@@ -419,7 +419,7 @@ def _solve_cell(cell,
                 solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, W, Xc,
                 ar_Q_to_channel, ar_Qc_out,
-                ar_Qc_cell_up, ar_cell_label, ar_Vc1, ar_kc, ETr, ar_ETa,
+                ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc, ETr, ar_ETa,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 ar_ET_channel, external_flow_flag, cell_external_flow=None,
                 external_flow=None):
@@ -553,7 +553,7 @@ def _solve_cell(cell,
     ar_ETa[cell], \
     ar_Vs1[cell], \
     ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], ar_Vs1[cell],
-                                           Vsm, ar_kc[cell],
+                                           Vsm, kc,
                                            ETr, X)
 
     #~~~~~ Evaporation from channel
