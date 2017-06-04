@@ -196,14 +196,14 @@ def run(ini_file='TOPKAPI.ini'):
 
         h5file_in = h5py.File(file_out)
 
-        ar_Vs0 = h5file_in['/Soil/V_s'][-1, :]
+        Vs0 = h5file_in['/Soil/V_s'][-1, :]
         ar_Vc0 = h5file_in['/Channel/V_c'][-1, :]
         ar_Vo0 = h5file_in['/Overland/V_o'][-1, :]
 
         h5file_in.close()
     else:
         print('Initialize from parms')
-        ar_Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
+        Vs0 = fl.initial_volume_soil(ar_pVs_t0, ar_Vsm)
         ar_Vo0 = ar_Vo_t0
         ar_Vc0 = fl.initial_volume_channel(ar_Qc_t0, ar_W, X, ar_n_c)
 
@@ -319,7 +319,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     if append_output is False or first_run is True:
         #Write the initial values into the output file
-        array_Vs.append(ar_Vs0.reshape((1,nb_cell)))
+        array_Vs.append(Vs0.reshape((1,nb_cell)))
         array_Vo.append(ar_Vo0.reshape((1,nb_cell)))
         array_Vc.append(ar_Vc0.reshape((1,nb_cell)))
 
@@ -347,7 +347,7 @@ def run(ini_file='TOPKAPI.ini'):
     for t in range(nb_time_step):
         print(t+1, '/', nb_time_step)
 
-        eff_sat = ar_Vs0/ar_Vsm
+        eff_sat = Vs0/ar_Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)
         psi = psi_b/np.power(eff_sat, 1.0/lamda)
@@ -362,7 +362,7 @@ def run(ini_file='TOPKAPI.ini'):
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
@@ -375,7 +375,7 @@ def run(ini_file='TOPKAPI.ini'):
                     _solve_cell(cell,
                             Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
                             ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, ar_Vs0, solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
+                            alpha_s, Vs0[cell], solve_s, ar_Vsm, ar_Qs_out, ar_Vs1,
                             ar_b_o, alpha_o, ar_Vo0, solve_o, ar_Vo1,
                             ar_Qo_out, ar_lambda, ar_W, ar_Xc, ar_Q_to_channel,
                             ar_Q_to_channel_sub, ar_Qc_out,
@@ -387,7 +387,7 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         #### Affectation of new vector values  ####
         ####===================================####
-        ar_Vs0 = np.array(ar_Vs1)
+        Vs0 = np.array(ar_Vs1)
         ar_Vo0 = np.array(ar_Vo1)
         ar_Vc0 = np.array(ar_Vc1)
 
@@ -416,7 +416,7 @@ def run(ini_file='TOPKAPI.ini'):
 
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, ar_Vs0,
+                ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
                 solve_s, ar_Vsm, ar_Qs_out, ar_Vs1, ar_b_o, alpha_o,
                 ar_Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, ar_W, ar_Xc,
                 ar_Q_to_channel, ar_Q_to_channel_sub, ar_Qc_out,
@@ -452,10 +452,10 @@ def _solve_cell(cell,
     # current time-step.
 
     Vs_prim = om.solve_storage_eq(a_s, b_s,
-                                  alpha_s, ar_Vs0[cell], Dt, solve_s)
+                                  alpha_s, Vs0, Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
-    ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(ar_Vs0[cell], Vs_prim,
+    ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(Vs0, Vs_prim,
                                                    ar_Vsm[cell], a_s,
                                                    b_s, alpha_s, Dt)
 
@@ -474,7 +474,7 @@ def _solve_cell(cell,
 
     a_o = max(0,
                        a_s \
-                       - ((ar_Vs1[cell]-ar_Vs0[cell])/Dt \
+                       - ((ar_Vs1[cell]-Vs0)/Dt \
                        + ar_Qs_out[cell]) \
                        + rain_excess)
 
