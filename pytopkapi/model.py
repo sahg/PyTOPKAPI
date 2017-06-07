@@ -500,12 +500,10 @@ def _solve_cell(cell,
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
-        Vc1 = om.solve_storage_eq(a_c, b_c,
-                                           alpha_c, Vc0, Dt, solve_c)
+        Vc1 = om.solve_storage_eq(a_c, b_c, alpha_c, Vc0, Dt, solve_c)
 
         #~~~~ Computation of channel outflows
-        ar_Qc_out[cell] = fl.Qout_computing(Vc0,
-                                            Vc1, a_c, Dt)
+        ar_Qc_out[cell] = fl.Qout_computing(Vc0, Vc1, a_c, Dt)
 
         if ar_Qc_out[cell] < 0:
             print('Problem Channel: output greater than input....')
@@ -525,17 +523,10 @@ def _solve_cell(cell,
     ## ===== EVAPOTRANSPIRATION ===== ##
     ## ============================== ##
     #~~~~~ From soil
-    ar_ETa[cell], \
-    Vs1, \
-    Vo1 = em.evapot_soil_overland(Vo1, Vs1,
-                                           Vsm, kc,
-                                           ETr, X)
+    ar_ETa[cell], Vs1, Vo1 = em.evapot_soil_overland(Vo1, Vs1, Vsm, kc, ETr, X)
 
     #~~~~~ Evaporation from channel
     if ar_lambda[cell] == 1:
-        ar_ET_channel[cell], \
-        Vc1 = em.evapor_channel(Vc1,
-                                         ET0,
-                                         W, Xc)
+        ar_ET_channel[cell], Vc1 = em.evapor_channel(Vc1, ET0, W, Xc)
 
     return Qs_out, Qo_out, Q_down, Vs1, Vo1, Vc1
