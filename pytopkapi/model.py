@@ -211,7 +211,7 @@ def run(ini_file='TOPKAPI.ini'):
     #Matrix of soil,overland and channel store at the end of the time step
     Vs1 = np.ones(nb_cell)*-99.9
     Vo1 = np.ones(nb_cell)*-99.9
-    ar_Vc1 = np.ones(nb_cell)*-99.9
+    Vc1 = np.ones(nb_cell)*-99.9
 
     #Matrix of outflows between two time steps
     Qs_out = np.ones(nb_cell)*-99.9
@@ -358,7 +358,7 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = Q_down[li_cell_up[cell]]
 
                 if external_flow:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -367,13 +367,13 @@ def run(ini_file='TOPKAPI.ini'):
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
-                                ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
+                                kc[cell], ETr_forcing[t, cell], ar_ETa,
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell], ar_ET_channel,
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -382,7 +382,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
-                                ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
+                                kc[cell], ETr_forcing[t, cell], ar_ETa,
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell], ar_ET_channel,
                                 external_flow)
@@ -392,14 +392,14 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         Vs0 = np.array(Vs1)
         Vo0 = np.array(Vo1)
-        Vc0 = np.array(ar_Vc1)
+        Vc0 = np.array(Vc1)
 
         ####===================================####
         #### Results writing at each time step ####
         ####===================================####
         array_Vs.append(Vs1.reshape((1,nb_cell)))
         array_Vo.append(Vo1.reshape((1,nb_cell)))
-        array_Vc.append(ar_Vc1.reshape((1,nb_cell)))
+        array_Vc.append(Vc1.reshape((1,nb_cell)))
 
         array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
@@ -423,7 +423,7 @@ def _solve_cell(cell,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, ar_lambda, W, Xc,
                 ar_Qc_out,
-                ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc, ETr, ar_ETa,
+                ar_Qc_cell_up, ar_cell_label, kc, ETr, ar_ETa,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 ar_ET_channel, external_flow_flag, cell_external_flow=None,
                 external_flow=None):
@@ -500,12 +500,12 @@ def _solve_cell(cell,
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
 
-        ar_Vc1[cell] = om.solve_storage_eq(a_c, b_c,
+        Vc1 = om.solve_storage_eq(a_c, b_c,
                                            alpha_c, Vc0, Dt, solve_c)
 
         #~~~~ Computation of channel outflows
         ar_Qc_out[cell] = fl.Qout_computing(Vc0,
-                                            ar_Vc1[cell], a_c, Dt)
+                                            Vc1, a_c, Dt)
 
         if ar_Qc_out[cell] < 0:
             print('Problem Channel: output greater than input....')
@@ -517,7 +517,7 @@ def _solve_cell(cell,
 
     else:
         a_c = 0.
-        ar_Vc1[cell] = 0.
+        Vc1 = 0.
         ar_Qc_out[cell] = 0.
 
 
@@ -534,8 +534,8 @@ def _solve_cell(cell,
     #~~~~~ Evaporation from channel
     if ar_lambda[cell] == 1:
         ar_ET_channel[cell], \
-        ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell],
+        Vc1 = em.evapor_channel(Vc1,
                                          ET0,
                                          W, Xc)
 
-    return Qs_out, Qo_out, Q_down, Vs1, Vo1
+    return Qs_out, Qo_out, Q_down, Vs1, Vo1, Vc1
