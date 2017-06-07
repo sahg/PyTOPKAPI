@@ -448,14 +448,10 @@ def _solve_cell(cell,
     #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
     # Calculate the volume in the soil store at the end of the
     # current time-step.
-
-    Vs_prim = om.solve_storage_eq(a_s, b_s,
-                                  alpha_s, Vs0, Dt, solve_s)
+    Vs_prim = om.solve_storage_eq(a_s, b_s, alpha_s, Vs0, Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
-    Qs_out, Vs1 = fl.output_soil(Vs0, Vs_prim,
-                                                   Vsm, a_s,
-                                                   b_s, alpha_s, Dt)
+    Qs_out, Vs1 = fl.output_soil(Vs0, Vs_prim, Vsm, a_s, b_s, alpha_s, Dt)
 
     if Qs_out < 0:
         print('Problem Soil:output greater than input....')
