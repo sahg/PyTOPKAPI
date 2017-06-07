@@ -481,12 +481,6 @@ def _solve_cell(cell,
     ## ===== CHANNEL STORE ==== ##
     ## ======================== ##
     if ar_lambda[cell] == 1:
-        if ar_cell_down[cell] >= 0 \
-        and ar_lambda[ar_cell_down[cell]] == 0:
-
-            print('Problem: the present cell has a channel but not the cell down...')
-            Stop
-
         #~~~~ Computation of channel input
         a_c = fl.input_channel(channel_upstream_inflow, Q_to_channel)
 
