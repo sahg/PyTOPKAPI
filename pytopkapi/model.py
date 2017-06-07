@@ -360,31 +360,31 @@ def run(ini_file='TOPKAPI.ini'):
                 channel_upstream_inflow = Qc_out[li_cell_up[cell]]
 
                 if cell == cell_external_flow:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], \
+                    Vs1[cell], Vo1[cell], Vc1[cell], \
+                    ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                b_o[cell], alpha_o,
-                                Vo0[cell], solve_o,
+                                b_o[cell], alpha_o, Vo0[cell], solve_o,
                                 channel_flag[cell], W[cell], Xc[cell],
-                                ar_cell_label,
-                                channel_upstream_inflow,
+                                ar_cell_label, channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
                                 True, external_flow_records[t])
                 else:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], \
+                    Vs1[cell], Vo1[cell], Vc1[cell], \
+                    ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                b_o[cell], alpha_o,
-                                Vo0[cell], solve_o,
+                                b_o[cell], alpha_o, Vo0[cell], solve_o,
                                 channel_flag[cell], W[cell], Xc[cell],
-                                ar_cell_label,
-                                channel_upstream_inflow,
+                                ar_cell_label, channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
