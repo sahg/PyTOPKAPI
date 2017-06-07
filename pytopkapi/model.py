@@ -365,7 +365,7 @@ def run(ini_file='TOPKAPI.ini'):
                     ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                li_cell_up, soil_upstream_inflow, b_s[cell],
+                                soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o, Vo0[cell], solve_o,
                                 channel_flag[cell], W[cell], Xc[cell],
@@ -380,7 +380,7 @@ def run(ini_file='TOPKAPI.ini'):
                     ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                li_cell_up, soil_upstream_inflow, b_s[cell],
+                                soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o, Vo0[cell], solve_o,
                                 channel_flag[cell], W[cell], Xc[cell],
@@ -421,7 +421,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('***** THE END *****')
 
 def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
+                soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, channel_flag, W, Xc,
                 ar_cell_label, channel_upstream_inflow, kc, ETr,
