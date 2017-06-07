@@ -431,11 +431,6 @@ def _solve_cell(cell,
 
     """
     ## ======================== ##
-    ## ===== INTERCEPTION ===== ##
-    ## ======================== ##
-    ## No interception for the moment
-
-    ## ======================== ##
     ## ===== INFILTRATION ===== ##
     ## ======================== ##
     rain_rate = rain_depth/Dt
