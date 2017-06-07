@@ -421,12 +421,10 @@ def run(ini_file='TOPKAPI.ini'):
     print('***** THE END *****')
 
 def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                soil_upstream_inflow, b_s, alpha_s, Vs0,
-                solve_s, Vsm, b_o, alpha_o,
-                Vo0, solve_o, channel_flag, W, Xc,
-                channel_upstream_inflow, kc, ETr,
-                b_c, alpha_c, Vc0, solve_c, ET0,
-                external_flow_flag, external_flow=None):
+                soil_upstream_inflow, b_s, alpha_s, Vs0, solve_s, Vsm, b_o,
+                alpha_o, Vo0, solve_o, channel_flag, W, Xc,
+                channel_upstream_inflow, kc, ETr, b_c, alpha_c, Vc0, solve_c,
+                ET0, external_flow_flag, external_flow=None):
     """Core calculations for a model cell.
 
     """
@@ -497,7 +495,6 @@ def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
         a_c = 0.
         Vc1 = 0.
         Qc_out = 0.
-
 
     ## ============================== ##
     ## ===== EVAPOTRANSPIRATION ===== ##
