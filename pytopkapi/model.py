@@ -220,7 +220,6 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Intermediate variables
     Q_down = np.ones(nb_cell)*-99.9
-    ar_Qc_cell_up = np.zeros(nb_cell)
     ETa = np.zeros(nb_cell)
     ET_channel = np.zeros(nb_cell)
 
@@ -367,7 +366,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
-                                ar_Qc_cell_up, ar_cell_label,
+                                ar_cell_label,
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
@@ -383,7 +382,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
-                                ar_Qc_cell_up, ar_cell_label,
+                                ar_cell_label,
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
@@ -425,7 +424,7 @@ def _solve_cell(cell,
                 li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, ar_lambda, W, Xc,
-                ar_Qc_cell_up, ar_cell_label, channel_upstream_inflow, kc, ETr,
+                ar_cell_label, channel_upstream_inflow, kc, ETr,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 external_flow_flag, cell_external_flow=None,
                 external_flow=None):
@@ -489,9 +488,7 @@ def _solve_cell(cell,
             Stop
 
         #~~~~ Computation of channel input
-        a_c, \
-        ar_Qc_cell_up[cell] = fl.input_channel(channel_upstream_inflow,
-                                               Q_to_channel)
+        a_c = fl.input_channel(channel_upstream_inflow, Q_to_channel)
 
         #TO DO: Handle external flows properly. Vars not passed into
         #this function currently.

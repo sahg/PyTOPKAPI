@@ -260,7 +260,7 @@ def input_channel(channel_upstream_inflow, Q_to_channel):
     Qc_cell_up = channel_upstream_inflow.sum()
     a_c = Q_to_channel + Qc_cell_up
 
-    return a_c, Qc_cell_up
+    return a_c
 
 def manning_depth(Q,W,X,n):
     """Compute Manning depth for flow `Q`.
