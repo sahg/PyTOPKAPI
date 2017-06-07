@@ -371,7 +371,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 channel_flag[cell], W[cell], Xc[cell],
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
-                                ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
+                                b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
                                 True, external_flow_records[t])
                 else:
@@ -386,7 +386,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 channel_flag[cell], W[cell], Xc[cell],
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
-                                ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
+                                b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
                                 False)
 
@@ -425,7 +425,7 @@ def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, channel_flag, W, Xc,
                 channel_upstream_inflow, kc, ETr,
-                ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
+                b_c, alpha_c, Vc0, solve_c, ET0,
                 external_flow_flag, external_flow=None):
     """Core calculations for a model cell.
 
