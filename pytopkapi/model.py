@@ -359,29 +359,33 @@ def run(ini_file='TOPKAPI.ini'):
 
                 if external_flow:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                            ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
-                            b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
-                            ar_Qo_out, ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
-                            ar_Qc_out,
-                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc[cell],
-                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
-                            Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
-                            external_flow, cell_external_flow,
-                            external_flow_records[t])
+                                Dt, rainfall_forcing[t, cell], psi[cell],
+                                eff_theta[cell], eff_sat[cell],Ks[cell], X,
+                                ar_Q_to_next_cell, li_cell_up, b_s[cell],
+                                alpha_s, Vs0[cell], solve_s, Vsm[cell],
+                                ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
+                                Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
+                                ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
+                                ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
+                                ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
+                                ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
+                                solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                                external_flow,
+                                cell_external_flow, external_flow_records[t])
                 else:
                     _solve_cell(cell,
-                            Dt, rainfall_forcing[t, cell], psi[cell], eff_theta[cell], eff_sat[cell], Ks[cell], X,
-                            ar_Q_to_next_cell, li_cell_up, b_s[cell],
-                            alpha_s, Vs0[cell], solve_s, Vsm[cell], ar_Qs_out, ar_Vs1,
-                            b_o[cell], alpha_o, Vo0[cell], solve_o, ar_Vo1,
-                            ar_Qo_out, ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
-                            ar_Qc_out,
-                            ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc[cell],
-                            ETr_forcing[t, cell], ar_ETa, ar_cell_down, b_c[cell], alpha_c,
-                            Vc0[cell], solve_c, ET0_forcing[t, cell], ar_ET_channel,
-                            external_flow)
+                                Dt, rainfall_forcing[t, cell], psi[cell],
+                                eff_theta[cell], eff_sat[cell],Ks[cell], X,
+                                ar_Q_to_next_cell, li_cell_up, b_s[cell],
+                                alpha_s, Vs0[cell], solve_s, Vsm[cell],
+                                ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
+                                Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
+                                ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
+                                ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
+                                ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
+                                ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
+                                solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                                external_flow)
 
         ####===================================####
         #### Affectation of new vector values  ####
