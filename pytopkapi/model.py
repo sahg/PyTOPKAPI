@@ -124,7 +124,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     #~~~~Read Cell parameters file
     ar_cell_label, ar_coorx, \
-    ar_coory, ar_lambda, \
+    ar_coory, channel_flag, \
     Xc, ar_dam, \
     ar_tan_beta, ar_tan_beta_channel, \
     ar_L0, Ks0, \
@@ -163,7 +163,7 @@ def run(ini_file='TOPKAPI.ini'):
     W, b_c = pm.compute_cell_param(X, Xc, Dt, alpha_s,
                                          alpha_o, alpha_c, nb_cell,
                                          A_thres, W_max, W_min,
-                                         ar_lambda, ar_tan_beta,
+                                         channel_flag, ar_tan_beta,
                                          ar_tan_beta_channel, ar_L,
                                          Ks, ar_theta_r, ar_theta_s,
                                          ar_n_o, ar_n_c, ar_A_drained)
@@ -175,7 +175,7 @@ def run(ini_file='TOPKAPI.ini'):
                                                       Yexternal_flow,
                                                       ar_coorx,
                                                       ar_coory,
-                                                      ar_lambda)
+                                                      channel_flag)
 
         print('external flows will be taken into account for cell no',\
             cell_external_flow, ' coordinates ('\
@@ -365,7 +365,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
-                                ar_lambda, W[cell], Xc[cell],
+                                channel_flag[cell], W[cell], Xc[cell],
                                 ar_cell_label,
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
@@ -381,7 +381,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
-                                ar_lambda, W[cell], Xc[cell],
+                                channel_flag[cell], W[cell], Xc[cell],
                                 ar_cell_label,
                                 channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
@@ -423,7 +423,7 @@ def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
-                Vo0, solve_o, ar_lambda, W, Xc,
+                Vo0, solve_o, channel_flag, W, Xc,
                 ar_cell_label, channel_upstream_inflow, kc, ETr,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 external_flow_flag, cell_external_flow=None,
@@ -474,13 +474,13 @@ def _solve_cell(cell,
     ## ===== FLOW PARTITIONING ===== ##
     ## ============================= ##
 
-    Q_down, Q_to_channel  = fl.flow_partitioning(ar_lambda[cell],
+    Q_down, Q_to_channel  = fl.flow_partitioning(channel_flag,
                                                  Qs_out, Qo_out, W, X, Xc)
 
     ## ======================== ##
     ## ===== CHANNEL STORE ==== ##
     ## ======================== ##
-    if ar_lambda[cell] == 1:
+    if channel_flag == 1:
         #~~~~ Computation of channel input
         a_c = fl.input_channel(channel_upstream_inflow, Q_to_channel)
 
@@ -510,7 +510,7 @@ def _solve_cell(cell,
     ETa, Vs1, Vo1 = em.evapot_soil_overland(Vo1, Vs1, Vsm, kc, ETr, X)
 
     #~~~~~ Evaporation from channel
-    if ar_lambda[cell] == 1:
+    if channel_flag == 1:
         ET_channel, Vc1 = em.evapor_channel(Vc1, ET0, W, Xc)
     else:
         ET_channel = 0
