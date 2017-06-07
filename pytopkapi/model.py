@@ -465,8 +465,7 @@ def _solve_cell(cell,
 
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
-    Vo1 = om.solve_storage_eq(a_o, b_o,
-                                       alpha_o, Vo0, Dt, solve_o)
+    Vo1 = om.solve_storage_eq(a_o, b_o, alpha_o, Vo0, Dt, solve_o)
 
     #~~~~ Computation of overland outflows
     ar_Qo_out[cell] = fl.Qout_computing(Vo0,
