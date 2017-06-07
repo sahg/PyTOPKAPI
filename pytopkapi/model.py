@@ -453,11 +453,6 @@ def _solve_cell(cell,
     #~~~~ Computation of soil outflow and overland input
     Qs_out, Vs1 = fl.output_soil(Vs0, Vs_prim, Vsm, a_s, b_s, alpha_s, Dt)
 
-    if Qs_out < 0:
-        print('Problem Soil:output greater than input....')
-        print('n=', n, 'label=', cell)
-        stop
-
     ## ========================== ##
     ## ===== OVERLAND STORE ===== ##
     ## ========================== ##

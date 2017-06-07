@@ -106,8 +106,11 @@ def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
         Vs_out = Vs_t1_prim
 
     if Qs_out < 0:
-        print('a=', a_s, 'Vs_t1_prim=', Vs_t1_prim, 'Vs_t0=', Vs_t0, 'Vsm=', Vsm)
-        print('Qs=', Qs_out)
+        err_string = ('Negative soil outflow {}, a_s={}, '
+                      'Vs_t1_prim={}, Vs_t0={}, Vsm={}')
+        err_string = err_string.format(Qs_out, a_s, Vs_t1_prim, Vs_t0, Vsm)
+
+        raise ValueError(err_string)
 
     return Qs_out, Vs_out
 
