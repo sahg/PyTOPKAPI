@@ -353,8 +353,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         ## Loop on cell hierarchy
         for lvl in range(len(node_hierarchy.keys())):
-            for cell1 in node_hierarchy[lvl]:
-                cell=np.where(ar_cell_label==cell1)[0][0]
+            for cell in node_hierarchy[lvl]:
 
                 soil_upstream_inflow = Q_down[li_cell_up[cell]]
                 channel_upstream_inflow = Qc_out[li_cell_up[cell]]
