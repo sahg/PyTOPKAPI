@@ -209,7 +209,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     ## Computed variables
     #Matrix of soil,overland and channel store at the end of the time step
-    ar_Vs1 = np.ones(nb_cell)*-99.9
+    Vs1 = np.ones(nb_cell)*-99.9
     ar_Vo1 = np.ones(nb_cell)*-99.9
     ar_Vc1 = np.ones(nb_cell)*-99.9
 
@@ -359,12 +359,12 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = ar_Q_to_next_cell[li_cell_up[cell]]
 
                 if external_flow:
-                    ar_Qs_out[cell] = _solve_cell(cell,
+                    ar_Qs_out[cell], Vs1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                ar_Vs1, b_o[cell], alpha_o,
+                                b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
@@ -374,12 +374,12 @@ def run(ini_file='TOPKAPI.ini'):
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    ar_Qs_out[cell] = _solve_cell(cell,
+                    ar_Qs_out[cell], Vs1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                ar_Vs1, b_o[cell], alpha_o,
+                                b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
@@ -391,14 +391,14 @@ def run(ini_file='TOPKAPI.ini'):
         ####===================================####
         #### Affectation of new vector values  ####
         ####===================================####
-        Vs0 = np.array(ar_Vs1)
+        Vs0 = np.array(Vs1)
         Vo0 = np.array(ar_Vo1)
         Vc0 = np.array(ar_Vc1)
 
         ####===================================####
         #### Results writing at each time step ####
         ####===================================####
-        array_Vs.append(ar_Vs1.reshape((1,nb_cell)))
+        array_Vs.append(Vs1.reshape((1,nb_cell)))
         array_Vo.append(ar_Vo1.reshape((1,nb_cell)))
         array_Vc.append(ar_Vc1.reshape((1,nb_cell)))
 
@@ -421,7 +421,7 @@ def run(ini_file='TOPKAPI.ini'):
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
-                solve_s, Vsm, ar_Vs1, b_o, alpha_o,
+                solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, W, Xc,
                 ar_Q_to_channel, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc, ETr, ar_ETa,
@@ -453,7 +453,7 @@ def _solve_cell(cell,
                                   alpha_s, Vs0, Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
-    Qs_out, ar_Vs1[cell] = fl.output_soil(Vs0, Vs_prim,
+    Qs_out, Vs1 = fl.output_soil(Vs0, Vs_prim,
                                                    Vsm, a_s,
                                                    b_s, alpha_s, Dt)
 
@@ -472,7 +472,7 @@ def _solve_cell(cell,
 
     a_o = max(0,
                        a_s \
-                       - ((ar_Vs1[cell]-Vs0)/Dt \
+                       - ((Vs1-Vs0)/Dt \
                        + Qs_out) \
                        + rain_excess)
 
@@ -550,8 +550,8 @@ def _solve_cell(cell,
     ## ============================== ##
     #~~~~~ From soil
     ar_ETa[cell], \
-    ar_Vs1[cell], \
-    ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], ar_Vs1[cell],
+    Vs1, \
+    ar_Vo1[cell] = em.evapot_soil_overland(ar_Vo1[cell], Vs1,
                                            Vsm, kc,
                                            ETr, X)
 
@@ -562,4 +562,4 @@ def _solve_cell(cell,
                                          ET0,
                                          W, Xc)
 
-    return Qs_out
+    return Qs_out, Vs1
