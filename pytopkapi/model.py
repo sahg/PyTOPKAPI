@@ -461,11 +461,7 @@ def _solve_cell(cell,
     # convert mm to m^3/s
     rain_excess = max(0, (rain_excess*(10**-3)/Dt)*X**2)
 
-    a_o = max(0,
-                       a_s \
-                       - ((Vs1-Vs0)/Dt \
-                       + Qs_out) \
-                       + rain_excess)
+    a_o = max(0, a_s - ((Vs1-Vs0)/Dt + Qs_out) + rain_excess)
 
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
 
