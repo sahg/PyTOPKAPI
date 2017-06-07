@@ -215,7 +215,7 @@ def run(ini_file='TOPKAPI.ini'):
 
     #Matrix of outflows between two time steps
     ar_Qs_out = np.ones(nb_cell)*-99.9
-    ar_Qo_out = np.ones(nb_cell)*-99.9
+    Qo_out = np.ones(nb_cell)*-99.9
     ar_Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
@@ -323,7 +323,7 @@ def run(ini_file='TOPKAPI.ini'):
         array_Vc.append(Vc0.reshape((1,nb_cell)))
 
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
-        array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell)))
+        array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
 
         array_Q_down.append(ar_Q_to_next_cell.reshape((1,nb_cell)))
@@ -359,13 +359,13 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = ar_Q_to_next_cell[li_cell_up[cell]]
 
                 if external_flow:
-                    ar_Qs_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    ar_Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o,
-                                Vo0[cell], solve_o, ar_Qo_out,
+                                Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
                                 ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
@@ -374,13 +374,13 @@ def run(ini_file='TOPKAPI.ini'):
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    ar_Qs_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    ar_Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 b_o[cell], alpha_o,
-                                Vo0[cell], solve_o, ar_Qo_out,
+                                Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
                                 ar_Vc1, kc[cell], ETr_forcing[t, cell], ar_ETa,
@@ -403,7 +403,7 @@ def run(ini_file='TOPKAPI.ini'):
         array_Vc.append(ar_Vc1.reshape((1,nb_cell)))
 
         array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
-        array_Qo_out.append(ar_Qo_out.reshape((1,nb_cell)))
+        array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
 
         array_Q_down.append(ar_Q_to_next_cell.reshape((1,nb_cell)))
@@ -422,7 +422,7 @@ def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
-                Vo0, solve_o, ar_Qo_out, ar_lambda, W, Xc,
+                Vo0, solve_o, ar_lambda, W, Xc,
                 ar_Q_to_channel, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc, ETr, ar_ETa,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
@@ -468,10 +468,10 @@ def _solve_cell(cell,
     Vo1 = om.solve_storage_eq(a_o, b_o, alpha_o, Vo0, Dt, solve_o)
 
     #~~~~ Computation of overland outflows
-    ar_Qo_out[cell] = fl.Qout_computing(Vo0,
+    Qo_out = fl.Qout_computing(Vo0,
                                         Vo1, a_o, Dt)
 
-    if ar_Qo_out[cell] < 0:
+    if Qo_out < 0:
         print('Problem Overland:output greater than input....')
         print('n=', n, 'label=', cell)
         stop
@@ -483,7 +483,7 @@ def _solve_cell(cell,
     ar_Q_to_next_cell[cell], \
     ar_Q_to_channel[cell]  = fl.flow_partitioning(ar_lambda[cell],
                                                      Qs_out,
-                                                     ar_Qo_out[cell],
+                                                     Qo_out,
                                                      W, X, Xc)
 
     ## ======================== ##
@@ -548,4 +548,4 @@ def _solve_cell(cell,
                                          ET0,
                                          W, Xc)
 
-    return Qs_out, Vs1, Vo1
+    return Qs_out, Qo_out, Vs1, Vo1
