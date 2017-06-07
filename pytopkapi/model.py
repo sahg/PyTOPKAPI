@@ -473,11 +473,8 @@ def _solve_cell(cell,
     ## ===== FLOW PARTITIONING ===== ##
     ## ============================= ##
 
-    Q_down, \
-    Q_to_channel  = fl.flow_partitioning(ar_lambda[cell],
-                                                     Qs_out,
-                                                     Qo_out,
-                                                     W, X, Xc)
+    Q_down, Q_to_channel  = fl.flow_partitioning(ar_lambda[cell],
+                                                 Qs_out, Qo_out, W, X, Xc)
 
     ## ======================== ##
     ## ===== CHANNEL STORE ==== ##
