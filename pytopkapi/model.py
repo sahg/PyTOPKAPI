@@ -359,12 +359,12 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = ar_Q_to_next_cell[li_cell_up[cell]]
 
                 if external_flow:
-                    _solve_cell(cell,
+                    ar_Qs_out[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
+                                ar_Vs1, b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
@@ -374,12 +374,12 @@ def run(ini_file='TOPKAPI.ini'):
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    _solve_cell(cell,
+                    ar_Qs_out[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
+                                ar_Vs1, b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
                                 ar_lambda, W[cell], Xc[cell], ar_Q_to_channel,
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
@@ -421,7 +421,7 @@ def run(ini_file='TOPKAPI.ini'):
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
-                solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
+                solve_s, Vsm, ar_Vs1, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, W, Xc,
                 ar_Q_to_channel, ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, ar_Vc1, kc, ETr, ar_ETa,
@@ -453,11 +453,11 @@ def _solve_cell(cell,
                                   alpha_s, Vs0, Dt, solve_s)
 
     #~~~~ Computation of soil outflow and overland input
-    ar_Qs_out[cell], ar_Vs1[cell] = fl.output_soil(Vs0, Vs_prim,
+    Qs_out, ar_Vs1[cell] = fl.output_soil(Vs0, Vs_prim,
                                                    Vsm, a_s,
                                                    b_s, alpha_s, Dt)
 
-    if ar_Qs_out[cell] < 0:
+    if Qs_out < 0:
         print('Problem Soil:output greater than input....')
         print('n=', n, 'label=', cell)
         stop
@@ -473,7 +473,7 @@ def _solve_cell(cell,
     a_o = max(0,
                        a_s \
                        - ((ar_Vs1[cell]-Vs0)/Dt \
-                       + ar_Qs_out[cell]) \
+                       + Qs_out) \
                        + rain_excess)
 
     #~~~~ Resolution of the equation dV/dt=a_o-b_o*V^alpha_o
@@ -496,7 +496,7 @@ def _solve_cell(cell,
 
     ar_Q_to_next_cell[cell], \
     ar_Q_to_channel[cell]  = fl.flow_partitioning(ar_lambda[cell],
-                                                     ar_Qs_out[cell],
+                                                     Qs_out,
                                                      ar_Qo_out[cell],
                                                      W, X, Xc)
 
@@ -561,3 +561,5 @@ def _solve_cell(cell,
         ar_Vc1[cell] = em.evapor_channel(ar_Vc1[cell],
                                          ET0,
                                          W, Xc)
+
+    return Qs_out
