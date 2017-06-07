@@ -468,8 +468,7 @@ def _solve_cell(cell,
     Vo1 = om.solve_storage_eq(a_o, b_o, alpha_o, Vo0, Dt, solve_o)
 
     #~~~~ Computation of overland outflows
-    Qo_out = fl.Qout_computing(Vo0,
-                                        Vo1, a_o, Dt)
+    Qo_out = fl.Qout_computing(Vo0, Vo1, a_o, Dt)
 
     if Qo_out < 0:
         print('Problem Overland:output greater than input....')
