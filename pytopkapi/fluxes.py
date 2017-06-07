@@ -21,7 +21,7 @@ def initial_volume_soil(ar_pVs_t0, ar_Vsm):
     ar_Vs_t0=ar_pVs_t0/100.*ar_Vsm
     return ar_Vs_t0
 
-def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
+def input_soil(P, Dt, X, soil_upstream_inflow):
     """Compute the total input to a soil store.
 
     Calculate the total rate of input to a single soil store. This
@@ -37,13 +37,11 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
         The length of the current time-step in seconds
     X : scalar
         The lateral dimension of the grid-cell (:math:`m`)
-    ar_Q_to_next_cell : (N,) Numpy array
-        The total contribution from each cell to it's downstream
-        neighbour as a result of subsurface and overland fluxes
-        calculated during the previous timestep (:math:`m^3/s`)
-    ar_cell_up : list of `int`
-        List of integer indices into `ar_Q_to_next_cell`. The indices
-        point to the cells upstream of the current cell
+    soil_upstream_inflow : Numpy array
+        The total flow contribution to the current cell from each
+        immediate upstream neighbour as a result of both subsurface
+        and overland fluxes calculated during the previous timestep
+        (:math:`m^3/s`)
 
     Returns
     -------
@@ -54,18 +52,8 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
     """
     #Transformation of P in mm to P_flux in m^3/s
     P_flux=(P*(10**-3)/Dt)*X**2
-    #Case 1: cell without up)
-    ind=ar_cell_up[ar_cell_up>-90.]
-    ar_sel=ar_Q_to_next_cell[ind]
-    if ar_sel[ar_sel<0].size!=0:
-        print('')
-        print('STOP-ERROR: By computing -->Upstream from cell n. ',ind[ar_sel<0],' missing')
-        print('')
-        a_s='Error on upstream'
-        return a_s
-    else:
-        a_s=P_flux+ar_sel.sum()
-        return a_s
+
+    return P_flux + soil_upstream_inflow.sum()
 
 def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
     """Compute the outflow from and volume in a soil store.

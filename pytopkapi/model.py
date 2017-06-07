@@ -356,12 +356,13 @@ def run(ini_file='TOPKAPI.ini'):
             for cell1 in node_hierarchy[lvl]:
                 cell=np.where(ar_cell_label==cell1)[0][0]
 
+                soil_upstream_inflow = ar_Q_to_next_cell[li_cell_up[cell]]
 
                 if external_flow:
                     _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                ar_Q_to_next_cell, li_cell_up, b_s[cell],
+                                ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
@@ -376,7 +377,7 @@ def run(ini_file='TOPKAPI.ini'):
                     _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                ar_Q_to_next_cell, li_cell_up, b_s[cell],
+                                ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
                                 alpha_s, Vs0[cell], solve_s, Vsm[cell],
                                 ar_Qs_out, ar_Vs1, b_o[cell], alpha_o,
                                 Vo0[cell], solve_o, ar_Vo1, ar_Qo_out,
@@ -419,7 +420,7 @@ def run(ini_file='TOPKAPI.ini'):
 
 def _solve_cell(cell,
                 Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                ar_Q_to_next_cell, li_cell_up, b_s, alpha_s, Vs0,
+                ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, ar_Qs_out, ar_Vs1, b_o, alpha_o,
                 Vo0, solve_o, ar_Vo1, ar_Qo_out, ar_lambda, W, Xc,
                 ar_Q_to_channel, ar_Qc_out,
@@ -442,8 +443,7 @@ def _solve_cell(cell,
     ## ===== SOIL STORE ===== ##
     ## ====================== ##
     #~~~~ Computation of soil input
-    a_s = fl.input_soil(infiltration_depth, Dt,
-                                 X, ar_Q_to_next_cell, li_cell_up[cell])
+    a_s = fl.input_soil(infiltration_depth, Dt, X, soil_upstream_inflow)
 
     #~~~~ Resolution of the equation dV/dt=a_s-b_s*V^alpha_s
     # Calculate the volume in the soil store at the end of the
