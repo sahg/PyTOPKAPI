@@ -506,14 +506,6 @@ def _solve_cell(cell,
         #~~~~ Computation of channel outflows
         Qc_out = fl.Qout_computing(Vc0, Vc1, a_c, Dt)
 
-        if Qc_out < 0:
-            print('Problem Channel: output greater than input....')
-            stop
-        if str(Qc_out).count('N') > 0:
-            print(Qc_out)
-            print('Problem Channel: Non authorized operand....')
-            stop
-
     else:
         a_c = 0.
         Vc1 = 0.
