@@ -222,7 +222,7 @@ def run(ini_file='TOPKAPI.ini'):
     Q_down = np.ones(nb_cell)*-99.9
     ar_Qc_cell_up = np.zeros(nb_cell)
     ETa = np.zeros(nb_cell)
-    ar_ET_channel = np.zeros(nb_cell)
+    ET_channel = np.zeros(nb_cell)
 
 
     ##=============================##
@@ -329,7 +329,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_ET_out.append(ETa.reshape((1,nb_cell)))
 
-        E_vol = ar_ET_channel*1e-3 * W * Xc
+        E_vol = ET_channel*1e-3 * W * Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
     eff_theta = ar_theta_s - ar_theta_r
@@ -358,7 +358,7 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = Q_down[li_cell_up[cell]]
 
                 if external_flow:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -369,11 +369,11 @@ def run(ini_file='TOPKAPI.ini'):
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
-                                solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                                solve_c, ET0_forcing[t, cell],
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -384,7 +384,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
-                                solve_c, ET0_forcing[t, cell], ar_ET_channel,
+                                solve_c, ET0_forcing[t, cell],
                                 external_flow)
 
         ####===================================####
@@ -409,7 +409,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_ET_out.append(ETa.reshape((1,nb_cell)))
 
-        E_vol = ar_ET_channel*1e-3 * W * Xc
+        E_vol = ET_channel*1e-3 * W * Xc
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
     h5file.close()
@@ -425,7 +425,7 @@ def _solve_cell(cell,
                 ar_Qc_out,
                 ar_Qc_cell_up, ar_cell_label, kc, ETr,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
-                ar_ET_channel, external_flow_flag, cell_external_flow=None,
+                external_flow_flag, cell_external_flow=None,
                 external_flow=None):
     """Core calculations for a model cell.
 
@@ -527,6 +527,8 @@ def _solve_cell(cell,
 
     #~~~~~ Evaporation from channel
     if ar_lambda[cell] == 1:
-        ar_ET_channel[cell], Vc1 = em.evapor_channel(Vc1, ET0, W, Xc)
+        ET_channel, Vc1 = em.evapor_channel(Vc1, ET0, W, Xc)
+    else:
+        ET_channel = 0
 
-    return Qs_out, Qo_out, Q_down, Vs1, Vo1, Vc1, ETa
+    return Qs_out, Qo_out, Q_down, Vs1, Vo1, Vc1, ETa, ET_channel
