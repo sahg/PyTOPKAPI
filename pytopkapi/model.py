@@ -180,6 +180,8 @@ def run(ini_file='TOPKAPI.ini'):
         print('external flows will be taken into account for cell no',\
             cell_external_flow, ' coordinates ('\
             ,Xexternal_flow,',',Yexternal_flow,')')
+    else:
+        cell_external_flow = None
 
     #~~~~Number of simulation time steps
     nb_time_step = len(rainfall_forcing[:,0])
@@ -357,7 +359,7 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = Q_down[li_cell_up[cell]]
                 channel_upstream_inflow = Qc_out[li_cell_up[cell]]
 
-                if external_flow:
+                if cell == cell_external_flow:
                     Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
@@ -371,8 +373,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
-                                external_flow,
-                                cell_external_flow, external_flow_records[t])
+                                True, external_flow_records[t])
                 else:
                     Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
@@ -387,7 +388,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
-                                external_flow)
+                                False)
 
         ####===================================####
         #### Affectation of new vector values  ####
@@ -426,8 +427,7 @@ def _solve_cell(cell,
                 Vo0, solve_o, channel_flag, W, Xc,
                 ar_cell_label, channel_upstream_inflow, kc, ETr,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
-                external_flow_flag, cell_external_flow=None,
-                external_flow=None):
+                external_flow_flag, external_flow=None):
     """Core calculations for a model cell.
 
     """
@@ -484,10 +484,7 @@ def _solve_cell(cell,
         #~~~~ Computation of channel input
         a_c = fl.input_channel(channel_upstream_inflow, Q_to_channel)
 
-        #TO DO: Handle external flows properly. Vars not passed into
-        #this function currently.
-        if external_flow_flag \
-          and cell == np.where(ar_cell_label==cell_external_flow)[0][0]:
+        if external_flow_flag:
             a_c = a_c + external_flow
 
         #~~~~ Resolution of the equation dV/dt=a_c-b_c*V^alpha_c
