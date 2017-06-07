@@ -470,11 +470,6 @@ def _solve_cell(cell,
     #~~~~ Computation of overland outflows
     Qo_out = fl.Qout_computing(Vo0, Vo1, a_o, Dt)
 
-    if Qo_out < 0:
-        print('Problem Overland:output greater than input....')
-        print('n=', n, 'label=', cell)
-        stop
-
     ## ============================= ##
     ## ===== FLOW PARTITIONING ===== ##
     ## ============================= ##
