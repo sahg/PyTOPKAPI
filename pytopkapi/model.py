@@ -360,7 +360,7 @@ def run(ini_file='TOPKAPI.ini'):
                 channel_upstream_inflow = Qc_out[li_cell_up[cell]]
 
                 if cell == cell_external_flow:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -375,7 +375,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 solve_c, ET0_forcing[t, cell],
                                 True, external_flow_records[t])
                 else:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -420,8 +420,7 @@ def run(ini_file='TOPKAPI.ini'):
     print(' ')
     print('***** THE END *****')
 
-def _solve_cell(cell,
-                Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
+def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
                 li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, channel_flag, W, Xc,
