@@ -214,7 +214,7 @@ def run(ini_file='TOPKAPI.ini'):
     ar_Vc1 = np.ones(nb_cell)*-99.9
 
     #Matrix of outflows between two time steps
-    ar_Qs_out = np.ones(nb_cell)*-99.9
+    Qs_out = np.ones(nb_cell)*-99.9
     Qo_out = np.ones(nb_cell)*-99.9
     ar_Qc_out = np.zeros(nb_cell)
 
@@ -322,7 +322,7 @@ def run(ini_file='TOPKAPI.ini'):
         array_Vo.append(Vo0.reshape((1,nb_cell)))
         array_Vc.append(Vc0.reshape((1,nb_cell)))
 
-        array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
+        array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
 
@@ -359,7 +359,7 @@ def run(ini_file='TOPKAPI.ini'):
                 soil_upstream_inflow = ar_Q_to_next_cell[li_cell_up[cell]]
 
                 if external_flow:
-                    ar_Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -374,7 +374,7 @@ def run(ini_file='TOPKAPI.ini'):
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    ar_Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Vs1[cell], Vo1[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 ar_Q_to_next_cell, li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -402,7 +402,7 @@ def run(ini_file='TOPKAPI.ini'):
         array_Vo.append(Vo1.reshape((1,nb_cell)))
         array_Vc.append(ar_Vc1.reshape((1,nb_cell)))
 
-        array_Qs_out.append(ar_Qs_out.reshape((1,nb_cell)))
+        array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
         array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
 
