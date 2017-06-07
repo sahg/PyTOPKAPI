@@ -216,7 +216,7 @@ def run(ini_file='TOPKAPI.ini'):
     #Matrix of outflows between two time steps
     Qs_out = np.ones(nb_cell)*-99.9
     Qo_out = np.ones(nb_cell)*-99.9
-    ar_Qc_out = np.zeros(nb_cell)
+    Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
     Q_down = np.ones(nb_cell)*-99.9
@@ -323,7 +323,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
-        array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
+        array_Qc_out.append(Qc_out.reshape((1,nb_cell)))
 
         array_Q_down.append(Q_down.reshape((1,nb_cell)))
 
@@ -356,9 +356,10 @@ def run(ini_file='TOPKAPI.ini'):
                 cell=np.where(ar_cell_label==cell1)[0][0]
 
                 soil_upstream_inflow = Q_down[li_cell_up[cell]]
+                channel_upstream_inflow = Qc_out[li_cell_up[cell]]
 
                 if external_flow:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -366,14 +367,15 @@ def run(ini_file='TOPKAPI.ini'):
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
-                                ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
+                                ar_Qc_cell_up, ar_cell_label,
+                                channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
                                 external_flow,
                                 cell_external_flow, external_flow_records[t])
                 else:
-                    Qs_out[cell], Qo_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
+                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], Vs1[cell], Vo1[cell], Vc1[cell], ETa[cell], ET_channel[cell] = _solve_cell(cell,
                                 Dt, rainfall_forcing[t, cell], psi[cell],
                                 eff_theta[cell], eff_sat[cell],Ks[cell], X,
                                 li_cell_up, soil_upstream_inflow, b_s[cell],
@@ -381,7 +383,8 @@ def run(ini_file='TOPKAPI.ini'):
                                 b_o[cell], alpha_o,
                                 Vo0[cell], solve_o,
                                 ar_lambda, W[cell], Xc[cell],
-                                ar_Qc_out, ar_Qc_cell_up, ar_cell_label,
+                                ar_Qc_cell_up, ar_cell_label,
+                                channel_upstream_inflow,
                                 kc[cell], ETr_forcing[t, cell],
                                 ar_cell_down, b_c[cell], alpha_c, Vc0[cell],
                                 solve_c, ET0_forcing[t, cell],
@@ -403,7 +406,7 @@ def run(ini_file='TOPKAPI.ini'):
 
         array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
         array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
-        array_Qc_out.append(ar_Qc_out.reshape((1,nb_cell)))
+        array_Qc_out.append(Qc_out.reshape((1,nb_cell)))
 
         array_Q_down.append(Q_down.reshape((1,nb_cell)))
 
@@ -422,8 +425,7 @@ def _solve_cell(cell,
                 li_cell_up, soil_upstream_inflow, b_s, alpha_s, Vs0,
                 solve_s, Vsm, b_o, alpha_o,
                 Vo0, solve_o, ar_lambda, W, Xc,
-                ar_Qc_out,
-                ar_Qc_cell_up, ar_cell_label, kc, ETr,
+                ar_Qc_cell_up, ar_cell_label, channel_upstream_inflow, kc, ETr,
                 ar_cell_down,b_c, alpha_c, Vc0, solve_c, ET0,
                 external_flow_flag, cell_external_flow=None,
                 external_flow=None):
@@ -488,9 +490,8 @@ def _solve_cell(cell,
 
         #~~~~ Computation of channel input
         a_c, \
-        ar_Qc_cell_up[cell] = fl.input_channel(ar_Qc_out,
-                                               Q_to_channel,
-                                               li_cell_up[cell])
+        ar_Qc_cell_up[cell] = fl.input_channel(channel_upstream_inflow,
+                                               Q_to_channel)
 
         #TO DO: Handle external flows properly. Vars not passed into
         #this function currently.
@@ -503,20 +504,20 @@ def _solve_cell(cell,
         Vc1 = om.solve_storage_eq(a_c, b_c, alpha_c, Vc0, Dt, solve_c)
 
         #~~~~ Computation of channel outflows
-        ar_Qc_out[cell] = fl.Qout_computing(Vc0, Vc1, a_c, Dt)
+        Qc_out = fl.Qout_computing(Vc0, Vc1, a_c, Dt)
 
-        if ar_Qc_out[cell] < 0:
+        if Qc_out < 0:
             print('Problem Channel: output greater than input....')
             stop
-        if str(ar_Qc_out[cell]).count('N') > 0:
-            print(ar_Qc_out[cell])
+        if str(Qc_out).count('N') > 0:
+            print(Qc_out)
             print('Problem Channel: Non authorized operand....')
             stop
 
     else:
         a_c = 0.
         Vc1 = 0.
-        ar_Qc_out[cell] = 0.
+        Qc_out = 0.
 
 
     ## ============================== ##
@@ -531,4 +532,4 @@ def _solve_cell(cell,
     else:
         ET_channel = 0
 
-    return Qs_out, Qo_out, Q_down, Vs1, Vo1, Vc1, ETa, ET_channel
+    return Qs_out, Qo_out, Qc_out, Q_down, Vs1, Vo1, Vc1, ETa, ET_channel

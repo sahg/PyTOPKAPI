@@ -228,7 +228,7 @@ def flow_partitioning(Lambda, Qs_out, Qo_out, W, X, Xc):
 
     return Q_to_next_cell, Q_to_channel
 
-def input_channel(ar_Qc_out, Q_to_channel, ar_cell_up):
+def input_channel(channel_upstream_inflow, Q_to_channel):
     """Compute the total inflow to the channel of a channel cell.
 
     Calculate the total inflow to the channel as the sum of inflows
@@ -257,15 +257,8 @@ def input_channel(ar_Qc_out, Q_to_channel, ar_cell_up):
         upstream cells during the current time-step (:math:`m^3/s`)
 
     """
-    ind=ar_cell_up[ar_cell_up>-90.]
-    if len(ind)>0:
-        ar_Qc_cell_up=ar_Qc_out[ind]
-        a_c=Q_to_channel+ar_Qc_cell_up.sum()
-    else:
-        ar_Qc_cell_up=np.array([0.])
-        a_c=Q_to_channel
-
-    Qc_cell_up = ar_Qc_cell_up.sum()
+    Qc_cell_up = channel_upstream_inflow.sum()
+    a_c = Q_to_channel + Qc_cell_up
 
     return a_c, Qc_cell_up
 
