@@ -359,35 +359,73 @@ def run(ini_file='TOPKAPI.ini'):
                 channel_upstream_inflow = Qc_out[li_cell_up[cell]]
 
                 if cell == cell_external_flow:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], \
-                    Vs1[cell], Vo1[cell], Vc1[cell], \
-                    ETa[cell], ET_channel[cell] = _solve_cell(
-                                Dt, rainfall_forcing[t, cell], psi[cell],
-                                eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                soil_upstream_inflow, b_s[cell],
-                                alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                b_o[cell], alpha_o, Vo0[cell], solve_o,
-                                channel_flag[cell], W[cell], Xc[cell],
-                                channel_upstream_inflow,
-                                kc[cell], ETr_forcing[t, cell],
-                                b_c[cell], alpha_c, Vc0[cell],
-                                solve_c, ET0_forcing[t, cell],
-                                True, external_flow_records[t])
+                    cell_params = {'Dt' : Dt,
+                                  'rain_depth' : rainfall_forcing[t, cell],
+                                  'psi' : psi[cell],
+                                  'eff_theta' : eff_theta[cell],
+                                  'eff_sat' : eff_sat[cell],
+                                  'Ks' : Ks[cell],
+                                  'X' : X,
+                                  'soil_upstream_inflow' : soil_upstream_inflow,
+                                  'b_s' : b_s[cell],
+                                  'alpha_s' : alpha_s,
+                                  'Vs0' : Vs0[cell],
+                                  'solve_s' : solve_s,
+                                  'Vsm' : Vsm[cell],
+                                  'b_o' : b_o[cell],
+                                  'alpha_o' : alpha_o,
+                                  'Vo0' : Vo0[cell],
+                                  'solve_o' : solve_o,
+                                  'channel_flag' : channel_flag[cell],
+                                  'W' : W[cell],
+                                  'Xc' : Xc[cell],
+                                  'chan_up_inflow' : channel_upstream_inflow,
+                                  'kc' : kc[cell],
+                                  'ETr' : ETr_forcing[t, cell],
+                                  'b_c' : b_c[cell],
+                                  'alpha_c' : alpha_c,
+                                  'Vc0' : Vc0[cell],
+                                  'solve_c' : solve_c,
+                                  'ET0' : ET0_forcing[t, cell],
+                                  'external_flow_flag' : True,
+                                  'external_flow' : external_flow_records[t]}
+
                 else:
-                    Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], \
-                    Vs1[cell], Vo1[cell], Vc1[cell], \
-                    ETa[cell], ET_channel[cell] = _solve_cell(
-                                Dt, rainfall_forcing[t, cell], psi[cell],
-                                eff_theta[cell], eff_sat[cell],Ks[cell], X,
-                                soil_upstream_inflow, b_s[cell],
-                                alpha_s, Vs0[cell], solve_s, Vsm[cell],
-                                b_o[cell], alpha_o, Vo0[cell], solve_o,
-                                channel_flag[cell], W[cell], Xc[cell],
-                                channel_upstream_inflow,
-                                kc[cell], ETr_forcing[t, cell],
-                                b_c[cell], alpha_c, Vc0[cell],
-                                solve_c, ET0_forcing[t, cell],
-                                False)
+                    cell_params = {'Dt' : Dt,
+                                  'rain_depth' : rainfall_forcing[t, cell],
+                                  'psi' : psi[cell],
+                                  'eff_theta' : eff_theta[cell],
+                                  'eff_sat' : eff_sat[cell],
+                                  'Ks' : Ks[cell],
+                                  'X' : X,
+                                  'soil_upstream_inflow' : soil_upstream_inflow,
+                                  'b_s' : b_s[cell],
+                                  'alpha_s' : alpha_s,
+                                  'Vs0' : Vs0[cell],
+                                  'solve_s' : solve_s,
+                                  'Vsm' : Vsm[cell],
+                                  'b_o' : b_o[cell],
+                                  'alpha_o' : alpha_o,
+                                  'Vo0' : Vo0[cell],
+                                  'solve_o' : solve_o,
+                                  'channel_flag' : channel_flag[cell],
+                                  'W' : W[cell],
+                                  'Xc' : Xc[cell],
+                                  'chan_up_inflow' : channel_upstream_inflow,
+                                  'kc' : kc[cell],
+                                  'ETr' : ETr_forcing[t, cell],
+                                  'b_c' : b_c[cell],
+                                  'alpha_c' : alpha_c,
+                                  'Vc0' : Vc0[cell],
+                                  'solve_c' : solve_c,
+                                  'ET0' : ET0_forcing[t, cell],
+                                  'external_flow_flag' : False,
+                                  'external_flow' : None}
+
+                Qs_out[cell], Qo_out[cell], Qc_out[cell], Q_down[cell], \
+                Vs1[cell], Vo1[cell], Vc1[cell], \
+                ETa[cell], ET_channel[cell] = \
+                                           _solve_cell(cell_params)
 
         ####===================================####
         #### Affectation of new vector values  ####
@@ -419,14 +457,41 @@ def run(ini_file='TOPKAPI.ini'):
     print(' ')
     print('***** THE END *****')
 
-def _solve_cell(Dt, rain_depth, psi, eff_theta, eff_sat, Ks, X,
-                soil_upstream_inflow, b_s, alpha_s, Vs0, solve_s, Vsm, b_o,
-                alpha_o, Vo0, solve_o, channel_flag, W, Xc,
-                channel_upstream_inflow, kc, ETr, b_c, alpha_c, Vc0, solve_c,
-                ET0, external_flow_flag, external_flow=None):
+def _solve_cell(params):
     """Core calculations for a model cell.
 
     """
+    Dt = params['Dt']
+    rain_depth = params['rain_depth']
+    psi = params['psi']
+    eff_theta = params['eff_theta']
+    eff_sat = params['eff_sat']
+    Ks = params['Ks']
+    X = params['X']
+    soil_upstream_inflow = params['soil_upstream_inflow']
+    b_s = params['b_s']
+    alpha_s = params['alpha_s']
+    Vs0 = params['Vs0']
+    solve_s = params['solve_s']
+    Vsm = params['Vsm']
+    b_o = params['b_o']
+    alpha_o = params['alpha_o']
+    Vo0 = params['Vo0']
+    solve_o = params['solve_o']
+    channel_flag = params['channel_flag']
+    W = params['W']
+    Xc = params['Xc']
+    channel_upstream_inflow = params['chan_up_inflow']
+    kc = params['kc']
+    ETr = params['ETr']
+    b_c = params['b_c']
+    alpha_c = params['alpha_c']
+    Vc0 = params['Vc0']
+    solve_c = params['solve_c']
+    ET0 = params['ET0']
+    external_flow_flag = params['external_flow_flag']
+    external_flow = params['external_flow']
+
     ## ======================== ##
     ## ===== INFILTRATION ===== ##
     ## ======================== ##
