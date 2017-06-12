@@ -12,6 +12,7 @@ from configparser import SafeConfigParser
 import h5py
 import numpy as np
 import tables as h5
+from tqdm import tqdm
 
 #Personnal module importation
 import pytopkapi
@@ -343,9 +344,7 @@ def run(ini_file='TOPKAPI.ini'):
     print('--> SIMULATIONS <--')
 
     ## Loop on time
-    for t in range(nb_time_step):
-        print(t+1, '/', nb_time_step)
-
+    for t in tqdm(range(nb_time_step), ascii=True):
         eff_sat = Vs0/Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)
@@ -453,9 +452,6 @@ def run(ini_file='TOPKAPI.ini'):
         array_Ec_out.append(E_vol.reshape((1,nb_cell)))
 
     h5file.close()
-
-    print(' ')
-    print('***** THE END *****')
 
 def _solve_cell(params):
     """Core calculations for a model cell.
