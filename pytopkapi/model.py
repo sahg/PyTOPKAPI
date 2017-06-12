@@ -27,13 +27,14 @@ def run(ini_file='TOPKAPI.ini'):
     """Run the model with the set-up defined by `ini_file`.
 
     """
+    ut.show_banner()
 
     ##================================##
     ##  Read the input file (*.ini)   ##
     ##================================##
     config = SafeConfigParser()
     config.read(ini_file)
-    print('Read the file ',ini_file)
+    print('Running simulation from file: ', ini_file)
 
     ##~~~~~~ Numerical_options ~~~~~~##
     solve_s = config.getfloat('numerical_options', 'solve_s')

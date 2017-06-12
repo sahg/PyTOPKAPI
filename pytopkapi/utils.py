@@ -5,6 +5,16 @@ from subprocess import Popen, PIPE
 import h5py
 import numpy as np
 
+def show_banner():
+    """Show an ASCII banner describing the model.
+
+    """
+
+    print("""=====================================================================
+PyTOPKAPI - a Python implementation of the TOPKAPI Hydrological model
+=====================================================================
+""")
+
 # System utility functions
 def exec_command(cmd_args):
     """Execute a shell command in a subprocess
