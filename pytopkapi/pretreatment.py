@@ -4,6 +4,7 @@ Functions required to compute the intrinsic TOPKAPI parameters from the
 physical parameters
 
 """
+import warnings
 
 import numpy as np
 import networkx as nx
@@ -413,7 +414,12 @@ def compute_cell_param(X, ar_Xc, Dt, alpha_s, alpha_o,
     ar_W = W_max + ((W_max-W_min)/(A_total**0.5-A_thres**0.5)) \
            * (ar_A_drained**0.5-A_total**0.5)
 
-    ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
+    with warnings.catch_warnings():
+        # Cells without channel stores cause harmless zero-division errors
+        warnings.filterwarnings('ignore',
+                                r'divide by zero encountered in true_divide')
+
+        ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
 
     ar_b_c=ar_Cc*ar_W/((ar_Xc*ar_W)**(alpha_c))
     ar_W[ar_lambda==0]=-99.9
