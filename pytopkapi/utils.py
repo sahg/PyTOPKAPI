@@ -5,15 +5,18 @@ from subprocess import Popen, PIPE
 import h5py
 import numpy as np
 
+import pytopkapi
+
 def show_banner():
     """Show an ASCII banner describing the model.
 
     """
 
-    print("""=====================================================================
-PyTOPKAPI - a Python implementation of the TOPKAPI Hydrological model
-=====================================================================
-""")
+    print('===============================================================\n',
+          '\n PyTOPKAPI\n',
+          'A Python implementation of the TOPKAPI Hydrological model\n\n',
+          'Version {}\n'.format(pytopkapi.__version__),
+          '\r===============================================================\n')
 
 # System utility functions
 def exec_command(cmd_args):
