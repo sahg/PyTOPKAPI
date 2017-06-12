@@ -23,7 +23,7 @@ from . import ode as om
 from . import evap as em
 from .infiltration import green_ampt_cum_infiltration
 
-def run(ini_file='TOPKAPI.ini'):
+def run(ini_file='TOPKAPI.ini', verbose=False):
     """Run the model with the set-up defined by `ini_file`.
 
     """
@@ -34,7 +34,7 @@ def run(ini_file='TOPKAPI.ini'):
     ##================================##
     config = SafeConfigParser()
     config.read(ini_file)
-    print('Running simulation from file: ', ini_file)
+    print('Running simulation from file: {}\n'.format(ini_file))
 
     ##~~~~~~ Numerical_options ~~~~~~##
     solve_s = config.getfloat('numerical_options', 'solve_s')
@@ -86,7 +86,8 @@ def run(ini_file='TOPKAPI.ini'):
     ##============================##
     ##   Read the forcing data    ##
     ##============================##
-    print('Read the forcing data')
+    if verbose:
+        print('Read the forcing data')
 
     #~~~~Rainfall
     h5file_in = h5.open_file(file_rain,mode='r')
@@ -117,7 +118,8 @@ def run(ini_file='TOPKAPI.ini'):
     ##============================##
     ## Pretreatment of input data ##
     ##============================##
-    print('Pretreatment of input data')
+    if verbose:
+        print('Pretreatment of input data')
 
     #~~~~Read Global parameters file
     X, Dt, alpha_s, \
@@ -155,10 +157,11 @@ def run(ini_file='TOPKAPI.ini'):
     ar_n_o = ar_n_o0*fac_n_o
     ar_n_c = ar_n_c0*fac_n_c
 
-    print('Max L=', max(ar_L))
-    print('Max Ks=', max(Ks))
-    print('Max n_o=', max(ar_n_o))
-    print('Max n_c=', max(ar_n_c))
+    if verbose:
+        print('Max L=', max(ar_L))
+        print('Max Ks=', max(Ks))
+        print('Max n_o=', max(ar_n_o))
+        print('Max n_c=', max(ar_n_c))
 
     #~~~~Computation of model parameters from physical parameters
     Vsm, b_s, b_o, \
@@ -179,9 +182,10 @@ def run(ini_file='TOPKAPI.ini'):
                                                       ar_coory,
                                                       channel_flag)
 
-        print('external flows will be taken into account for cell no',\
-            cell_external_flow, ' coordinates ('\
-            ,Xexternal_flow,',',Yexternal_flow,')')
+        if verbose:
+            print('external flows will be taken into account for cell no',\
+                  cell_external_flow, ' coordinates ('\
+                  ,Xexternal_flow,',',Yexternal_flow,')')
     else:
         cell_external_flow = None
 
@@ -196,7 +200,8 @@ def run(ini_file='TOPKAPI.ini'):
     ## Initialisation of the reservoirs
     #Matrix of soil,overland and channel store at the begining of the time step
     if append_output and not first_run:
-        print('Initialize from file')
+        if verbose:
+            print('Initialize from simulation file')
 
         h5file_in = h5py.File(file_out)
 
@@ -206,7 +211,8 @@ def run(ini_file='TOPKAPI.ini'):
 
         h5file_in.close()
     else:
-        print('Initialize from parms')
+        if verbose:
+            print('Initialize from parameters')
         Vs0 = fl.initial_volume_soil(ar_pVs_t0, Vsm)
         Vo0 = ar_Vo_t0
         Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
@@ -340,9 +346,8 @@ def run(ini_file='TOPKAPI.ini'):
     ##===========================##
     ##     Core of the Model     ##
     ##===========================##
-    print('** NB_CELL=',nb_cell)
-    print('** NB_TIME_STEP=',nb_time_step)
-    print('--> SIMULATIONS <--')
+    print('Number of model cells: {}'.format(nb_cell))
+    print('Number of model time-steps: {}\n'.format(nb_time_step))
 
     ## Loop on time
     for t in tqdm(range(nb_time_step), ascii=True):
