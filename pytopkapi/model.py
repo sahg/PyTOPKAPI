@@ -23,18 +23,31 @@ from . import ode as om
 from . import evap as em
 from .infiltration import green_ampt_cum_infiltration
 
-def run(ini_file='TOPKAPI.ini', verbose=False):
-    """Run the model with the set-up defined by `ini_file`.
+def run(ini_file='TOPKAPI.ini', verbose=False, quiet=False):
+    """Run the model.
+
+    Parameters
+    ----------
+    ini_file : str
+       The name of the PyTOPKAPI initialization file. This file
+       describes the locations of the parameter files and model setup
+       options. Default is to use a file named `TOPKAPI.ini` in the
+       current directory.
+    verbose : bool
+        Prints runtime information [default False - don't display
+        runtime info]. Is independent of the `quiet` keyword argument.
+    quiet : bool
+        Toggles whether to display an informational banner at runtime
+        [default False - display banner]. Is independent of the
+        `verbose` keyword argument.
 
     """
-    ut.show_banner()
 
     ##================================##
     ##  Read the input file (*.ini)   ##
     ##================================##
     config = SafeConfigParser()
     config.read(ini_file)
-    print('Running simulation from file: {}\n'.format(ini_file))
 
     ##~~~~~~ Numerical_options ~~~~~~##
     solve_s = config.getfloat('numerical_options', 'solve_s')
@@ -346,11 +359,14 @@ def run(ini_file='TOPKAPI.ini', verbose=False):
     ##===========================##
     ##     Core of the Model     ##
     ##===========================##
-    print('Number of model cells: {}'.format(nb_cell))
-    print('Number of model time-steps: {}\n'.format(nb_time_step))
+    if not quiet:
+        ut.show_banner(ini_file, nb_cell, nb_time_step)
+        desc = 'Simulation'
+    else:
+        desc = 'PyTOPKAPI v{}'.format(pytopkapi.__version__)
 
     ## Loop on time
-    for t in tqdm(range(nb_time_step), ascii=True):
+    for t in tqdm(range(nb_time_step), ascii=True, desc=desc):
         eff_sat = Vs0/Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)

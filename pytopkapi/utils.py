@@ -7,8 +7,18 @@ import numpy as np
 
 import pytopkapi
 
-def show_banner():
-    """Show an ASCII banner describing the model.
+def show_banner(ini_file, nb_cell, nb_time_step):
+    """Show an ASCII banner at run time describing the model.
+
+    Parameters
+    ----------
+    ini_file : str
+        The name of the PyTOPKAPI initialization file passed to the
+        run function.
+    nb_cell : int
+        The number of model cells to be processed.
+    nb_time_step : int
+        The number of model time-steps to be processed.
 
     """
 
@@ -16,6 +26,9 @@ def show_banner():
           '\n PyTOPKAPI\n',
           'A Python implementation of the TOPKAPI Hydrological model\n\n',
           'Version {}\n'.format(pytopkapi.__version__),
+          'Number of model cells: {:d}\n'.format(nb_cell),
+          'Number of model time-steps: {:d}\n'.format(nb_time_step),
+          'Running simulation from file: {}\n'.format(ini_file),
           '\r===============================================================\n')
 
 # System utility functions
