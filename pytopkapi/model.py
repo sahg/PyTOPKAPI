@@ -103,25 +103,20 @@ def run(ini_file='TOPKAPI.ini', verbose=False, quiet=False):
         print('Read the forcing data')
 
     #~~~~Rainfall
-    h5file_in = h5.open_file(file_rain,mode='r')
-    group = '/'+group_name+'/'
-    node = h5file_in.get_node(group+'rainfall')
-    rainfall_forcing = node.read()
-    h5file_in.close()
+    h5_rain = h5py.File(file_rain)
+    dset_name = '/{}/rainfall'.format(group_name)
+    rainfall_forcing = h5_rain[dset_name][...]
+    h5_rain.close()
 
     #~~~~ETr - Reference crop ET
-    h5file_in = h5.open_file(file_ET,mode='r')
-    group = '/'+group_name+'/'
-    node = h5file_in.get_node(group+'ETr')
-    ETr_forcing = node.read()
-    h5file_in.close()
+    h5_ET = h5py.File(file_ET)
+    dset_name = '/{}/ETr'.format(group_name)
+    ETr_forcing = h5_ET[dset_name][...]
 
     #~~~~ETo - Open water potential evap.
-    h5file_in = h5.open_file(file_ET,mode='r')
-    group = '/'+group_name+'/'
-    node = h5file_in.get_node(group+'ETo')
-    ET0_forcing = node.read()
-    h5file_in.close()
+    dset_name = '/{}/ETo'.format(group_name)
+    ET0_forcing = h5_ET[dset_name][...]
+    h5_ET.close()
 
     #~~~~external_flow flows
     if external_flow:
@@ -203,7 +198,7 @@ def run(ini_file='TOPKAPI.ini', verbose=False, quiet=False):
         cell_external_flow = None
 
     #~~~~Number of simulation time steps
-    nb_time_step = len(rainfall_forcing[:,0])
+    nb_time_step = rainfall_forcing.shape[0]
 
 
     ##=============================##
