@@ -229,11 +229,6 @@ def run(ini_file='TOPKAPI.ini',
         Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
 
     ## Computed variables
-    #Matrix of soil,overland and channel store at the end of the time step
-    Vs1 = np.ones(nb_cell)*-99.9
-    Vo1 = np.ones(nb_cell)*-99.9
-    Vc1 = np.ones(nb_cell)*-99.9
-
     #Matrix of outflows between two time steps
     Qs_out = np.ones(nb_cell)*-99.9
     Qo_out = np.ones(nb_cell)*-99.9
@@ -387,9 +382,6 @@ def run(ini_file='TOPKAPI.ini',
                    'Vs0' : Vs0,
                    'Vo0' : Vo0,
                    'Vc0' : Vc0,
-                   'Vs1' : Vs1,
-                   'Vo1' : Vo1,
-                   'Vc1' : Vc1,
                    'Vsm' : Vsm,
                    'array_Vs' : array_Vs,
                    'array_Vo' : array_Vo,
@@ -555,9 +547,6 @@ def _serial_execute(model_params):
     Vs0 = model_params['Vs0']
     Vo0 = model_params['Vo0']
     Vc0 = model_params['Vc0']
-    Vs1 = model_params['Vs1']
-    Vo1 = model_params['Vo1']
-    Vc1 = model_params['Vc1']
     Vsm = model_params['Vsm']
     psi_b = model_params['psi_b']
     lamda = model_params['lamda']
@@ -600,6 +589,11 @@ def _serial_execute(model_params):
     array_Q_down = model_params['array_Q_down']
     array_ET_out = model_params['array_ET_out']
     array_Ec_out = model_params['array_Ec_out']
+
+    # Initialize and of timestep soil, overland and channel stores
+    Vs1 = np.ones(nb_cell)*-99.9
+    Vo1 = np.ones(nb_cell)*-99.9
+    Vc1 = np.ones(nb_cell)*-99.9
 
     ## Loop on time
     for t in tqdm(range(nb_time_step), ascii=True, desc=progress_desc):
