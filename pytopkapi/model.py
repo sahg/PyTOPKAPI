@@ -390,7 +390,6 @@ def run(ini_file='TOPKAPI.ini',
                    'node_hierarchy' : node_hierarchy,
                    'li_cell_up' : li_cell_up}
 
-
     if not parallel_exec:
         # Serial execution. Solve by timestep in a single process.
         # Outer loop timesteps - inner loop cells
@@ -627,7 +626,6 @@ def _serial_execute(model_params):
                                   'ET0' : ET0_forcing[t, cell],
                                   'external_flow_flag' : True,
                                   'external_flow' : external_flow_records[t]}
-
                 else:
                     cell_params = {'Dt' : Dt,
                                   'rain_depth' : rainfall_forcing[t, cell],
