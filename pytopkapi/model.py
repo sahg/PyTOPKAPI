@@ -23,6 +23,8 @@ from . import ode as om
 from . import evap as em
 from .infiltration import green_ampt_cum_infiltration
 
+no_data = np.nan
+
 def run(ini_file='TOPKAPI.ini',
         verbose=False, quiet=False, parallel_exec=False):
     """Run the model.
@@ -230,12 +232,12 @@ def run(ini_file='TOPKAPI.ini',
 
     ## Computed variables
     #Matrix of outflows between two time steps
-    Qs_out = np.ones(nb_cell)*-99.9
-    Qo_out = np.ones(nb_cell)*-99.9
+    Qs_out = np.ones(nb_cell)*no_data
+    Qo_out = np.ones(nb_cell)*no_data
     Qc_out = np.zeros(nb_cell)
 
     ## Intermediate variables
-    Q_down = np.ones(nb_cell)*-99.9
+    Q_down = np.ones(nb_cell)*no_data
     ETa = np.zeros(nb_cell)
     ET_channel = np.zeros(nb_cell)
 
@@ -591,9 +593,9 @@ def _serial_execute(model_params):
     array_Ec_out = model_params['array_Ec_out']
 
     # Initialize and of timestep soil, overland and channel stores
-    Vs1 = np.ones(nb_cell)*-99.9
-    Vo1 = np.ones(nb_cell)*-99.9
-    Vc1 = np.ones(nb_cell)*-99.9
+    Vs1 = np.ones(nb_cell)*no_data
+    Vo1 = np.ones(nb_cell)*no_data
+    Vc1 = np.ones(nb_cell)*no_data
 
     ## Loop on time
     for t in tqdm(range(nb_time_step), ascii=True, desc=progress_desc):
