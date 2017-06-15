@@ -230,12 +230,6 @@ def run(ini_file='TOPKAPI.ini',
         Vo0 = ar_Vo_t0
         Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
 
-    ## Computed variables
-    ## Intermediate variables
-    ETa = np.zeros(nb_cell)
-    ET_channel = np.zeros(nb_cell)
-
-
     ##=============================##
     ## HDF5 output file definition ##
     ##=============================##
@@ -338,10 +332,8 @@ def run(ini_file='TOPKAPI.ini',
 
         array_Q_down.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
 
-        array_ET_out.append(ETa.reshape((1,nb_cell)))
-
-        E_vol = ET_channel*1e-3 * W * Xc
-        array_Ec_out.append(E_vol.reshape((1,nb_cell)))
+        array_ET_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
+        array_Ec_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
 
     eff_theta = ar_theta_s - ar_theta_r
 
@@ -362,8 +354,6 @@ def run(ini_file='TOPKAPI.ini',
                    'rainfall_forcing' : rainfall_forcing,
                    'ETr_forcing' : ETr_forcing,
                    'ET0_forcing' : ET0_forcing,
-                   'ET_channel' : ET_channel,
-                   'ETa' : ETa,
                    'psi_b' : psi_b,
                    'lamda' : lamda,
                    'eff_theta' : eff_theta,
@@ -550,8 +540,6 @@ def _serial_execute(model_params):
     rainfall_forcing = model_params['rainfall_forcing']
     ETr_forcing = model_params['ETr_forcing']
     ET0_forcing = model_params['ET0_forcing']
-    ET_channel = model_params['ET_channel']
-    ETa = model_params['ETa']
     eff_theta = model_params['eff_theta']
     Ks = model_params['Ks']
     W = model_params['W']
@@ -589,6 +577,10 @@ def _serial_execute(model_params):
     Qc_out = np.zeros(nb_cell)
 
     Q_down = np.ones(nb_cell)*no_data
+
+    # Evaporation during the timestep
+    ETa = np.zeros(nb_cell)
+    ET_channel = np.zeros(nb_cell)
 
     ## Loop on time
     for t in tqdm(range(nb_time_step), ascii=True, desc=progress_desc):
