@@ -231,13 +231,7 @@ def run(ini_file='TOPKAPI.ini',
         Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
 
     ## Computed variables
-    #Matrix of outflows between two time steps
-    Qs_out = np.ones(nb_cell)*no_data
-    Qo_out = np.ones(nb_cell)*no_data
-    Qc_out = np.zeros(nb_cell)
-
     ## Intermediate variables
-    Q_down = np.ones(nb_cell)*no_data
     ETa = np.zeros(nb_cell)
     ET_channel = np.zeros(nb_cell)
 
@@ -338,11 +332,11 @@ def run(ini_file='TOPKAPI.ini',
         array_Vo.append(Vo0.reshape((1,nb_cell)))
         array_Vc.append(Vc0.reshape((1,nb_cell)))
 
-        array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
-        array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
-        array_Qc_out.append(Qc_out.reshape((1,nb_cell)))
+        array_Qs_out.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
+        array_Qo_out.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
+        array_Qc_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
 
-        array_Q_down.append(Q_down.reshape((1,nb_cell)))
+        array_Q_down.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
 
         array_ET_out.append(ETa.reshape((1,nb_cell)))
 
@@ -404,10 +398,6 @@ def run(ini_file='TOPKAPI.ini',
                    'cell_external_flow' : cell_external_flow,
                    'external_flow_records' : external_flow_records,
                    'node_hierarchy' : node_hierarchy,
-                   'Qs_out' : Qs_out,
-                   'Qo_out' : Qo_out,
-                   'Qc_out' : Qc_out,
-                   'Q_down' : Q_down,
                    'li_cell_up' : li_cell_up}
 
 
@@ -553,11 +543,7 @@ def _serial_execute(model_params):
     psi_b = model_params['psi_b']
     lamda = model_params['lamda']
     node_hierarchy = model_params['node_hierarchy']
-    Q_down = model_params['Q_down']
     li_cell_up = model_params['li_cell_up']
-    Qs_out = model_params['Qs_out']
-    Qo_out = model_params['Qo_out']
-    Qc_out = model_params['Qc_out']
     cell_external_flow = model_params['cell_external_flow']
     external_flow_records = model_params['external_flow_records']
     Dt = model_params['Dt']
@@ -596,6 +582,13 @@ def _serial_execute(model_params):
     Vs1 = np.ones(nb_cell)*no_data
     Vo1 = np.ones(nb_cell)*no_data
     Vc1 = np.ones(nb_cell)*no_data
+
+    # Outflows during the time step
+    Qs_out = np.ones(nb_cell)*no_data
+    Qo_out = np.ones(nb_cell)*no_data
+    Qc_out = np.zeros(nb_cell)
+
+    Q_down = np.ones(nb_cell)*no_data
 
     ## Loop on time
     for t in tqdm(range(nb_time_step), ascii=True, desc=progress_desc):
