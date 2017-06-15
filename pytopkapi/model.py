@@ -142,9 +142,9 @@ def run(ini_file='TOPKAPI.ini',
     ar_coory, channel_flag, \
     Xc, ar_dam, \
     ar_tan_beta, ar_tan_beta_channel, \
-    ar_L0, Ks0, \
+    ar_L, Ks, \
     ar_theta_r, ar_theta_s, \
-    ar_n_o0, ar_n_c0, \
+    ar_n_o, ar_n_c, \
     ar_cell_down, ar_pVs_t0, \
     ar_Vo_t0, ar_Qc_t0, \
     kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
@@ -163,10 +163,10 @@ def run(ini_file='TOPKAPI.ini',
     ar_A_drained = pm.drained_area(ar_label_sort, li_cell_up, X)
 
     #~~~~Apply calibration factors to the parameter values
-    ar_L = ar_L0*fac_L
-    Ks = Ks0*fac_Ks
-    ar_n_o = ar_n_o0*fac_n_o
-    ar_n_c = ar_n_c0*fac_n_c
+    ar_L = ar_L*fac_L
+    Ks = Ks*fac_Ks
+    ar_n_o = ar_n_o*fac_n_o
+    ar_n_c = ar_n_c*fac_n_c
 
     if verbose:
         print('Max L=', max(ar_L))
