@@ -232,9 +232,9 @@ def run(ini_file='TOPKAPI.ini',
     ##=============================##
     ## HDF5 output file definition ##
     ##=============================##
-    h5file, array_Vs, array_Vo, array_Vc,     \
-    array_Qs_out, array_Qo_out, array_Qc_out, \
-    array_Q_down, array_ET_out, array_Ec_out  \
+    h5file, dset_Vs, dset_Vo, dset_Vc,     \
+    dset_Qs_out, dset_Qo_out, dset_Qc_out, \
+    dset_Q_down, dset_ET_out, dset_Ec_out  \
                                     = ut.open_simulation_file(file_out, fmode,
                                                        Vs0, Vo0, Vc0, no_data,
                                                        nb_cell, nb_time_step,
@@ -274,15 +274,15 @@ def run(ini_file='TOPKAPI.ini',
                    'Vo0' : Vo0,
                    'Vc0' : Vc0,
                    'Vsm' : Vsm,
-                   'array_Vs' : array_Vs,
-                   'array_Vo' : array_Vo,
-                   'array_Vc' : array_Vc,
-                   'array_Qs_out' : array_Qs_out,
-                   'array_Qo_out' : array_Qo_out,
-                   'array_Qc_out' : array_Qc_out,
-                   'array_Q_down' : array_Q_down,
-                   'array_ET_out' : array_ET_out,
-                   'array_Ec_out' : array_Ec_out,
+                   'dset_Vs' : dset_Vs,
+                   'dset_Vo' : dset_Vo,
+                   'dset_Vc' : dset_Vc,
+                   'dset_Qs_out' : dset_Qs_out,
+                   'dset_Qo_out' : dset_Qo_out,
+                   'dset_Qc_out' : dset_Qc_out,
+                   'dset_Q_down' : dset_Q_down,
+                   'dset_ET_out' : dset_ET_out,
+                   'dset_Ec_out' : dset_Ec_out,
                    'solve_s' : solve_s,
                    'solve_o' : solve_o,
                    'solve_c' : solve_c,
@@ -460,15 +460,15 @@ def _serial_execute(model_params):
     solve_o = model_params['solve_o']
     solve_c = model_params['solve_c']
     channel_flag = model_params['channel_flag']
-    array_Vs = model_params['array_Vs']
-    array_Vo = model_params['array_Vo']
-    array_Vc = model_params['array_Vc']
-    array_Qs_out = model_params['array_Qs_out']
-    array_Qo_out = model_params['array_Qo_out']
-    array_Qc_out = model_params['array_Qc_out']
-    array_Q_down = model_params['array_Q_down']
-    array_ET_out = model_params['array_ET_out']
-    array_Ec_out = model_params['array_Ec_out']
+    dset_Vs = model_params['dset_Vs']
+    dset_Vo = model_params['dset_Vo']
+    dset_Vc = model_params['dset_Vc']
+    dset_Qs_out = model_params['dset_Qs_out']
+    dset_Qo_out = model_params['dset_Qo_out']
+    dset_Qc_out = model_params['dset_Qc_out']
+    dset_Q_down = model_params['dset_Q_down']
+    dset_ET_out = model_params['dset_ET_out']
+    dset_Ec_out = model_params['dset_Ec_out']
 
     # Initialize and of timestep soil, overland and channel stores
     Vs1 = np.ones(nb_cell)*no_data
@@ -578,20 +578,18 @@ def _serial_execute(model_params):
         ####===================================####
         #### Results writing at each time step ####
         ####===================================####
-        array_Vs.append(Vs1.reshape((1,nb_cell)))
-        array_Vo.append(Vo1.reshape((1,nb_cell)))
-        array_Vc.append(Vc1.reshape((1,nb_cell)))
+        dset_Vs[t+1] = Vs1
+        dset_Vo[t+1] = Vo1
+        dset_Vc[t+1] = Vc1
 
-        array_Qs_out.append(Qs_out.reshape((1,nb_cell)))
-        array_Qo_out.append(Qo_out.reshape((1,nb_cell)))
-        array_Qc_out.append(Qc_out.reshape((1,nb_cell)))
+        dset_Qs_out[t+1] = Qs_out
+        dset_Qo_out[t+1] = Qo_out
+        dset_Qc_out[t+1] = Qc_out
 
-        array_Q_down.append(Q_down.reshape((1,nb_cell)))
+        dset_Q_down[t+1] = Q_down
 
-        array_ET_out.append(ETa.reshape((1,nb_cell)))
-
-        E_vol = ET_channel*1e-3 * W * Xc
-        array_Ec_out.append(E_vol.reshape((1,nb_cell)))
+        dset_ET_out[t+1] = ETa
+        dset_Ec_out[t+1] = ET_channel*1e-3 * W * Xc
 
 def _parallel_execute():
     pass

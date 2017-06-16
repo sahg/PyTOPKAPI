@@ -4,7 +4,6 @@ from subprocess import Popen, PIPE
 
 import h5py
 import numpy as np
-import tables as h5
 
 import pytopkapi
 
@@ -32,118 +31,91 @@ def show_banner(ini_file, nb_cell, nb_time_step):
           'Running simulation from file: {}\n'.format(ini_file),
           '\r===============================================================\n')
 
+def _create_dataset(h5file, grp_name, dset_name, shape, units):
+    """Create HDF5 dataset if it doesn't exist.
+
+    """
+    if '{}/{}'.format(grp_name, dset_name) not in h5file:
+        dset = h5file.create_dataset('{}/{}'.format(grp_name, dset_name),
+                               shape, maxshape=(None, None), compression='gzip')
+
+        dset.attrs['units'] = units
+
 def open_simulation_file(file_out, fmode, Vs0, Vo0, Vc0, no_data,
                          nb_cell, nb_time_step, append_output, first_run):
     """Open simulation file and return handles to it's content.
 
     """
-    h5file = h5.open_file(file_out, mode=fmode, title='TOPKAPI_out')
+    h5file = h5py.File(file_out, fmode)
 
-    root = h5file.get_node('/')
-    root._v_attrs.pytopkapi_version = pytopkapi.__version__
-    root._v_attrs.pytopkapi_git_revision = pytopkapi.__git_revision__
+    dset_shape = (nb_time_step+1, nb_cell)
 
-    atom = h5.Float32Atom()
-    h5filter = h5.Filters(9)# maximum compression
+    h5file.attrs['title'] = 'PyTOPKAPI simulation'
+    h5file.attrs['pytopkapi_version'] = pytopkapi.__version__
+    h5file.attrs['pytopkapi_git_revision'] = pytopkapi.__git_revision__
 
     # create file structure as necessary
-    grp_name = '/Soil'
-    if grp_name not in h5file:
-        h5file.create_group('/', 'Soil', 'Soil arrays')
-    if grp_name+'/Qs_out' not in h5file:
-        array_Qs_out = h5file.create_earray(grp_name, 'Qs_out',
-                                           atom, shape=(0,nb_cell),
-                                           title='m3/s', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_Qs_out = h5file.get_node(grp_name+'/Qs_out')
+    grp_name = 'Soil'
 
-    if grp_name+'/V_s' not in h5file:
-        array_Vs = h5file.create_earray(grp_name, 'V_s',
-                                       atom, shape=(0, nb_cell),
-                                       title='m3', filters=h5filter,
-                                       expectedrows=nb_time_step+1)
-    else:
-        array_Vs = h5file.get_node(grp_name+'/V_s')
+    dset_name = 'Qs_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qs_out = h5file['{}/{}'.format(grp_name, dset_name)]
 
-    grp_name = '/Overland'
-    if grp_name not in h5file:
-        h5file.create_group('/', 'Overland', 'Overland arrays')
-    if grp_name+'/Qo_out' not in h5file:
-        array_Qo_out = h5file.create_earray(grp_name, 'Qo_out',
-                                           atom, shape=(0,nb_cell),
-                                           title='m3/s', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_Qo_out = h5file.get_node(grp_name+'/Qo_out')
+    dset_name = 'V_s'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vs = h5file['{}/{}'.format(grp_name, dset_name)]
 
-    if grp_name+'/V_o' not in h5file:
-        array_Vo = h5file.create_earray(grp_name, 'V_o',
-                                       atom, shape=(0,nb_cell),
-                                       title='m3', filters=h5filter,
-                                       expectedrows=nb_time_step+1)
-    else:
-        array_Vo = h5file.get_node(grp_name+'/V_o')
+    grp_name = 'Overland'
 
-    grp_name = '/Channel'
-    if grp_name not in h5file:
-        h5file.create_group('/', 'Channel', 'Channel arrays')
-    if grp_name+'/Qc_out' not in h5file:
-        array_Qc_out = h5file.create_earray(grp_name, 'Qc_out',
-                                           atom, shape=(0,nb_cell),
-                                           title='m3/s', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_Qc_out = h5file.get_node(grp_name+'/Qc_out')
+    dset_name = 'Qo_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qo_out = h5file['{}/{}'.format(grp_name, dset_name)]
 
-    if grp_name+'/V_c' not in h5file:
-        array_Vc = h5file.create_earray(grp_name, 'V_c',
-                                       atom, shape=(0,nb_cell),
-                                       title='m3', filters=h5filter,
-                                       expectedrows=nb_time_step)
-    else:
-        array_Vc = h5file.get_node(grp_name+'/V_c')
-    if grp_name+'/Ec_out' not in h5file:
-        array_Ec_out = h5file.create_earray(grp_name, 'Ec_out',
-                                           atom, shape=(0,nb_cell),
-                                           title='m3', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_Ec_out = h5file.get_node(grp_name+'/Ec_out')
+    dset_name = 'V_o'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vo = h5file['{}/{}'.format(grp_name, dset_name)]
 
-    if '/ET_out' not in h5file:
-        array_ET_out = h5file.create_earray('/', 'ET_out',
-                                           atom, shape=(0,nb_cell),
-                                           title='mm', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_ET_out = h5file.get_node('/ET_out')
+    grp_name = 'Channel'
 
-    if '/Q_down' not in h5file:
-        array_Q_down = h5file.create_earray('/', 'Q_down',
-                                           atom, shape=(0,nb_cell),
-                                           title='m3/s', filters=h5filter,
-                                           expectedrows=nb_time_step)
-    else:
-        array_Q_down = h5file.get_node('/Q_down')
+    dset_name = 'Qc_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qc_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'V_c'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vc = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'Ec_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Ec_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    grp_name = ''
+
+    dset_name = 'ET_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'mm')
+    dset_ET_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'Q_down'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Q_down = h5file['{}/{}'.format(grp_name, dset_name)]
 
     if append_output is False or first_run is True:
         #Write the initial values into the output file
-        array_Vs.append(Vs0.reshape((1,nb_cell)))
-        array_Vo.append(Vo0.reshape((1,nb_cell)))
-        array_Vc.append(Vc0.reshape((1,nb_cell)))
+        dset_Vs[0] = Vs0
+        dset_Vo[0] = Vo0
+        dset_Vc[0] = Vc0
 
-        array_Qs_out.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
-        array_Qo_out.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
-        array_Qc_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
+        dset_Qs_out[0] = np.ones(nb_cell)*no_data
+        dset_Qo_out[0] = np.ones(nb_cell)*no_data
+        dset_Qc_out[0] = np.zeros(nb_cell)
 
-        array_Q_down.append((np.ones(nb_cell)*no_data).reshape((1,nb_cell)))
+        dset_Q_down[0] = np.ones(nb_cell)*no_data
 
-        array_ET_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
-        array_Ec_out.append(np.zeros(nb_cell).reshape((1,nb_cell)))
+        dset_ET_out[0] = np.zeros(nb_cell)
+        dset_Ec_out[0] = np.zeros(nb_cell)
 
-    return h5file, array_Vs, array_Vo, array_Vc, array_Qs_out, \
-           array_Qo_out, array_Qc_out, array_Q_down, array_ET_out, array_Ec_out
+    return h5file, dset_Vs, dset_Vo, dset_Vc, dset_Qs_out, \
+           dset_Qo_out, dset_Qc_out, dset_Q_down, dset_ET_out, dset_Ec_out
 
 # System utility functions
 def exec_command(cmd_args):
