@@ -686,20 +686,20 @@ def _solve_cell_timeseries(tseries_params):
     Vc0 = tseries_params['Vc_t0']
 
     # Storage for end of timestep soil, overland and channel store volumes
-    Vs1 = np.ones(tseries_params['nb_time_step'])*no_data
-    Vo1 = np.ones(tseries_params['nb_time_step'])*no_data
-    Vc1 = np.ones(tseries_params['nb_time_step'])*no_data
+    Vs1 = np.empty(tseries_params['nb_time_step'])
+    Vo1 = np.empty(tseries_params['nb_time_step'])
+    Vc1 = np.empty(tseries_params['nb_time_step'])
 
     # Storage for outflows during the time step
-    Qs_out = np.ones(tseries_params['nb_time_step'])*no_data
-    Qo_out = np.ones(tseries_params['nb_time_step'])*no_data
-    Qc_out = np.zeros(tseries_params['nb_time_step'])
+    Qs_out = np.empty(tseries_params['nb_time_step'])
+    Qo_out = np.empty(tseries_params['nb_time_step'])
+    Qc_out = np.empty(tseries_params['nb_time_step'])
 
-    Q_down = np.ones(tseries_params['nb_time_step'])*no_data
+    Q_down = np.empty(tseries_params['nb_time_step'])
 
     # Storage for evaporation during the timestep
-    ETa = np.zeros(tseries_params['nb_time_step'])
-    ET_channel = np.zeros(tseries_params['nb_time_step'])
+    ETa = np.empty(tseries_params['nb_time_step'])
+    ET_channel = np.empty(tseries_params['nb_time_step'])
 
     ## Loop on time
     for t in range(tseries_params['nb_time_step']):
