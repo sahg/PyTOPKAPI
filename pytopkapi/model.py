@@ -27,7 +27,8 @@ from .infiltration import green_ampt_cum_infiltration
 no_data = np.nan
 
 def run(ini_file='TOPKAPI.ini',
-        verbose=False, quiet=False, parallel_exec=True):
+        verbose=False, quiet=False,
+        parallel_exec=True, nworkers=int(mp.cpu_count()/2)):
     """Run the model.
 
     Parameters
@@ -296,7 +297,7 @@ def run(ini_file='TOPKAPI.ini',
                    'external_flow_records' : external_flow_records,
                    'node_hierarchy' : node_hierarchy,
                    'li_cell_up' : li_cell_up,
-                   'nworkers' : int(mp.cpu_count()/2)}
+                   'nworkers' : nworkers}
 
     if not parallel_exec:
         # Serial execution. Solve by timestep in a single process.
