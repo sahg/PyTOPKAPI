@@ -7,7 +7,9 @@ simulation based on the parameters specified in an INI file.
 
 #General module importation
 import os.path
+import multiprocessing as mp
 from configparser import SafeConfigParser
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import h5py
 import numpy as np
@@ -25,7 +27,8 @@ from .infiltration import green_ampt_cum_infiltration
 no_data = np.nan
 
 def run(ini_file='TOPKAPI.ini',
-        verbose=False, quiet=False, parallel_exec=True):
+        verbose=False, quiet=False,
+        parallel_exec=True, nworkers=int(mp.cpu_count()/2)):
     """Run the model.
 
     Parameters
@@ -293,7 +296,8 @@ def run(ini_file='TOPKAPI.ini',
                    'cell_external_flow' : cell_external_flow,
                    'external_flow_records' : external_flow_records,
                    'node_hierarchy' : node_hierarchy,
-                   'li_cell_up' : li_cell_up}
+                   'li_cell_up' : li_cell_up,
+                   'nworkers' : nworkers}
 
     if not parallel_exec:
         # Serial execution. Solve by timestep in a single process.
@@ -600,9 +604,12 @@ def _parallel_execute(model_params):
     node_hierarchy = model_params['node_hierarchy']
     li_cell_up = model_params['li_cell_up']
 
+    pool = ProcessPoolExecutor(max_workers=model_params['nworkers'])
+
     with tqdm(total=nb_cell, ascii=True, desc=progress_desc) as pbar:
         ## Loop on cell hierarchy
         for lvl in range(len(node_hierarchy.keys())):
+            futures = []
             for cell in node_hierarchy[lvl]:
 
                 if cell == model_params['cell_external_flow']:
@@ -622,6 +629,7 @@ def _parallel_execute(model_params):
                                                for i in range(nb_time_step)]
 
                 ts_params = {
+                 'cell' : cell,
                  'nb_time_step' : model_params['nb_time_step'],
                  'Vs_t0' : model_params['Vs_t0'][cell],
                  'Vo_t0' : model_params['Vo_t0'][cell],
@@ -655,7 +663,12 @@ def _parallel_execute(model_params):
                  'external_flow_records' : model_params['external_flow_records']
                     }
 
-                ts_result = _solve_cell_timeseries(ts_params)
+                futures.append(pool.submit(_solve_cell_timeseries, ts_params))
+
+            for f in as_completed(futures):
+                ts_result = f.result()
+
+                cell = ts_result['cell']
 
                 # Write results to disk
                 model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
@@ -674,7 +687,10 @@ def _parallel_execute(model_params):
                 Ec = Ec * model_params['Xc'][cell]
                 model_params['dset_Ec_out'][1:, cell] = Ec
 
+                # Update progress meter as cell calcs are completed
                 pbar.update()
+
+    pool.shutdown()
 
 def _solve_cell_timeseries(tseries_params):
     """Solve the full simulation timeseries for a single cell.
@@ -794,7 +810,8 @@ def _solve_cell_timeseries(tseries_params):
         'Qc_out' : Qc_out,
         'Q_down' : Q_down,
         'ETa' : ETa,
-        'ET_channel' : ET_channel
+        'ET_channel' : ET_channel,
+        'cell' : tseries_params['cell']
               }
 
     return result
