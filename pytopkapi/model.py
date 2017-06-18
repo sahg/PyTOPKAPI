@@ -7,7 +7,9 @@ simulation based on the parameters specified in an INI file.
 
 #General module importation
 import os.path
+import multiprocessing as mp
 from configparser import SafeConfigParser
+from concurrent.futures import ProcessPoolExecutor, as_completed
 
 import h5py
 import numpy as np
@@ -293,7 +295,8 @@ def run(ini_file='TOPKAPI.ini',
                    'cell_external_flow' : cell_external_flow,
                    'external_flow_records' : external_flow_records,
                    'node_hierarchy' : node_hierarchy,
-                   'li_cell_up' : li_cell_up}
+                   'li_cell_up' : li_cell_up,
+                   'nworkers' : int(mp.cpu_count()/2)}
 
     if not parallel_exec:
         # Serial execution. Solve by timestep in a single process.
@@ -600,9 +603,12 @@ def _parallel_execute(model_params):
     node_hierarchy = model_params['node_hierarchy']
     li_cell_up = model_params['li_cell_up']
 
+    pool = ProcessPoolExecutor(max_workers=model_params['nworkers'])
+
     with tqdm(total=nb_cell, ascii=True, desc=progress_desc) as pbar:
         ## Loop on cell hierarchy
         for lvl in range(len(node_hierarchy.keys())):
+            futures = []
             for cell in node_hierarchy[lvl]:
 
                 if cell == model_params['cell_external_flow']:
@@ -655,7 +661,15 @@ def _parallel_execute(model_params):
                  'external_flow_records' : model_params['external_flow_records']
                     }
 
-                ts_result = _solve_cell_timeseries(ts_params)
+                futures.append(pool.submit(_solve_cell_timeseries, ts_params))
+
+            for f in as_completed(futures):
+                # Update progress meter as cell calcs are completed
+                pbar.update()
+
+            for k, cell in enumerate(node_hierarchy[lvl]):
+
+                ts_result = futures[k].result()
 
                 # Write results to disk
                 model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
@@ -674,7 +688,7 @@ def _parallel_execute(model_params):
                 Ec = Ec * model_params['Xc'][cell]
                 model_params['dset_Ec_out'][1:, cell] = Ec
 
-                pbar.update()
+    pool.shutdown()
 
 def _solve_cell_timeseries(tseries_params):
     """Solve the full simulation timeseries for a single cell.
