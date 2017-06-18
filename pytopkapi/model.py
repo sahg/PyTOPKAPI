@@ -629,6 +629,7 @@ def _parallel_execute(model_params):
                                                for i in range(nb_time_step)]
 
                 ts_params = {
+                 'cell' : cell,
                  'nb_time_step' : model_params['nb_time_step'],
                  'Vs_t0' : model_params['Vs_t0'][cell],
                  'Vo_t0' : model_params['Vo_t0'][cell],
@@ -665,12 +666,9 @@ def _parallel_execute(model_params):
                 futures.append(pool.submit(_solve_cell_timeseries, ts_params))
 
             for f in as_completed(futures):
-                # Update progress meter as cell calcs are completed
-                pbar.update()
+                ts_result = f.result()
 
-            for k, cell in enumerate(node_hierarchy[lvl]):
-
-                ts_result = futures[k].result()
+                cell = ts_result['cell']
 
                 # Write results to disk
                 model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
@@ -688,6 +686,9 @@ def _parallel_execute(model_params):
                 Ec = Ec * model_params['W'][cell]
                 Ec = Ec * model_params['Xc'][cell]
                 model_params['dset_Ec_out'][1:, cell] = Ec
+
+                # Update progress meter as cell calcs are completed
+                pbar.update()
 
     pool.shutdown()
 
@@ -809,7 +810,8 @@ def _solve_cell_timeseries(tseries_params):
         'Qc_out' : Qc_out,
         'Q_down' : Q_down,
         'ETa' : ETa,
-        'ET_channel' : ET_channel
+        'ET_channel' : ET_channel,
+        'cell' : tseries_params['cell']
               }
 
     return result
