@@ -25,7 +25,7 @@ from .infiltration import green_ampt_cum_infiltration
 no_data = np.nan
 
 def run(ini_file='TOPKAPI.ini',
-        verbose=False, quiet=False, parallel_exec=False):
+        verbose=False, quiet=False, parallel_exec=True):
     """Run the model.
 
     Parameters
@@ -148,7 +148,7 @@ def run(ini_file='TOPKAPI.ini',
     ar_n_o, ar_n_c, \
     ar_cell_down, ar_pVs_t0, \
     ar_Vo_t0, ar_Qc_t0, \
-    kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
+    Kc, psi_b, lamda = pm.read_cell_parameters(file_cell_param)
 
     #~~~~Number of cell in the catchment
     nb_cell = len(ar_cell_label)
@@ -217,17 +217,17 @@ def run(ini_file='TOPKAPI.ini',
 
         h5file_in = h5py.File(file_out)
 
-        Vs0 = h5file_in['/Soil/V_s'][-1, :]
-        Vc0 = h5file_in['/Channel/V_c'][-1, :]
-        Vo0 = h5file_in['/Overland/V_o'][-1, :]
+        Vs_t0 = h5file_in['/Soil/V_s'][-1, :]
+        Vc_t0 = h5file_in['/Channel/V_c'][-1, :]
+        Vo_t0 = h5file_in['/Overland/V_o'][-1, :]
 
         h5file_in.close()
     else:
         if verbose:
             print('Initialize from parameters')
-        Vs0 = fl.initial_volume_soil(ar_pVs_t0, Vsm)
-        Vo0 = ar_Vo_t0
-        Vc0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
+        Vs_t0 = fl.initial_volume_soil(ar_pVs_t0, Vsm)
+        Vo_t0 = ar_Vo_t0
+        Vc_t0 = fl.initial_volume_channel(ar_Qc_t0, W, X, ar_n_c)
 
     ##=============================##
     ## HDF5 output file definition ##
@@ -236,9 +236,9 @@ def run(ini_file='TOPKAPI.ini',
     dset_Qs_out, dset_Qo_out, dset_Qc_out, \
     dset_Q_down, dset_ET_out, dset_Ec_out  \
                                     = ut.open_simulation_file(file_out, fmode,
-                                                       Vs0, Vo0, Vc0, no_data,
-                                                       nb_cell, nb_time_step,
-                                                       append_output, first_run)
+                                                   Vs_t0, Vo_t0, Vc_t0, no_data,
+                                                   nb_cell, nb_time_step,
+                                                   append_output, first_run)
 
     eff_theta = ar_theta_s - ar_theta_r
 
@@ -270,9 +270,9 @@ def run(ini_file='TOPKAPI.ini',
                    'alpha_s' : alpha_s,
                    'alpha_o' : alpha_o,
                    'alpha_c' : alpha_c,
-                   'Vs0' : Vs0,
-                   'Vo0' : Vo0,
-                   'Vc0' : Vc0,
+                   'Vs_t0' : Vs_t0,
+                   'Vo_t0' : Vo_t0,
+                   'Vc_t0' : Vc_t0,
                    'Vsm' : Vsm,
                    'dset_Vs' : dset_Vs,
                    'dset_Vo' : dset_Vo,
@@ -289,7 +289,7 @@ def run(ini_file='TOPKAPI.ini',
                    'channel_flag' : channel_flag,
                    'W' : W,
                    'Xc' : Xc,
-                   'kc' : kc,
+                   'Kc' : Kc,
                    'cell_external_flow' : cell_external_flow,
                    'external_flow_records' : external_flow_records,
                    'node_hierarchy' : node_hierarchy,
@@ -302,7 +302,7 @@ def run(ini_file='TOPKAPI.ini',
     else:
         # Parallel execution. Solve by cell using multiple processes.
         # Outer loop cells - inner loop timesteps
-        _parallel_execute()
+        _parallel_execute(exec_params)
 
     h5file.close()
 
@@ -331,7 +331,7 @@ def _solve_cell(params):
     W = params['W']
     Xc = params['Xc']
     channel_upstream_inflow = params['chan_up_inflow']
-    kc = params['kc']
+    Kc = params['Kc']
     ETr = params['ETr']
     b_c = params['b_c']
     alpha_c = params['alpha_c']
@@ -413,7 +413,7 @@ def _solve_cell(params):
     ## ===== EVAPOTRANSPIRATION ===== ##
     ## ============================== ##
     #~~~~~ From soil
-    ETa, Vs1, Vo1 = em.evapot_soil_overland(Vo1, Vs1, Vsm, kc, ETr, X)
+    ETa, Vs1, Vo1 = em.evapot_soil_overland(Vo1, Vs1, Vsm, Kc, ETr, X)
 
     #~~~~~ Evaporation from channel
     if channel_flag == 1:
@@ -430,9 +430,6 @@ def _serial_execute(model_params):
     nb_cell = model_params['nb_cell']
     nb_time_step = model_params['nb_time_step']
     progress_desc = model_params['progress_desc']
-    Vs0 = model_params['Vs0']
-    Vo0 = model_params['Vo0']
-    Vc0 = model_params['Vc0']
     Vsm = model_params['Vsm']
     psi_b = model_params['psi_b']
     lamda = model_params['lamda']
@@ -449,7 +446,7 @@ def _serial_execute(model_params):
     W = model_params['W']
     X = model_params['X']
     Xc = model_params['Xc']
-    kc = model_params['kc']
+    Kc = model_params['Kc']
     b_s = model_params['b_s']
     b_o = model_params['b_o']
     b_c = model_params['b_c']
@@ -470,19 +467,23 @@ def _serial_execute(model_params):
     dset_ET_out = model_params['dset_ET_out']
     dset_Ec_out = model_params['dset_Ec_out']
 
-    # Initialize and of timestep soil, overland and channel stores
+    # Initialize start and end of timestep soil, overland and channel stores
+    Vs0 = np.array(model_params['Vs_t0'])
+    Vo0 = np.array(model_params['Vo_t0'])
+    Vc0 = np.array(model_params['Vc_t0'])
+
     Vs1 = np.ones(nb_cell)*no_data
     Vo1 = np.ones(nb_cell)*no_data
     Vc1 = np.ones(nb_cell)*no_data
 
-    # Outflows during the time step
+    # Initialize outflows during the time step
     Qs_out = np.ones(nb_cell)*no_data
     Qo_out = np.ones(nb_cell)*no_data
     Qc_out = np.zeros(nb_cell)
 
     Q_down = np.ones(nb_cell)*no_data
 
-    # Evaporation during the timestep
+    # Initialize evaporation during the timestep
     ETa = np.zeros(nb_cell)
     ET_channel = np.zeros(nb_cell)
 
@@ -522,7 +523,7 @@ def _serial_execute(model_params):
                                   'W' : W[cell],
                                   'Xc' : Xc[cell],
                                   'chan_up_inflow' : channel_upstream_inflow,
-                                  'kc' : kc[cell],
+                                  'Kc' : Kc[cell],
                                   'ETr' : ETr_forcing[t, cell],
                                   'b_c' : b_c[cell],
                                   'alpha_c' : alpha_c,
@@ -553,7 +554,7 @@ def _serial_execute(model_params):
                                   'W' : W[cell],
                                   'Xc' : Xc[cell],
                                   'chan_up_inflow' : channel_upstream_inflow,
-                                  'kc' : kc[cell],
+                                  'Kc' : Kc[cell],
                                   'ETr' : ETr_forcing[t, cell],
                                   'b_c' : b_c[cell],
                                   'alpha_c' : alpha_c,
@@ -591,5 +592,209 @@ def _serial_execute(model_params):
         dset_ET_out[t+1] = ETa
         dset_Ec_out[t+1] = ET_channel*1e-3 * W * Xc
 
-def _parallel_execute():
-    pass
+def _parallel_execute(model_params):
+    nb_cell = model_params['nb_cell']
+    nb_time_step = model_params['nb_time_step']
+    progress_desc = model_params['progress_desc']
+
+    node_hierarchy = model_params['node_hierarchy']
+    li_cell_up = model_params['li_cell_up']
+
+    with tqdm(total=nb_cell, ascii=True, desc=progress_desc) as pbar:
+        ## Loop on cell hierarchy
+        for lvl in range(len(node_hierarchy.keys())):
+            for cell in node_hierarchy[lvl]:
+
+                if cell == model_params['cell_external_flow']:
+                    external_flow_flag = True
+                else:
+                    external_flow_flag = False
+
+                if len(li_cell_up[cell]) > 0:
+                    soil_upstream_inflow =    \
+                               model_params['dset_Q_down'][1:, li_cell_up[cell]]
+                    channel_upstream_inflow = \
+                               model_params['dset_Qc_out'][1:, li_cell_up[cell]]
+                else:
+                    soil_upstream_inflow = [np.array([])
+                                            for i in range(nb_time_step)]
+                    channel_upstream_inflow = [np.array([])
+                                               for i in range(nb_time_step)]
+
+                ts_params = {
+                 'nb_time_step' : model_params['nb_time_step'],
+                 'Vs_t0' : model_params['Vs_t0'][cell],
+                 'Vo_t0' : model_params['Vo_t0'][cell],
+                 'Vc_t0' : model_params['Vc_t0'][cell],
+                 'psi_b' : model_params['psi_b'][cell],
+                 'lamda' : model_params['lamda'][cell],
+                 'external_flow_flag' : external_flow_flag,
+                 'rainfall_forcing' : model_params['rainfall_forcing'][:, cell],
+                 'ETr_forcing' : model_params['ETr_forcing'][:, cell],
+                 'ET0_forcing' : model_params['ET0_forcing'][:, cell],
+                 'soil_upstream_inflow' : soil_upstream_inflow,
+                 'channel_upstream_inflow' : channel_upstream_inflow,
+                 'eff_theta' : model_params['eff_theta'][cell],
+                 'X' : model_params['X'],
+                 'W' : model_params['W'][cell],
+                 'Dt' : model_params['Dt'],
+                 'Xc' : model_params['Xc'][cell],
+                 'Kc' : model_params['Kc'][cell],
+                 'Ks' : model_params['Ks'][cell],
+                 'b_s' : model_params['b_s'][cell],
+                 'b_o' : model_params['b_o'][cell],
+                 'b_c' : model_params['b_c'][cell],
+                 'alpha_s' : model_params['alpha_s'],
+                 'alpha_o' : model_params['alpha_o'],
+                 'alpha_c' : model_params['alpha_c'],
+                 'solve_s' : model_params['solve_s'],
+                 'solve_o' : model_params['solve_o'],
+                 'solve_c' : model_params['solve_c'],
+                 'Vsm' : model_params['Vsm'][cell],
+                 'channel_flag' : model_params['channel_flag'][cell],
+                 'external_flow_records' : model_params['external_flow_records']
+                    }
+
+                ts_result = _solve_cell_timeseries(ts_params)
+
+                # Write results to disk
+                model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
+                model_params['dset_Vo'][1:, cell] = ts_result['Vo1']
+                model_params['dset_Vc'][1:, cell] = ts_result['Vc1']
+
+                model_params['dset_Qs_out'][1:, cell] = ts_result['Qs_out']
+                model_params['dset_Qo_out'][1:, cell] = ts_result['Qo_out']
+                model_params['dset_Qc_out'][1:, cell] = ts_result['Qc_out']
+
+                model_params['dset_Q_down'][1:, cell] = ts_result['Q_down']
+
+                model_params['dset_ET_out'][1:, cell] = ts_result['ETa']
+                Ec = ts_result['ET_channel']*1e-3
+                Ec = Ec * model_params['W'][cell]
+                Ec = Ec * model_params['Xc'][cell]
+                model_params['dset_Ec_out'][1:, cell] = Ec
+
+                pbar.update()
+
+def _solve_cell_timeseries(tseries_params):
+    """Solve the full simulation timeseries for a single cell.
+
+    """
+    # Initial values for cell store volumes
+    Vs0 = tseries_params['Vs_t0']
+    Vo0 = tseries_params['Vo_t0']
+    Vc0 = tseries_params['Vc_t0']
+
+    # Storage for end of timestep soil, overland and channel store volumes
+    Vs1 = np.empty(tseries_params['nb_time_step'])
+    Vo1 = np.empty(tseries_params['nb_time_step'])
+    Vc1 = np.empty(tseries_params['nb_time_step'])
+
+    # Storage for outflows during the time step
+    Qs_out = np.empty(tseries_params['nb_time_step'])
+    Qo_out = np.empty(tseries_params['nb_time_step'])
+    Qc_out = np.empty(tseries_params['nb_time_step'])
+
+    Q_down = np.empty(tseries_params['nb_time_step'])
+
+    # Storage for evaporation during the timestep
+    ETa = np.empty(tseries_params['nb_time_step'])
+    ET_channel = np.empty(tseries_params['nb_time_step'])
+
+    ## Loop on time
+    for t in range(tseries_params['nb_time_step']):
+        eff_sat = Vs0/tseries_params['Vsm']
+
+        # estimate soil suction head using Brookes and Corey (1964)
+        psi = tseries_params['psi_b']/np.power(eff_sat,
+                                               1.0/tseries_params['lamda'])
+
+        if tseries_params['external_flow_flag']:
+            # This cell receives external flow inputs
+            cell_params = {
+             'rain_depth' : tseries_params['rainfall_forcing'][t],
+             'ETr' : tseries_params['ETr_forcing'][t],
+             'ET0' : tseries_params['ET0_forcing'][t],
+             'soil_upstream_inflow' : tseries_params['soil_upstream_inflow'][t],
+             'chan_up_inflow' : tseries_params['channel_upstream_inflow'][t],
+             'psi' : psi,
+             'eff_sat' : eff_sat,
+             'eff_theta' : tseries_params['eff_theta'],
+             'X' : tseries_params['X'],
+             'W' : tseries_params['W'],
+             'Dt' : tseries_params['Dt'],
+             'Xc' : tseries_params['Xc'],
+             'Kc' : tseries_params['Kc'],
+             'Ks' : tseries_params['Ks'],
+             'b_s' : tseries_params['b_s'],
+             'b_o' : tseries_params['b_o'],
+             'b_c' : tseries_params['b_c'],
+             'alpha_s' : tseries_params['alpha_s'],
+             'alpha_o' : tseries_params['alpha_o'],
+             'alpha_c' : tseries_params['alpha_c'],
+             'solve_s' : tseries_params['solve_s'],
+             'solve_o' : tseries_params['solve_o'],
+             'solve_c' : tseries_params['solve_c'],
+             'Vs0' : Vs0,
+             'Vo0' : Vo0,
+             'Vc0' : Vc0,
+             'Vsm' : tseries_params['Vsm'],
+             'channel_flag' : tseries_params['channel_flag'],
+             'external_flow_flag' : tseries_params['external_flow_flag'],
+             'external_flow' : tseries_params['external_flow_records'][t]
+                            }
+        else:
+            cell_params = {
+             'rain_depth' : tseries_params['rainfall_forcing'][t],
+             'ETr' : tseries_params['ETr_forcing'][t],
+             'ET0' : tseries_params['ET0_forcing'][t],
+             'soil_upstream_inflow' : tseries_params['soil_upstream_inflow'][t],
+             'chan_up_inflow' : tseries_params['channel_upstream_inflow'][t],
+             'psi' : psi,
+             'eff_sat' : eff_sat,
+             'eff_theta' : tseries_params['eff_theta'],
+             'X' : tseries_params['X'],
+             'W' : tseries_params['W'],
+             'Dt' : tseries_params['Dt'],
+             'Xc' : tseries_params['Xc'],
+             'Kc' : tseries_params['Kc'],
+             'Ks' : tseries_params['Ks'],
+             'b_s' : tseries_params['b_s'],
+             'b_o' : tseries_params['b_o'],
+             'b_c' : tseries_params['b_c'],
+             'alpha_s' : tseries_params['alpha_s'],
+             'alpha_o' : tseries_params['alpha_o'],
+             'alpha_c' : tseries_params['alpha_c'],
+             'solve_s' : tseries_params['solve_s'],
+             'solve_o' : tseries_params['solve_o'],
+             'solve_c' : tseries_params['solve_c'],
+             'Vs0' : Vs0,
+             'Vo0' : Vo0,
+             'Vc0' : Vc0,
+             'Vsm' : tseries_params['Vsm'],
+             'channel_flag' : tseries_params['channel_flag'],
+             'external_flow_flag' : tseries_params['external_flow_flag'],
+             'external_flow' : None
+                            }
+
+        Qs_out[t], Qo_out[t], Qc_out[t], Q_down[t], \
+        Vs1[t], Vo1[t], Vc1[t], ETa[t], ET_channel[t] = _solve_cell(cell_params)
+
+        # Update storages for next time-step
+        Vs0 = Vs1[t]
+        Vo0 = Vo1[t]
+        Vc0 = Vc1[t]
+
+    result = {
+        'Vs1' : Vs1,
+        'Vo1' : Vo1,
+        'Vc1' : Vc1,
+        'Qs_out' : Qs_out,
+        'Qo_out' : Qo_out,
+        'Qc_out' : Qc_out,
+        'Q_down' : Q_down,
+        'ETa' : ETa,
+        'ET_channel' : ET_channel
+              }
+
+    return result
