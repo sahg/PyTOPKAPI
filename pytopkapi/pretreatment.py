@@ -4,8 +4,10 @@ Functions required to compute the intrinsic TOPKAPI parameters from the
 physical parameters
 
 """
+import warnings
 
 import numpy as np
+import networkx as nx
 
 def read_global_parameters(file_name):
     """Read global model parameters from file.
@@ -187,21 +189,67 @@ def sort_cell(ar_cell_label, ar_cell_down):
         Sorted array of cell labels
 
     """
-    ar_label_sort=np.ones(len(ar_cell_label))*-99.9
-    ar_dist_2_outlet=np.ones(len(ar_cell_label))*-99.9
-    nb_cell=len(ar_cell_label)
-    for cell in range(nb_cell):
-        cell_down=ar_cell_down[cell]
-        dist=0
-        while cell_down > -99:
-            cell_down=ar_cell_down[cell_down]
-            dist=dist+1
-        ar_dist_2_outlet[cell]=dist
-    a=np.argsort(ar_dist_2_outlet)
-    ar_label_sort=a[::-1]
-    ar_label_sort=np.array(ar_label_sort,int)
+    network_dag = _generate_network_dag(ar_cell_label, ar_cell_down)
+
+    ar_label_sort = np.array(nx.topological_sort(network_dag))
 
     return ar_label_sort
+
+def compute_node_hierarchy(nodes, downstream_nodes):
+    network_dag = _generate_network_dag(nodes, downstream_nodes)
+
+    dag_copy = nx.copy.deepcopy(network_dag)
+
+    level = 0
+    node_hierarchy = {}
+    while dag_copy.number_of_nodes() > 0:
+        outer = []
+        node_deps = {}
+
+        for node in nx.topological_sort(dag_copy):
+            # get list of nodes leading into this one as dependencies
+            deps = [ n for n in dag_copy.predecessors(node) ]
+            node_deps[node] = deps
+
+            if len(deps) == 0:
+                outer.append(node)
+
+        node_hierarchy[level] = outer
+        level = level+1
+
+        dag_copy.remove_nodes_from(outer)
+
+    return node_hierarchy
+
+def _generate_network_dag(nodes, downstream_nodes):
+    """DAG from list of nodes and downstream nodes.
+
+    Generates a networkx Directed Acyclic Graph (DAG) from a list of
+    cell nodes and their corresponding downstream neighbours.
+
+    Parameters
+    ----------
+    nodes : (N,) int array
+        Integer IDs labelling each cell
+    downstream_nodes : (N,) int array
+        The ID associated with the cell downstream of the current cell
+
+    Returns
+    -------
+    dag : Networkx DiGraph
+        A networkx DiGraph instance describing the catchment topology.
+
+    """
+    edges = []
+    for k in nodes:
+        if downstream_nodes[k] >= 0:
+            edges.append((k, downstream_nodes[k]))
+
+    dag = nx.DiGraph()
+    dag.add_nodes_from(nodes)
+    dag.add_edges_from(edges)
+
+    return dag
 
 def direct_up_cell(ar_cell_label, ar_cell_down, ar_label_sort):
     """Calculate the upstream cells for each cell.
@@ -366,7 +414,12 @@ def compute_cell_param(X, ar_Xc, Dt, alpha_s, alpha_o,
     ar_W = W_max + ((W_max-W_min)/(A_total**0.5-A_thres**0.5)) \
            * (ar_A_drained**0.5-A_total**0.5)
 
-    ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
+    with warnings.catch_warnings():
+        # Cells without channel stores cause harmless zero-division errors
+        warnings.filterwarnings('ignore',
+                                r'divide by zero encountered in true_divide')
+
+        ar_Cc=(1/ar_n_c)*(ar_tan_beta_channel)**0.5
 
     ar_b_c=ar_Cc*ar_W/((ar_Xc*ar_W)**(alpha_c))
     ar_W[ar_lambda==0]=-99.9

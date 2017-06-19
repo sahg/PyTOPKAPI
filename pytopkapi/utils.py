@@ -5,6 +5,118 @@ from subprocess import Popen, PIPE
 import h5py
 import numpy as np
 
+import pytopkapi
+
+def show_banner(ini_file, nb_cell, nb_time_step):
+    """Show an ASCII banner at run time describing the model.
+
+    Parameters
+    ----------
+    ini_file : str
+        The name of the PyTOPKAPI initialization file passed to the
+        run function.
+    nb_cell : int
+        The number of model cells to be processed.
+    nb_time_step : int
+        The number of model time-steps to be processed.
+
+    """
+
+    print('===============================================================\n',
+          '\n PyTOPKAPI\n',
+          'A Python implementation of the TOPKAPI Hydrological model\n\n',
+          'Version {}\n'.format(pytopkapi.__version__),
+          'Number of model cells: {:d}\n'.format(nb_cell),
+          'Number of model time-steps: {:d}\n'.format(nb_time_step),
+          'Running simulation from file: {}\n'.format(ini_file),
+          '\r===============================================================\n')
+
+def _create_dataset(h5file, grp_name, dset_name, shape, units):
+    """Create HDF5 dataset if it doesn't exist.
+
+    """
+    if '{}/{}'.format(grp_name, dset_name) not in h5file:
+        dset = h5file.create_dataset('{}/{}'.format(grp_name, dset_name),
+                               shape, maxshape=(None, None), compression='gzip')
+
+        dset.attrs['units'] = units
+
+def open_simulation_file(file_out, fmode, Vs0, Vo0, Vc0, no_data,
+                         nb_cell, nb_time_step, append_output, first_run):
+    """Open simulation file and return handles to it's content.
+
+    """
+    h5file = h5py.File(file_out, fmode)
+
+    dset_shape = (nb_time_step+1, nb_cell)
+
+    h5file.attrs['title'] = 'PyTOPKAPI simulation'
+    h5file.attrs['pytopkapi_version'] = pytopkapi.__version__
+    h5file.attrs['pytopkapi_git_revision'] = pytopkapi.__git_revision__
+
+    # create file structure as necessary
+    grp_name = 'Soil'
+
+    dset_name = 'Qs_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qs_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'V_s'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vs = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    grp_name = 'Overland'
+
+    dset_name = 'Qo_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qo_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'V_o'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vo = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    grp_name = 'Channel'
+
+    dset_name = 'Qc_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Qc_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'V_c'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Vc = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'Ec_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3')
+    dset_Ec_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    grp_name = ''
+
+    dset_name = 'ET_out'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'mm')
+    dset_ET_out = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    dset_name = 'Q_down'
+    _create_dataset(h5file, grp_name, dset_name, dset_shape, 'm3/s')
+    dset_Q_down = h5file['{}/{}'.format(grp_name, dset_name)]
+
+    if append_output is False or first_run is True:
+        #Write the initial values into the output file
+        dset_Vs[0] = Vs0
+        dset_Vo[0] = Vo0
+        dset_Vc[0] = Vc0
+
+        dset_Qs_out[0] = np.ones(nb_cell)*no_data
+        dset_Qo_out[0] = np.ones(nb_cell)*no_data
+        dset_Qc_out[0] = np.zeros(nb_cell)
+
+        dset_Q_down[0] = np.ones(nb_cell)*no_data
+
+        dset_ET_out[0] = np.zeros(nb_cell)
+        dset_Ec_out[0] = np.zeros(nb_cell)
+
+    return h5file, dset_Vs, dset_Vo, dset_Vc, dset_Qs_out, \
+           dset_Qo_out, dset_Qc_out, dset_Q_down, dset_ET_out, dset_Ec_out
+
 # System utility functions
 def exec_command(cmd_args):
     """Execute a shell command in a subprocess

@@ -106,8 +106,8 @@ def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out,variable):
     xmin=min(ar_coorx);xmax=max(ar_coorx)
     ymin=min(ar_coory);ymax=max(ar_coory)
     step=X
-    nx=(xmax-xmin)/step+1
-    ny=(ymax-ymin)/step+1
+    nx=int((xmax-xmin)/step+1)
+    ny=int((ymax-ymin)/step+1)
 
     ar_indx=np.array((ar_coorx-xmin)/step,int)
     ar_indy=np.array((ar_coory-ymin)/step,int)
@@ -119,7 +119,7 @@ def field_map_ndar(ndar_field,t,ar_coorx,ar_coory,X,image_out,variable):
     ut.check_file_exist(image_out)
 
     pl.clf()
-    pl.axes(axisbg='gray')
+    pl.axes(facecolor='gray')
     pl.imshow(ar_map2, cmap=pl.cm.RdBu,
               interpolation='Nearest', origin='lower', vmax=max_val, vmin=0)
     pl.title('time step= '+ut.string(t,len(str(t))))

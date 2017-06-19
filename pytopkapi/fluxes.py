@@ -21,7 +21,7 @@ def initial_volume_soil(ar_pVs_t0, ar_Vsm):
     ar_Vs_t0=ar_pVs_t0/100.*ar_Vsm
     return ar_Vs_t0
 
-def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
+def input_soil(P, Dt, X, soil_upstream_inflow):
     """Compute the total input to a soil store.
 
     Calculate the total rate of input to a single soil store. This
@@ -37,13 +37,11 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
         The length of the current time-step in seconds
     X : scalar
         The lateral dimension of the grid-cell (:math:`m`)
-    ar_Q_to_next_cell : (N,) Numpy array
-        The total contribution from each cell to it's downstream
-        neighbour as a result of subsurface and overland fluxes
-        calculated during the previous timestep (:math:`m^3/s`)
-    ar_cell_up : list of `int`
-        List of integer indices into `ar_Q_to_next_cell`. The indices
-        point to the cells upstream of the current cell
+    soil_upstream_inflow : Numpy array
+        The total flow contribution to the current cell from each
+        immediate upstream neighbour as a result of both subsurface
+        and overland fluxes calculated during the previous timestep
+        (:math:`m^3/s`)
 
     Returns
     -------
@@ -54,18 +52,8 @@ def input_soil(P, Dt, X, ar_Q_to_next_cell, ar_cell_up):
     """
     #Transformation of P in mm to P_flux in m^3/s
     P_flux=(P*(10**-3)/Dt)*X**2
-    #Case 1: cell without up)
-    ind=ar_cell_up[ar_cell_up>-90.]
-    ar_sel=ar_Q_to_next_cell[ind]
-    if ar_sel[ar_sel<0].size!=0:
-        print('')
-        print('STOP-ERROR: By computing -->Upstream from cell n. ',ind[ar_sel<0],' missing')
-        print('')
-        a_s='Error on upstream'
-        return a_s
-    else:
-        a_s=P_flux+ar_sel.sum()
-        return a_s
+
+    return P_flux + soil_upstream_inflow.sum()
 
 def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
     """Compute the outflow from and volume in a soil store.
@@ -118,8 +106,11 @@ def output_soil(Vs_t0, Vs_t1_prim, Vsm, a_s, b_s, alpha_s, Dt):
         Vs_out = Vs_t1_prim
 
     if Qs_out < 0:
-        print('a=', a_s, 'Vs_t1_prim=', Vs_t1_prim, 'Vs_t0=', Vs_t0, 'Vsm=', Vsm)
-        print('Qs=', Qs_out)
+        err_string = ('Negative soil outflow {}, a_s={}, '
+                      'Vs_t1_prim={}, Vs_t0={}, Vsm={}')
+        err_string = err_string.format(Qs_out, a_s, Vs_t1_prim, Vs_t0, Vsm)
+
+        raise ValueError(err_string)
 
     return Qs_out, Vs_out
 
@@ -226,22 +217,18 @@ def flow_partitioning(Lambda, Qs_out, Qo_out, W, X, Xc):
     Q_to_channel : scalar
         Combined outflow from soil and overland to the channel store
         (:math:`m^3/s`)
-    Q_to_channel_sub : scalar
-        Outflow from soil store to the channel store (:math:`m^3/s`)
 
     """
     if Lambda != 0: #ToDo: check for invalid values of Lambda.
         Q_to_next_cell = (1-Lambda*W*X/(X**2))*(Qs_out+Qo_out)
         Q_to_channel = (Lambda*W*X/(X**2))*(Qs_out+Qo_out)
-        Q_to_channel_sub = (Lambda*W*X/(X**2))*(Qs_out)
     else:
         Q_to_next_cell = (Qs_out+Qo_out)
         Q_to_channel = 0.
-        Q_to_channel_sub = 0.
 
-    return Q_to_next_cell, Q_to_channel, Q_to_channel_sub
+    return Q_to_next_cell, Q_to_channel
 
-def input_channel(ar_Qc_out, Q_to_channel, ar_cell_up):
+def input_channel(channel_upstream_inflow, Q_to_channel):
     """Compute the total inflow to the channel of a channel cell.
 
     Calculate the total inflow to the channel as the sum of inflows
@@ -270,17 +257,10 @@ def input_channel(ar_Qc_out, Q_to_channel, ar_cell_up):
         upstream cells during the current time-step (:math:`m^3/s`)
 
     """
-    ind=ar_cell_up[ar_cell_up>-90.]
-    if len(ind)>0:
-        ar_Qc_cell_up=ar_Qc_out[ind]
-        a_c=Q_to_channel+ar_Qc_cell_up.sum()
-    else:
-        ar_Qc_cell_up=np.array([0.])
-        a_c=Q_to_channel
+    Qc_cell_up = channel_upstream_inflow.sum()
+    a_c = Q_to_channel + Qc_cell_up
 
-    Qc_cell_up = ar_Qc_cell_up.sum()
-
-    return a_c, Qc_cell_up
+    return a_c
 
 def manning_depth(Q,W,X,n):
     """Compute Manning depth for flow `Q`.
