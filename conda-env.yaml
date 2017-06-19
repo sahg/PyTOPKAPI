@@ -1,0 +1,12 @@
+name: pytopkapi-0.3.x
+dependencies:
+- python=2
+- numpy
+- scipy
+- h5py
+- gdal
+- networkx
+- tqdm
+- matplotlib
+- pandas
+- nose
