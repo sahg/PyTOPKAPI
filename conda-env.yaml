@@ -6,7 +6,7 @@ dependencies:
 - h5py
 - gdal
 - networkx
-- tqdm
+- pytables
 - matplotlib
 - pandas
 - nose
