@@ -7,9 +7,10 @@ simulation based on the parameters specified in an INI file.
 
 #General module importation
 import os.path
+import functools
 import multiprocessing as mp
 from configparser import SafeConfigParser
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed, wait
 
 import h5py
 import numpy as np
@@ -663,34 +664,38 @@ def _parallel_execute(model_params):
                  'external_flow_records' : model_params['external_flow_records']
                     }
 
-                futures.append(pool.submit(_solve_cell_timeseries, ts_params))
+                f = pool.submit(_solve_cell_timeseries, ts_params)
+                f.add_done_callback(functools.partial(_cell_clean_up,
+                                                      cell, pbar, model_params))
 
-            for f in as_completed(futures):
-                ts_result = f.result()
+                futures.append(f)
 
-                cell = ts_result['cell']
-
-                # Write results to disk
-                model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
-                model_params['dset_Vo'][1:, cell] = ts_result['Vo1']
-                model_params['dset_Vc'][1:, cell] = ts_result['Vc1']
-
-                model_params['dset_Qs_out'][1:, cell] = ts_result['Qs_out']
-                model_params['dset_Qo_out'][1:, cell] = ts_result['Qo_out']
-                model_params['dset_Qc_out'][1:, cell] = ts_result['Qc_out']
-
-                model_params['dset_Q_down'][1:, cell] = ts_result['Q_down']
-
-                model_params['dset_ET_out'][1:, cell] = ts_result['ETa']
-                Ec = ts_result['ET_channel']*1e-3
-                Ec = Ec * model_params['W'][cell]
-                Ec = Ec * model_params['Xc'][cell]
-                model_params['dset_Ec_out'][1:, cell] = Ec
-
-                # Update progress meter as cell calcs are completed
-                pbar.update()
+            wait(futures)
 
     pool.shutdown()
+
+def _cell_clean_up(cell, pbar, model_params, future):
+    ts_result = future.result()
+
+    # Write results to disk
+    model_params['dset_Vs'][1:, cell] = ts_result['Vs1']
+    model_params['dset_Vo'][1:, cell] = ts_result['Vo1']
+    model_params['dset_Vc'][1:, cell] = ts_result['Vc1']
+
+    model_params['dset_Qs_out'][1:, cell] = ts_result['Qs_out']
+    model_params['dset_Qo_out'][1:, cell] = ts_result['Qo_out']
+    model_params['dset_Qc_out'][1:, cell] = ts_result['Qc_out']
+
+    model_params['dset_Q_down'][1:, cell] = ts_result['Q_down']
+
+    model_params['dset_ET_out'][1:, cell] = ts_result['ETa']
+    Ec = ts_result['ET_channel']*1e-3
+    Ec = Ec * model_params['W'][cell]
+    Ec = Ec * model_params['Xc'][cell]
+    model_params['dset_Ec_out'][1:, cell] = Ec
+
+    # Update progress meter as cell calcs are completed
+    pbar.update()
 
 def _solve_cell_timeseries(tseries_params):
     """Solve the full simulation timeseries for a single cell.
