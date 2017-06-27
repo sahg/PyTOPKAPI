@@ -1,3 +1,7 @@
-Version 0.3 will be the last release targeting py2.
+Version 0.3.x will be the last release series targeting python 2. All
+new development on master is targeting python 3. Only bug fixes with
+pull requests will be considered on this branch.
 
-Release the current state of this branch...
+This version contains the scripts for generating parameter files using
+GRASS 7 and is required since GRASS doesn't currently (June 2017) work
+with Python 3.
