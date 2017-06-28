@@ -1,4 +1,6 @@
 name: pytopkapi-0.4.x
+channels:
+- conda-forge
 dependencies:
 - python=3
 - numpy
