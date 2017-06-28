@@ -72,7 +72,8 @@ CrossRef](http://dx.doi.org/10.1016/j.jhydrol.2012.11.061)
 
 Vischel T., Pegram G.G.S., Sinclair S. and Parak M., (2008a),
 "Implementation of the TOPKAPI model in South Africa: Initial results
-from the Liebenbergsvlei catchment", Water SA, 34(3), 1-12.
+from the Liebenbergsvlei catchment", Water SA, 34(3), 1-12. [Full
+Text](http://hdl.handle.net/10520/EJC116536)
 
 Vischel T., Pegram G.G.S., Sinclair S., Wagner W. and Bartsch A.,
 (2008b), "Comparison of soil moisture fields estimated by catchment
