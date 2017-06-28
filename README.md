@@ -1,6 +1,4 @@
-=====================================================================
-PyTOPKAPI - a Python implementation of the TOPKAPI Hydrological model
-=====================================================================
+![PyTOPKAPI logo](http://sahg.github.io/PyTOPKAPI/static/logo.png)
 
 PyTOPKAPI is a BSD licensed Python library implementing the TOPKAPI
 Hydrological model (Liu and Todini, 2002). The model is a
@@ -39,3 +37,10 @@ Documentation
 
 Documentation for PyTOPKAPI can be found at
 http://sahg.github.com/PyTOPKAPI
+
+
+Citation
+--------
+
+Latest release
+[![DOI](https://zenodo.org/badge/689231.svg)](https://zenodo.org/badge/latestdoi/689231)
