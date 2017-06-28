@@ -1,0 +1,12 @@
+Version 0.4.x release highlights
+--------------------------------
+
+- PyTOPKAPI now targets Python 3
+
+- Experimental multi-core parallel processing mode
+
+- Infiltration layer based on Green-Ampt
+
+- Semi-automated parameter file generation tools using GRASS GIS
+
+- Numerous improvements and bug fixes
