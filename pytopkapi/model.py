@@ -607,7 +607,8 @@ def _parallel_execute(model_params):
 
     pool = ProcessPoolExecutor(max_workers=model_params['nworkers'])
 
-    with tqdm(total=nb_cell, ascii=True, desc=progress_desc) as pbar:
+    with tqdm(total=nb_cell,
+              ascii=True, desc=progress_desc, unit=' cell') as pbar:
         ## Loop on cell hierarchy
         for lvl in range(len(node_hierarchy.keys())):
             futures = []
