@@ -29,7 +29,7 @@ no_data = np.nan
 
 def run(ini_file='TOPKAPI.ini',
         verbose=False, quiet=False,
-        parallel_exec=True, nworkers=int(mp.cpu_count()/2)):
+        parallel_exec=True, nworkers=int(mp.cpu_count()-1)):
     """Run the model.
 
     Parameters
