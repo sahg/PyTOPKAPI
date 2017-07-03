@@ -39,8 +39,8 @@ def run(ini_file='TOPKAPI.ini',
        locations of the parameter files and model setup options. Default is to
        use a file named `TOPKAPI.ini` in the current directory.
     verbose : bool
-        Prints runtime information [default False - don't display runtime info].
-        Is independent of the `quiet` keyword argument.
+        Prints runtime information [default False - don't display runtime
+        info]. Is independent of the `quiet` keyword argument.
     quiet : bool
         Toggles whether to display an informational banner at runtime [default
         False - display banner]. Is independent of the `verbose` keyword
