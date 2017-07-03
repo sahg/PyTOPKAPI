@@ -46,6 +46,10 @@ def run(ini_file='TOPKAPI.ini',
         Toggles whether to display an informational banner at runtime
         [default False - display banner]. Is independent of the
         `verbose` keyword argument.
+    nworkers : int
+        Number of worker processes to spawn for solving each cell's time-series
+        in parallel. Default is one fewer than CPU count reported by
+        multiprocessing.
 
     """
 
