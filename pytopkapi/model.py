@@ -494,7 +494,8 @@ def _serial_execute(model_params):
     ET_channel = np.zeros(nb_cell)
 
     ## Loop on time
-    for t in tqdm(range(nb_time_step), ascii=True, desc=progress_desc):
+    for t in tqdm(range(nb_time_step),
+                  ascii=True, desc=progress_desc, unit=' step'):
         eff_sat = Vs0/Vsm
 
         # estimate soil suction head using Brookes and Corey (1964)
