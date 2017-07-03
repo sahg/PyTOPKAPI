@@ -1,4 +1,4 @@
-name: pytopkapi-0.4.x
+name: pytopkapi-0.5.x
 channels:
 - conda-forge
 dependencies:
