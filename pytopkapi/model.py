@@ -62,8 +62,6 @@ def run(ini_file='TOPKAPI.ini',
     solve_s = config.getint('numerical_options', 'solve_s')
     solve_o = config.getint('numerical_options', 'solve_o')
     solve_c = config.getint('numerical_options', 'solve_c')
-    only_channel_output = config.getboolean('numerical_options',
-                                            'only_channel_output')
 
     ##~~~~~~~~~~~ input files ~~~~~~~~~~~##
     #Param
