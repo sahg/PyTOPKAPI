@@ -10,7 +10,7 @@ import os.path
 import functools
 import multiprocessing as mp
 from configparser import SafeConfigParser
-from concurrent.futures import ProcessPoolExecutor, as_completed, wait
+from concurrent.futures import ProcessPoolExecutor, wait
 
 import h5py
 import numpy as np
