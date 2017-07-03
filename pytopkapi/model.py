@@ -35,17 +35,16 @@ def run(ini_file='TOPKAPI.ini',
     Parameters
     ----------
     ini_file : str
-       The name of the PyTOPKAPI initialization file. This file
-       describes the locations of the parameter files and model setup
-       options. Default is to use a file named `TOPKAPI.ini` in the
-       current directory.
+       The name of the PyTOPKAPI initialization file. This file describes the
+       locations of the parameter files and model setup options. Default is to
+       use a file named `TOPKAPI.ini` in the current directory.
     verbose : bool
-        Prints runtime information [default False - don't display
-        runtime info]. Is independent of the `quiet` keyword argument.
+        Prints runtime information [default False - don't display runtime info].
+        Is independent of the `quiet` keyword argument.
     quiet : bool
-        Toggles whether to display an informational banner at runtime
-        [default False - display banner]. Is independent of the
-        `verbose` keyword argument.
+        Toggles whether to display an informational banner at runtime [default
+        False - display banner]. Is independent of the `verbose` keyword
+        argument.
     nworkers : int
         Number of worker processes to spawn for solving each cell's time-series
         in parallel. Default is one fewer than CPU count reported by
