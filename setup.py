@@ -3,7 +3,8 @@ import subprocess
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't
 # properly update it when the contents of directories change.
-if os.path.exists('MANIFEST'): os.remove('MANIFEST')
+if os.path.exists('MANIFEST'):
+    os.remove('MANIFEST')
 
 from distutils.core import setup
 
@@ -20,7 +21,8 @@ def generate_version_py(filename):
         if os.path.exists(".git"):
             # should be a Git clone, use revision info from Git
             s = subprocess.Popen(["git", "rev-parse", "HEAD"],
-                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT)
             out = s.communicate()[0]
             GIT_REVISION = out.strip().decode('ascii')
         elif os.path.exists(dev_version_py):
@@ -58,7 +60,7 @@ if __name__ == '__main__':
     setup(name='PyTOPKAPI',
           version=full_version,
           description='TOPKAPI hydrological model in Python',
-          long_description = """\
+          long_description="""\
 PyTOPKAPI - a Python implementation of the TOPKAPI Hydrological model
 =====================================================================
 
@@ -72,21 +74,21 @@ world (Liu and Todini, 2002; Bartholomes and Todini, 2005; Liu et al.,
 
 """,
           license='BSD',
-          author='Theo Vischel & Scott Sinclair',
+          author='Scott Sinclair & Theo Vischel',
           author_email='theo.vischel@hmg.inpg.fr; sinclaird@ukzn.ac.za',
-          url='http://sahg.github.com/PyTOPKAPI',
+          url='http://sahg.github.io/PyTOPKAPI',
           download_url='http://github.com/sahg/PyTOPKAPI/downloads',
           packages=['pytopkapi',
                     'pytopkapi.parameter_utils',
-                    'pytopkapi.results_analysis'],
+                    'pytopkapi.results_analysis'
+                    ],
           scripts=['scripts/run-grass-script', 'scripts/process-catchment'],
-          classifiers=[
-          'Development Status :: 4 - Beta',
-          'License :: OSI Approved :: BSD License',
-          'Environment :: Console',
-          'Operating System :: OS Independent',
-          'Intended Audience :: Science/Research',
-          'Programming Language :: Python',
-          'Topic :: Scientific/Engineering',
-          ],
+          classifiers=['Development Status :: 4 - Beta',
+                       'License :: OSI Approved :: BSD License',
+                       'Environment :: Console',
+                       'Operating System :: OS Independent',
+                       'Intended Audience :: Science/Research',
+                       'Programming Language :: Python',
+                       'Topic :: Scientific/Engineering',
+                       ],
           )
