@@ -5,10 +5,11 @@ dependencies:
 - python=3
 - numpy
 - scipy
-- h5py
+- h5py=2.6.0
 - gdal
-- networkx
+- networkx=1.11
 - tqdm
-- matplotlib
+- matplotlib=1
 - pandas
 - nose
+- pyqt=4
