@@ -191,14 +191,14 @@ def sort_cell(ar_cell_label, ar_cell_down):
     """
     network_dag = _generate_network_dag(ar_cell_label, ar_cell_down)
 
-    ar_label_sort = np.array(nx.topological_sort(network_dag))
+    ar_label_sort = np.array(list(nx.topological_sort(network_dag)))
 
     return ar_label_sort
 
 def compute_node_hierarchy(nodes, downstream_nodes):
     network_dag = _generate_network_dag(nodes, downstream_nodes)
 
-    dag_copy = nx.copy.deepcopy(network_dag)
+    dag_copy = network_dag.copy()
 
     level = 0
     node_hierarchy = {}
