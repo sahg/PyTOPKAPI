@@ -4,7 +4,7 @@ __all__ = ['extract_ssi', 'extract_ssi_to_file',
            'extract_overland_volume', 'extract_overland_volume_to_file']
 
 from datetime import timedelta
-from configparser import SafeConfigParser
+from configparser import ConfigParser as  SafeConfigParser
 
 import h5py
 import numpy as np
@@ -77,7 +77,7 @@ def extract_Q_channel(control_fname):
     tkpi_file.close()
 
     channel_mask = params[:, 3]
-    cond = params[:, 3]*np.ones(Qc.shape, dtype=np.int) != 1
+    cond = params[:, 3]*np.ones(Qc.shape, dtype=np.int32) != 1
 
     Qc = np.ma.masked_where(cond, Qc)
 

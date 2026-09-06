@@ -9,7 +9,7 @@ simulation based on the parameters specified in an INI file.
 import os.path
 import functools
 import multiprocessing as mp
-from configparser import SafeConfigParser
+from configparser import ConfigParser as SafeConfigParser
 from concurrent.futures import ProcessPoolExecutor, wait
 
 import h5py
@@ -29,7 +29,7 @@ no_data = np.nan
 
 def run(ini_file='TOPKAPI.ini',
         verbose=False, quiet=False,
-        parallel_exec=True, nworkers=int(mp.cpu_count()-1)):
+        parallel_exec=True, nworkers=max(1, int(mp.cpu_count()-1))):
     """Run the model.
 
     Parameters
@@ -668,12 +668,16 @@ def _parallel_execute(model_params):
                     }
 
                 f = pool.submit(_solve_cell_timeseries, ts_params)
-                f.add_done_callback(functools.partial(_cell_clean_up,
-                                                      cell, pbar, model_params))
+                futures.append((cell, f))
 
-                futures.append(f)
-
-            wait(futures)
+            # Barrier: every cell in this level must finish AND have its
+            # results written to the datasets before the next (downstream)
+            # level reads its upstream inflow. Writing here, synchronously,
+            # rather than in an add_done_callback avoids a race where
+            # wait() returns before the callbacks have written back.
+            wait([f for _, f in futures])
+            for cell, f in futures:
+                _cell_clean_up(cell, pbar, model_params, f)
 
     pool.shutdown()
 

@@ -16,7 +16,7 @@ import numpy as np
 import pylab as pl
 from numpy import ma
 
-from configparser import SafeConfigParser
+from configparser import ConfigParser as SafeConfigParser
 config = SafeConfigParser()
 
 #External modules

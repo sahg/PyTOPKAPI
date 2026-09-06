@@ -29,16 +29,16 @@ to South is: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18
 """
 import sys
 from warnings import warn
-from configparser import SafeConfigParser
+from configparser import ConfigParser as SafeConfigParser
 
 import numpy as np
 from numpy import ma
 import networkx as nx
-from osgeo import gdal
 
 from pytopkapi import utils as ut
 
 def compute_cell_coordinates(mask_fname):
+    from osgeo import gdal
     dset = gdal.Open(mask_fname)
     mask = dset.ReadAsArray()
 
@@ -80,6 +80,7 @@ def read_raster(rast_fname, file_format='GTiff'):
         err_str = 'Reading %s files not implemented.' % file_format
         raise NotImplementedError(err_str)
     else:
+        from osgeo import gdal
         dset = gdal.Open(rast_fname)
         data = dset.ReadAsArray()
 
@@ -114,7 +115,7 @@ def generate_param_file(ini_fname, isolated_cells=False):
         overland_manning_fname = <path to overland Manning roughness file>
         channel_network_fname = <path to channel network file>
         flowdir_fname = <path to flow direction file>
-        flowdir_source = <source of flowdir file. Can be `GRASS` or `ARCGIS`>
+        flowdir_source = <source of flowdir file. Can be `GRASS` or `ArcGIS`>
 
         [output]
         param_fname = <path to output parameter file>
@@ -252,7 +253,7 @@ def read_bin_data(fname):
     f = open(fname, "rb")
     raw = f.read()
     f.close()
-    data = np.fromstring(raw, 'f')
+    data = np.frombuffer(raw, 'f')
     if sys.byteorder == 'big':
         data = data.byteswap()
 
@@ -442,9 +443,9 @@ def strahler_to_channel_manning(cell_labels, channel_network, cell_down):
                         6 : 0.025}
 
     # ensure input arrays are integers
-    cell_labels = np.asarray(cell_labels, dtype=np.int)
-    channel_network = np.asarray(channel_network, dtype=np.int)
-    cell_down = np.asarray(cell_down, dtype=np.int)
+    cell_labels = np.asarray(cell_labels, dtype=int)
+    channel_network = np.asarray(channel_network, dtype=int)
+    cell_down = np.asarray(cell_down, dtype=int)
 
     # compute strahler order
     nodes = cell_labels[channel_network == 1]
@@ -460,7 +461,7 @@ def strahler_to_channel_manning(cell_labels, channel_network, cell_down):
 
     # determine the outlet stream arc ID and it's upstream node using
     # obfuscated list comprehension. Strictly for speed of course ;-)
-    outlet_node = nx.topological_sort(G)[-1]
+    outlet_node = list(nx.topological_sort(G))[-1]
 
     outlet_info = [(edge_id, edge) for edge_id, edge in enumerate(G.edges())
            if outlet_node in edge]
@@ -547,11 +548,11 @@ def cell_connectivity(flowdir, mask, source='GRASS'):
         raise ValueError('Unknown flow direction scheme: %s' % source)
 
     ncells = mask[mask == 1].size
-    int_min = np.iinfo(np.int).min
-    cell_id = np.ones(mask.shape, dtype=np.int)*int_min
+    int_min = np.iinfo(int).min
+    cell_id = np.ones(mask.shape, dtype=int)*int_min
     cell_id[mask == 1] = np.arange(ncells)
 
-    cell_down = np.ones(ncells, dtype=np.int)*int_min
+    cell_down = np.ones(ncells, dtype=int)*int_min
 
     outlet_found = False
     nrows, ncols = mask.shape
@@ -650,15 +651,15 @@ def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
 
     """
     # Ensure input arrays are numpy arrays of the correct dtype.
-    cell_labels = np.asarray(cell_labels, dtype=np.int)
-    channel_network = np.asarray(channel_network, dtype=np.int)
-    X = np.asarray(X, dtype=np.float)
-    Y = np.asarray(Y, dtype=np.float)
-    cell_down = np.asarray(cell_down, dtype=np.int)
-    dem = np.asarray(dem, dtype=np.float)
+    cell_labels = np.asarray(cell_labels, dtype=int)
+    channel_network = np.asarray(channel_network, dtype=int)
+    X = np.asarray(X, dtype=float)
+    Y = np.asarray(Y, dtype=float)
+    cell_down = np.asarray(cell_down, dtype=int)
+    dem = np.asarray(dem, dtype=float)
 
-    Xc = np.zeros(cell_labels.shape, dtype=np.float)
-    tan_beta_channel = np.zeros(cell_labels.shape, dtype=np.float)
+    Xc = np.zeros(cell_labels.shape, dtype=float)
+    tan_beta_channel = np.zeros(cell_labels.shape, dtype=float)
 
     for i in cell_labels[channel_network == 1]:
         indx = cell_down[i]
@@ -667,12 +668,14 @@ def channel_properties(cell_labels, channel_network, X, Y, cell_down, dem):
             Xcell = X[i]
             Ycell = Y[i]
 
-            Xcell_down = X[cell_labels == indx]
-            Ycell_down = Y[cell_labels == indx]
+            # cell_labels == arange(ncells), so (cell_labels == indx) selects
+            # position indx. Index positionally to get scalars (NumPy >= 2 will
+            # not assign a length-1 array into a scalar slot).
+            Xcell_down = X[indx]
+            Ycell_down = Y[indx]
 
             Xc[i] = ut.distance(Xcell, Ycell, Xcell_down, Ycell_down)
-            tan_beta_channel[i] = (dem[i]
-                                   - dem[cell_labels == indx][0])/Xc[i]
+            tan_beta_channel[i] = (dem[i] - dem[indx]) / Xc[i]
 
     # Assign sensible values to the catchment outlet cell, since it
     # has no downstream neighbour.

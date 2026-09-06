@@ -1,0 +1,19 @@
+{
+  "soil_depth": "projects/umhlanga/soil/soil_depth.tif",
+  "conductivity": "projects/umhlanga/soil/conductivity.tif",
+  "resid_moisture_content": "projects/umhlanga/soil/resid_moisture_content.tif",
+  "sat_moisture_content": "projects/umhlanga/soil/sat_moisture_content.tif",
+  "overland_manning": "projects/umhlanga/soil/overland_manning.tif",
+  "bubbling_pressure": "projects/umhlanga/soil/bubbling_pressure.tif",
+  "pore_size_dist": "projects/umhlanga/soil/pore_size_dist.tif",
+  "crs": "EPSG:32736",
+  "n_cells": 90770,
+  "soil_source": "land_type:projects/umhlanga/data/soil/landtype.shp",
+  "landcover_source": "raster:projects/umhlanga/data/landuse/SA_NLC_2020_GEO.tif",
+  "depth_source": "soil source (land_type:projects/umhlanga/data/soil/landtype.shp)",
+  "warnings": [
+    "land type: codes ['0'] not in the attribute table; used loam defaults.",
+    "Setting the shape on a NumPy array has been deprecated in NumPy 2.5.\nAs an alternative, you can create a new view using np.reshape (with copy=False if needed).",
+    "SANLC: codes [16, 18, 19, 20, 21, 22, 23, 25, 26, 29, 30, 31, 32, 36, 40, 41, 42, 43, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 69, 73] not in lookup; used default (0.15)."
+  ]
+}

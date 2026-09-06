@@ -50,7 +50,7 @@ def read(bingrid_name):
 
     a = read_bin(bin_name)
 
-    a = a.reshape(rows, cols)
+    a = a.reshape(int(rows), int(cols))
 
     return a, li_headers
 

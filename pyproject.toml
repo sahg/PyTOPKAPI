@@ -1,0 +1,20 @@
+# ─── How this project gets built ────────────────────────────────
+[build-system]
+requires = ["setuptools>=68"]              # the tool that assembles the package
+build-backend = "setuptools.build_meta"    # tells pip to hand the job to setuptools
+
+# ─── What this project IS ───────────────────────────────────────
+[project]
+name = "pytopkapi"          # the name pip lists it under (kept the same as upstream)
+version = "0.1.0"           # any version string; bump it as the work grows
+description = "PyTOPKAPI solver, catchment toolkit, and estuary model"
+requires-python = ">=3.11"  # refuse to install on older Python
+dependencies = [ 
+    "networkx>=3.2", # imported at module top of pretreatment.py & create_file.py
+    "pdfplumber>=0.11", # M2 soil_table: parse SA Land Type memoir PDFs
+]           
+
+# ─── Which folders of code belong to it ─────────────────────────
+[tool.setuptools.packages.find]
+where = ["."]                                     # look in the repo root
+include = ["pytopkapi*", "topkapi_setup*", "estuary*"]  # these three, plus their sub-folders

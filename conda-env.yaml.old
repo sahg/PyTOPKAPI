@@ -1,0 +1,14 @@
+name: pytopkapi-0.5.x
+channels:
+- conda-forge
+dependencies:
+- python=3
+- numpy
+- scipy
+- h5py
+- gdal
+- networkx
+- tqdm
+- matplotlib
+- pandas
+- nose
